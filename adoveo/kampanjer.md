@@ -30,10 +30,10 @@ bort. (Ligger den kvar gör det inget — scriptet använder den då i stället.
 | Id | Vad | Theme → Custom CSS | Innehåll |
 |---|---|---|---|
 | 294 | Summary, huvudsida | tomt | `inputfalt/294-summary.html` |
-| 295 | Födelsedag | konceptfärg (rosa) | `inputfalt/295-fodelsedag.html` |
-| 297 | Utmaning | konceptfärg (grön) | `inputfalt/297-utmaning.html` |
-| 298 | Till minne | konceptfärg (krämvit + ram) | `inputfalt/298-till-minne.html` |
-| 299 | Stå bakom (arbetsnamn) | konceptfärg (röd) | `inputfalt/299-sta-bakom.html` |
+| 295 | Födelsedag | konceptfärg: rosa | `inputfalt/295-fodelsedag.html` |
+| 297 | Utmaning | konceptfärg: grön | `inputfalt/297-utmaning.html` |
+| 298 | Till minne | konceptfärg: svart | `inputfalt/298-till-minne.html` |
+| 299 | Stå bakom (arbetsnamn) | konceptfärg: vit med ram | `inputfalt/299-sta-bakom.html` |
 | 308 | Infosida | tomt | `inputfalt/308-info.html` |
 
 Insamlingssidorna (`/p/…`) som varje insamlare får hämtar sin kod och färg
@@ -44,8 +44,16 @@ från sin konceptkampanj — de behöver inget eget.
 Det enda som skiljer konceptkampanjerna åt i koden. Klistras in som hela
 innehållet i kampanjens **Theme → Custom CSS**. (Insamlingssidorna avslöjar
 inte vilket koncept de hör till, därför kan färgen inte ligga i repot.)
+Alla färger är Ung Cancers egna (tokens i `src/css/01-bas.css`).
 
-**295 Födelsedag** — rosa, festligt utan att bli barnkalas
+| Koncept | Yta | Text | Ram |
+|---|---|---|---|
+| 295 Födelsedag | Rosa | Svart | – |
+| 297 Utmaning | Grön | Svart | – |
+| 298 Till minne | Svart | Vit | – (krämvit platta bakom logotyperna) |
+| 299 Stå bakom | Vit | Svart | Svart, eftersom Vit = sidans bakgrund |
+
+**295 Födelsedag**
 ```css
 :root {
     --uc-concept-bg:    var(--uc-pink);
@@ -54,7 +62,7 @@ inte vilket koncept de hör till, därför kan färgen inte ligga i repot.)
 }
 ```
 
-**297 Utmaning** — grön, som korten på Summary
+**297 Utmaning** (grönt är standard — fältet kan också lämnas tomt)
 ```css
 :root {
     --uc-concept-bg:    var(--uc-green);
@@ -63,7 +71,20 @@ inte vilket koncept de hör till, därför kan färgen inte ligga i repot.)
 }
 ```
 
-**298 Till minne** — ingen färgyta, krämvitt med svart ram som en dödsannons
+**298 Till minne**
+```css
+:root {
+    --uc-concept-bg:      var(--uc-black);
+    --uc-concept-ink:     var(--uc-cream);
+    --uc-concept-frame:   none;
+    --uc-concept-logo-bg: var(--uc-cream);
+}
+```
+`--uc-concept-logo-bg` lägger en krämvit platta bakom 90-konto- och
+Ung Cancer-logotyperna efter att en insamling skapats. De är svarta
+bilder och syns annars inte på svart.
+
+**299 Stå bakom**
 ```css
 :root {
     --uc-concept-bg:    var(--uc-cream);
@@ -72,14 +93,8 @@ inte vilket koncept de hör till, därför kan färgen inte ligga i repot.)
 }
 ```
 
-**299 Stå bakom** — röd med krämvit text (kontrast 4,5:1, klarar AA)
-```css
-:root {
-    --uc-concept-bg:    var(--uc-red);
-    --uc-concept-ink:   var(--uc-cream);
-    --uc-concept-frame: none;
-}
-```
+Mörk yta i ett nytt koncept: sätt alltid `--uc-concept-ink` till en ljus
+färg och `--uc-concept-logo-bg` till `var(--uc-cream)`.
 
 ## Ny kampanj
 

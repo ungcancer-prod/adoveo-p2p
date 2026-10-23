@@ -5,13 +5,14 @@
    det påverkar inte Summary eller infosidan.
 
    Varje konceptkampanj sätter sin färg i sin EGEN Theme → Custom CSS
-   (tre rader, se adoveo/koncept-farger.md). Värdena nedan är
-   standard om en kampanj inte satt något.
+   (se adoveo/kampanjer.md). Värdena nedan är standard om en kampanj
+   inte satt något. Alla färger är Ung Cancers egna tokens.
    ============================================================ */
 :root {
-    --uc-concept-bg:    var(--uc-green);
-    --uc-concept-ink:   var(--uc-black);
-    --uc-concept-frame: none;
+    --uc-concept-bg:       var(--uc-green);   /* ytan */
+    --uc-concept-ink:      var(--uc-black);   /* text på ytan */
+    --uc-concept-frame:    none;              /* ram runt ytan */
+    --uc-concept-logo-bg:  transparent;       /* platta bakom svarta logotyper på mörk yta */
 }
 /* =========================================
    9. P2P — SKAPA-FLÖDET
@@ -106,13 +107,28 @@
 #after-coupon-share-text .cc-button {
     margin: 0;
 }
-.p2p-share-campaign-button.cc-button {
-    background-color: var(--uc-black);
-    color: var(--uc-cream);
+.p2p-share-campaign-button.cc-button {      /* fylld i ytans textfärg: syns på både ljus och mörk yta */
+    background-color: var(--uc-concept-ink);
+    border-color: var(--uc-concept-ink);
+    color: var(--uc-concept-bg);
 }
 .p2p-share-campaign-button.cc-button:hover {
-    background-color: var(--uc-cream);
-    color: var(--uc-black);
+    background-color: var(--uc-concept-bg);
+    color: var(--uc-concept-ink);
+}
+/* Integritetstext + logotyper under knapparna (innehåll från admin) */
+#after-coupon-subheading a {
+    color: inherit;                    /* plattformsröd länk -> ytans textfärg */
+    text-decoration: underline;
+}
+/* Plattan läggs på diven runt bilden: bilden har en inline-stil från
+   admin (background-color) som annars bara !important slår. */
+#after-coupon-subheading div:has(> img) {
+    width: fit-content;
+    max-width: 100%;
+    margin: var(--sp-5) auto 0;
+    padding: var(--sp-2) var(--sp-4);
+    background-color: var(--uc-concept-logo-bg);
 }
 
 /* =========================================
