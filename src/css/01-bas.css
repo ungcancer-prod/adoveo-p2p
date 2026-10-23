@@ -373,7 +373,7 @@ button.cc-button-custom-product {
     gap: var(--gap-md);
     -webkit-clip-path: var(--uc-clip);
     clip-path: var(--uc-clip);
-    background-color: var(--uc-green);
+    background-color: var(--uc-cream);
     border-radius: var(--radius);
 }
 .cc-card-padded {
@@ -410,8 +410,11 @@ a.uc-card {
     text-decoration: none;
     color: var(--uc-black);
 }
-/* P2P-paketeringskort: släpp radklampen på texten */
+/* P2P-paketeringskort: släpp radklampen på texten (plattformen ger
+   max-height 100px och -webkit-box, så femte raden la sig över nästa) */
 .campaignsDisplay .cc-card .cc-txt {
+    display: block;
+    max-height: none;
     white-space: normal;
     overflow: visible;
     text-overflow: clip;
@@ -429,17 +432,41 @@ a.uc-card {
     object-fit: cover;
     display: block;
 }
-/* P2P-paketeringskort: kortmått + padding (Summary #3-uppstädning) */
+/* P2P-paketeringskort: kortmått + samma luft runt bilden på alla sidor.
+   height: auto så att korten i en rad blir lika höga (plattformen låser
+   höjden annars). */
 .campaignsDisplay .cc-card {
+    position: relative;                /* för den klickbara ytan nedan */
+    height: auto;
     max-width: 375px;
-    padding-inline: var(--sp-4);
+    padding: 16px;
 }
-/* P2P-paketeringskort: innehållswrapper under bilden */
+/* P2P-paketeringskort: innehållswrapper under bilden. Fyller kortet och
+   lägger knappen längst ner, så att knapparna står i linje. */
 .uc-p2p-content {
     display: flex;
+    flex: 1;
     flex-direction: column;
+    justify-content: flex-start;
     align-items: center;
     gap: var(--gap-card);
+}
+.campaignsDisplay .uc-p2p-content > p {
+    margin: 0;                         /* plattformens .cc-title { margin: auto } */
+}
+.campaignsDisplay .uc-p2p-content > a {
+    margin-top: auto;
+}
+/* Hela kortet är klickbart: länkens yta sträcks över kortet. Knappen
+   blir svart när man håller över kortet, så att det syns vart klicket går. */
+.campaignsDisplay .cc-card a::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+}
+.campaignsDisplay .cc-card:hover .cc-button {
+    background-color: var(--uc-black);
+    color: var(--uc-white);
 }
 /* P2P-paketeringskort: "Insamlat hittills"-etiketten i cc-price-container */
 .cc-price-container .cc-txt {
@@ -655,11 +682,10 @@ button[name="swish-send"] {
         flex: 1 1 calc(20% - 16px);                  /* 20% minus 4×gap/5 */
         min-width: 0;
         max-width: none;
-        padding-inline: 0;                           /* dubbel padding, se 3 */
     }
 
-    /* 3. Innanmätet: 20px kortpadding + 24px cc-content = 44px/sida.
-          Släpp kortets, behåll innehållets (nedskalad). */
+    /* 3. Innanmätet: kortets 16px runt bilden + innehållets egen,
+          nedskalade padding under den. */
     .campaignsDisplay .cc-content,
     .campaignsDisplay .uc-p2p-content {
         padding: var(--sp-4) var(--sp-3);
