@@ -133,6 +133,129 @@
     background-color: var(--uc-concept-logo-bg);
 }
 
+/* 9.6 Skapa-sidan på bred skärm: formuläret till vänster, insamlingssidan
+   i en telefon till höger, uppdaterad medan man skriver (som kampanj 300).
+   Scriptet (createLayout) lägger html.uc-create-split och flyttar
+   plattformens förhandsvisning till .uc-create__phone. Under 1000px gäller
+   plattformens egen förhandsvisning bakom ögat.
+   Telefonen ritas i 375 x 667 px (plattformens mått) och krymps med
+   --uc-phone-scale, som inte påverkar layouten. */
+:root {
+    --uc-phone-scale: 0.8;             /* 375 x 667 -> 300 x 534 px */
+}
+html.uc-create-split .uc-create {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    gap: var(--sp-7) 64px;
+}
+html.uc-create-split .uc-create__form {
+    flex: 0 1 400px;
+    min-width: 0;
+}
+html.uc-create-split .uc-create__phone {
+    flex: none;
+    position: sticky;
+    top: var(--sp-5);
+    width: calc(375px * var(--uc-phone-scale));
+    height: calc(667px * var(--uc-phone-scale));
+}
+/* !important: plattformen skriver en stilmall vid körning
+   (#giftcard-preview 375 x 667, scale 0.5, rutan absolut och dold) som
+   ligger efter vår CSS. Gäller bara i tvåspaltsläget. */
+html.uc-create-split #giftcard-preview-container {
+    display: block !important;
+    position: static !important;
+    inset: auto !important;
+    width: 100% !important;
+    height: 100% !important;
+    max-height: none !important;
+    margin: 0 !important;
+    transform: none !important;
+}
+html.uc-create-split #giftcard-preview {
+    position: relative !important;
+    width: 375px !important;
+    height: 667px !important;
+    max-width: none !important;
+    max-height: none !important;
+    margin: 0 !important;
+    transform: scale(var(--uc-phone-scale)) !important;
+    transform-origin: top left !important;
+    border: 12px solid var(--uc-black) !important;   /* telefonens ram */
+    border-radius: 48px !important;
+    box-shadow: 0 24px 48px rgba(var(--uc-black-rgb), 0.25) !important;
+    overflow-y: auto !important;
+    scrollbar-width: none;
+}
+html.uc-create-split #giftcard-preview::-webkit-scrollbar { display: none; }
+/* Kameran överst i telefonen (ligger på rutan, så den scrollar inte med) */
+html.uc-create-split .uc-create__phone::before {
+    content: '';
+    position: absolute;
+    top: calc(12px * var(--uc-phone-scale));
+    left: 50%;
+    z-index: 3;
+    width: calc(110px * var(--uc-phone-scale));
+    height: calc(26px * var(--uc-phone-scale));
+    transform: translateX(-50%);
+    border-radius: 0 0 14px 14px;
+    background-color: var(--uc-black);
+    pointer-events: none;
+}
+/* Ögat och krysset behövs inte när telefonen alltid syns */
+html.uc-create-split #giftcard-preview-button,
+html.uc-create-split #hide-preview {
+    display: none !important;
+}
+
+/* 9.7 Innehållet i förhandsvisningen ser ut som insamlingssidan (10.1–10.2):
+   rund bild, titelraden som rubrik, beskrivningen som brödtext.
+   Gäller både telefonen och plattformens popup. */
+#giftcard-preview > .wrapper {
+    min-height: 100%;
+    margin: 0;
+    padding: 56px var(--sp-4) var(--sp-7);   /* plats för kameran överst */
+    -webkit-clip-path: none;
+    clip-path: none;
+}
+#coupon-page-title img {
+    display: block;
+    width: 120px !important;           /* inline-stil från plattformen: 150px */
+    height: 120px;
+    margin: 0 auto var(--sp-4);
+    object-fit: cover;
+    border-radius: 50%;
+    border: var(--border-w) solid var(--uc-concept-ink);
+}
+#coupon-page-title img[src=""],
+#coupon-page-title img:not([src]) {
+    border-style: dashed;              /* ingen bild vald än */
+}
+#coupon-page-message {
+    margin: 0 auto var(--sp-5);
+    font-family: var(--font-head);
+    font-size: var(--fs-h3);           /* 24px i en 375px-skärm */
+    line-height: var(--lh-head);
+    letter-spacing: var(--track-tight);
+    text-transform: uppercase;
+    color: var(--uc-concept-ink);
+}
+#coupon-page-message br { display: none; }
+#coupon-page-message .uc-ghost {
+    opacity: 0.5;                      /* fältets etikett tills man skrivit något */
+}
+#coupon-page-message > span {
+    display: block;
+    margin-top: var(--sp-3);
+    font-family: var(--font-body);
+    font-size: var(--fs-body) !important;   /* inline 16px */
+    line-height: 150%;
+    letter-spacing: normal;
+    text-transform: none;
+    white-space: pre-line;
+}
+
 /* =========================================
    10. P2P — INSAMLINGSSIDAN (/p/<hash>)
    Varje insamlares egen sida. body.p2p-transaction-landing, fas

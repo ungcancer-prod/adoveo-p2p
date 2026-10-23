@@ -518,6 +518,82 @@
     });
   }
 
+  /* ---------- Skapa-sidan: formulär till vänster, telefon till höger ---------- */
+  /* Konceptets startsida (/start/ID/). Plattformen har redan en
+     förhandsvisning av insamlingssidan (#giftcard-preview-container, öppnas
+     med ögat) och fyller den medan man skriver. På bred skärm flyttas den
+     ut ur formuläret och visas hela tiden som en telefon bredvid
+     formuläret, som i kampanj 300. Under brytpunkten flyttas den tillbaka
+     och ögat fungerar som vanligt. */
+  var CREATE_MQ = window.matchMedia ? window.matchMedia('(min-width: 1000px)') : null;
+  function createLayout() {
+    var phase = document.getElementById('phase-before-coupon');
+    var box = document.getElementById('giftcard-preview-container');
+    var heading = document.getElementById('coupon-heading');
+    if (!phase || !box || !heading || !CREATE_MQ || document.querySelector('.uc-create')) return;
+    var col = heading.parentElement;              /* rubrik, ingress och formulär */
+    var home = box.parentElement, homeNext = box.nextSibling;
+    var grid = el('div', 'uc-create');
+    col.parentNode.insertBefore(grid, col);
+    col.classList.add('uc-create__form');
+    grid.appendChild(col);
+    var phone = el('div', 'uc-create__phone');
+    phone.setAttribute('aria-label', 'Så här blir din insamlingssida');
+    grid.appendChild(phone);
+
+    var place = function () {
+      var wide = CREATE_MQ.matches;
+      root.classList.toggle('uc-create-split', wide);
+      if (wide && box.parentElement !== phone) phone.appendChild(box);
+      if (!wide && box.parentElement !== home) {
+        home.insertBefore(box, homeNext && homeNext.parentNode === home ? homeNext : null);
+      }
+    };
+    place();
+    if (CREATE_MQ.addEventListener) CREATE_MQ.addEventListener('change', place);
+    else if (CREATE_MQ.addListener) CREATE_MQ.addListener(place);
+    /* Flyttar plattformen tillbaka rutan (t.ex. när popupen stängs) */
+    new MutationObserver(function () {
+      if (CREATE_MQ.matches && box.parentElement !== phone) phone.appendChild(box);
+    }).observe(phase, { childList: true, subtree: true });
+
+    /* Innan man skrivit något visar plattformen {your_name} och
+       {description} rått. De byts mot fältens etiketter i spökskrift.
+       Plattformen bygger om texten vid varje tangent, så det görs om
+       varje gång texten ändras. */
+    var msg = box.querySelector('#coupon-page-message');
+    var label = function (id, fallback) {
+      var l = document.getElementById(id);
+      return (l && l.textContent.trim()) || fallback;
+    };
+    var GHOST = { your_name: label('name_label', 'Ditt namn'), description: label('custom_field_3_label', 'Din text') };
+    var ghost = function () {
+      for (var round = 0; round !== 5; round++) {
+        var w = document.createTreeWalker(msg, NodeFilter.SHOW_TEXT), t = null, m = null;
+        while (w.nextNode()) {
+          m = w.currentNode.nodeValue.match(/\{(your_name|description)\}/);
+          if (m) { t = w.currentNode; break; }
+        }
+        if (!t) return;
+        var rest = t.splitText(m.index);
+        rest.nodeValue = rest.nodeValue.slice(m[0].length);
+        t.parentNode.insertBefore(el('span', 'uc-ghost', GHOST[m[1]]), rest);
+      }
+    };
+    if (msg) {
+      ghost();
+      new MutationObserver(ghost).observe(msg, { childList: true, characterData: true, subtree: true });
+    }
+
+    /* Bilden: visa den valda bilden direkt, utan att vänta på uppladdningen */
+    var file = document.getElementById('registration_file_upload');
+    var img = box.querySelector('#coupon-page-title img');
+    if (file && img) file.addEventListener('change', function () {
+      var f = file.files && file.files[0];
+      if (f && /^image\//.test(f.type)) img.src = URL.createObjectURL(f);
+    });
+  }
+
   /* ---------- Start ---------- */
   function init() {
     removeOldHeaders();
@@ -540,6 +616,7 @@
 
     makeAnchors();
     fundraiserCards();
+    createLayout();
 
     /* Platshållare i plattformens sökfält, samma som i sökpanelen */
     var listSearch = onSummary() ? document.querySelector('#searchInput') : null;
