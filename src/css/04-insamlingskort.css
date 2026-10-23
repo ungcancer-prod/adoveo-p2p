@@ -45,7 +45,7 @@
     position: relative;
     display: flex;
     flex-direction: column;
-    gap: 4px;                          /* vit springa mellan bild och text, som ungcancer.se */
+    gap: 0;                            /* springan kommer av de oregelbundna kanterna, som ungcancer.se */
     aspect-ratio: 4 / 5;
     width: 100%;
     min-width: 0;
@@ -86,8 +86,9 @@
     padding: var(--sp-5);              /* 24px */
     -webkit-clip-path: var(--uc-clip);
     clip-path: var(--uc-clip);
-    background-color: var(--uc-cream);
-    color: var(--uc-black);
+    background-color: var(--uc-card-bg, var(--uc-cream));   /* konceptets färg, satt av scriptet */
+    color: var(--uc-card-ink, var(--uc-black));
+    transition: background-color 0.2s, color 0.2s;
 }
 
 /* 13.3 Text: rubrik högst två rader, brödtexten så många rader som ryms
@@ -141,8 +142,8 @@
     .uc-fcard__title { font-size: var(--fs-h3); }   /* 32 -> 24px när korten blir smala */
 }
 
-/* 13.4 Etiketten: konceptet, i konceptets färg (färgerna står i
-   MENU_MAIN i scriptet). Ligger i bildens övre vänstra hörn. */
+/* 13.4 Etiketten: konceptet, i konceptets färg (samma som textrutan;
+   färgerna står i MENU_MAIN i scriptet). Ligger i bildens övre vänstra hörn. */
 .uc-fcard__label {
     position: absolute;
     top: 0;
@@ -151,8 +152,8 @@
     padding: 4px 8px;
     -webkit-clip-path: var(--uc-clip);
     clip-path: var(--uc-clip);
-    background-color: var(--uc-label-bg, var(--uc-green));
-    color: var(--uc-label-ink, var(--uc-black));
+    background-color: var(--uc-card-bg, var(--uc-green));
+    color: var(--uc-card-ink, var(--uc-black));
     font-family: var(--font-body);
     font-size: 1.3rem;                 /* 13px */
     font-weight: 700;

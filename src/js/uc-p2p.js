@@ -15,7 +15,7 @@
   var BASE = 'https://ungcancer.adoveo.com/start/';
   /* Nivå 1: visas i mitten av headern på desktop och överst i menypanelen.
      Det här är också listan över koncepten: id = kampanjens nummer, och
-     bg/ink = färgerna på konceptets etikett på insamlingskorten. */
+     bg/ink = konceptets färger på insamlingskorten (textruta och etikett). */
   var MENU_MAIN = [
     { text: 'Födelsedag', id: '295', bg: 'var(--uc-pink)',  ink: 'var(--uc-black)', href: BASE + '295/?location=summary' },
     { text: 'Utmaning',   id: '297', bg: 'var(--uc-green)', ink: 'var(--uc-black)', href: BASE + '297/?location=summary' },
@@ -464,10 +464,9 @@
     var a = card.querySelector('.uc-fcard__link');
     var c = a ? map[p2pCode(a.getAttribute('href'))] : null;
     if (!c) return;
-    var lab = el('span', 'uc-fcard__label', c.text);
-    lab.style.setProperty('--uc-label-bg', c.bg);
-    lab.style.setProperty('--uc-label-ink', c.ink);
-    card.appendChild(lab);
+    card.style.setProperty('--uc-card-bg', c.bg);      /* textrutan och etiketten */
+    card.style.setProperty('--uc-card-ink', c.ink);
+    card.appendChild(el('span', 'uc-fcard__label', c.text));
   }
   function upgradeCard(card, map) {
     if (card.classList.contains('uc-fcard')) { conceptLabel(card, map); return; }
