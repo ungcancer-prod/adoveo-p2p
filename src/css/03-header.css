@@ -49,6 +49,25 @@ body > .uc-header.uc-header-bar--hidden {
     width: 104px;
     height: 56px;
     background: @@LOGO@@ no-repeat center / contain;
+    position: relative;                /* för "Min insamling" nedan */
+}
+/* "Min insamling" i handstil under logotypen, nuddar "Cancer".
+   Skärmläsare läser "Ung Cancer Min insamling". */
+.uc-header__logo::after {
+    content: 'Min insamling';
+    position: absolute;
+    left: 20px;
+    top: 57px;
+    white-space: nowrap;
+    font-family: var(--font-hand);
+    font-size: 22px;
+    line-height: 1;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    color: var(--uc-red);
+    transform: rotate(-7deg);
+    transform-origin: left center;
+    pointer-events: none;
 }
 /* Skärmläsartext (logotypens namn, ikonernas namn) */
 .uc-sr {
