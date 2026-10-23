@@ -9,8 +9,9 @@
 //     inget element som heter uc-x) men ger +1 i specificitet. Filen laddas
 //     tidigare på sidan än Adoveos egen CSS, och utan tillägget skulle
 //     Adoveos regler vinna varje gång specificiteten är lika.
-//     Undantag: :root-regler (variablerna ska kunna skrivas över av en
-//     kampanjs Custom CSS) och @font-face/@keyframes.
+//     Undantag: :root-regler blir i stället :where(:root) (specificitet 0),
+//     så att en kampanjs Custom CSS alltid kan skriva över variablerna,
+//     t.ex. konceptfärgen. @font-face/@keyframes lämnas orörda.
 
 import { readFileSync, writeFileSync, readdirSync, mkdirSync } from 'node:fs';
 import { join, dirname } from 'node:path';
@@ -63,7 +64,10 @@ function blockEnd(css, i) {
 }
 function bumpSelector(sel) {
   const t = sel.trim();
-  if (!t || t.startsWith(':root')) return sel;
+  if (!t) return sel;
+  // :root -> :where(:root): specificitet 0, så att en kampanjs egen
+  // :root i Custom CSS alltid vinner, var den än hamnar på sidan.
+  if (t.startsWith(':root')) return sel.replace(t, ':where(:root)' + t.slice(5));
   // Före pseudo-element (::placeholder m.fl.) på yttersta nivån
   let depth = 0, at = -1;
   for (let j = 0; j !== t.length; j++) {
