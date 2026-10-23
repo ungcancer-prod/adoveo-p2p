@@ -182,7 +182,7 @@ html.uc-create-split #giftcard-preview {
     margin: 0 !important;
     transform: scale(var(--uc-phone-scale)) !important;
     transform-origin: top left !important;
-    border: 12px solid var(--uc-black) !important;   /* telefonens ram */
+    border: 12px solid var(--uc-concept-ink) !important;   /* telefonens ram: svart, krämvit på mörk yta */
     border-radius: 48px !important;
     box-shadow: 0 24px 48px rgba(var(--uc-black-rgb), 0.25) !important;
     overflow-y: auto !important;
@@ -200,7 +200,7 @@ html.uc-create-split .uc-create__phone::before {
     height: calc(26px * var(--uc-phone-scale));
     transform: translateX(-50%);
     border-radius: 0 0 14px 14px;
-    background-color: var(--uc-black);
+    background-color: var(--uc-concept-ink);
     pointer-events: none;
 }
 /* Ögat och krysset behövs inte när telefonen alltid syns */
@@ -245,7 +245,7 @@ html.uc-create-split #hide-preview {
 #coupon-page-message .uc-ghost {
     opacity: 0.5;                      /* fältets etikett tills man skrivit något */
 }
-#coupon-page-message > span {
+#coupon-page-message > span:not(.uc-ghost) {
     display: block;
     margin-top: var(--sp-3);
     font-family: var(--font-body);
