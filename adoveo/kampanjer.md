@@ -33,7 +33,7 @@ bort. (Ligger den kvar gör det inget — scriptet använder den då i stället.
 | 295 | Födelsedag | konceptfärg: rosa | `inputfalt/295-fodelsedag.html` |
 | 297 | Utmaning | konceptfärg: grön | `inputfalt/297-utmaning.html` |
 | 298 | Till minne | konceptfärg: svart | `inputfalt/298-till-minne.html` |
-| 299 | Stå bakom (arbetsnamn) | konceptfärg: vit med ram | `inputfalt/299-sta-bakom.html` |
+| 299 | Stå bakom (arbetsnamn) | konceptfärg: vit | `inputfalt/299-sta-bakom.html` |
 | 308 | Infosida | tomt | `inputfalt/308-info.html` |
 
 Insamlingssidorna (`/p/…`) som varje insamlare får hämtar sin kod och färg
@@ -45,13 +45,15 @@ Det enda som skiljer konceptkampanjerna åt i koden. Klistras in som hela
 innehållet i kampanjens **Theme → Custom CSS**. (Insamlingssidorna avslöjar
 inte vilket koncept de hör till, därför kan färgen inte ligga i repot.)
 Alla färger är Ung Cancers egna (tokens i `src/css/01-bas.css`).
+Sidans bakgrund är alltid vit (#ffffff); färgen ligger på konceptets
+ytor (wrappern), inte på sidan.
 
 | Koncept | Yta | Text | Ram |
 |---|---|---|---|
 | 295 Födelsedag | Rosa | Svart | – |
 | 297 Utmaning | Grön | Svart | – |
 | 298 Till minne | Svart | Vit | – (krämvit platta bakom logotyperna) |
-| 299 Stå bakom | Vit | Svart | Svart, eftersom Vit = sidans bakgrund |
+| 299 Stå bakom | Vit | Svart | – |
 
 **295 Födelsedag**
 ```css
@@ -89,7 +91,7 @@ bilder och syns annars inte på svart.
 :root {
     --uc-concept-bg:    var(--uc-cream);
     --uc-concept-ink:   var(--uc-black);
-    --uc-concept-frame: var(--uc-border);
+    --uc-concept-frame: none;
 }
 ```
 

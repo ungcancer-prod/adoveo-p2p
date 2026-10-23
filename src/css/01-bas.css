@@ -150,6 +150,13 @@ cite {
 /* =========================================
    2. GLOBAL LAYOUT & SEKTIONER
    ========================================= */
+/* Sidans bakgrund: vit på alla P2P-sidor. Konceptens färger ligger på
+   wrappern (02-koncept.css), inte på sidan. Adoveos temainställning ger
+   body.campaign-flow sin egen färg (0,1,1) — body[class] slår den. */
+body,
+body[class] {
+    background-color: var(--uc-white);
+}
 #wrap-default {
     max-width: var(--wrap-max);
     margin: 0 auto;
