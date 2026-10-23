@@ -33,7 +33,7 @@ bort. (Ligger den kvar gör det inget — scriptet använder den då i stället.
 | 295 | Födelsedag | rosa i färgväljaren | `inputfalt/295-fodelsedag.html` |
 | 297 | Utmaning | grön i färgväljaren | `inputfalt/297-utmaning.html` |
 | 298 | Till minne | svart i färgväljaren | `inputfalt/298-till-minne.html` |
-| 299 | Stå bakom (arbetsnamn) | vit i färgväljaren | `inputfalt/299-sta-bakom.html` |
+| 299 | Pepp | vit i färgväljaren | `inputfalt/299-pepp.html` |
 | 308 | Infosida | – | `inputfalt/308-info.html` |
 
 Insamlingssidorna (`/p/…`) som varje insamlare får hämtar sin kod och färg
@@ -53,7 +53,7 @@ platta; på en ljus yta blir texten svart.
 | 295 Födelsedag | Rosa `#FFB5D8` |
 | 297 Utmaning | Grön `#8BEEA5` |
 | 298 Till minne | Svart `#282826` |
-| 299 Stå bakom | Vit `#FCF7E3` |
+| 299 Pepp | Vit `#FCF7E3` |
 
 Alla färger är Ung Cancers egna. Theme → Custom CSS ska vara tomt i alla
 kampanjer.

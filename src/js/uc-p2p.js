@@ -18,7 +18,7 @@
     { text: 'Födelsedag', href: BASE + '295/?location=summary' },
     { text: 'Utmaning',   href: BASE + '297/?location=summary' },
     { text: 'Till minne', href: BASE + '298/?location=summary' },
-    { text: 'Stå bakom',  href: BASE + '299/?location=summary' }
+    { text: 'Pepp',       href: BASE + '299/?location=summary' }
   ];
   /* Nivå 2: bara i menypanelen. Ankaret (#...) = rubrikens text, se README */
   var MENU_MORE = [
