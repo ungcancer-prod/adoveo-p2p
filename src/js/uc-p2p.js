@@ -589,6 +589,19 @@
       var f = file.files && file.files[0];
       if (f && /^image\//.test(f.type)) img.src = URL.createObjectURL(f);
     });
+    /* Ingen bild än: plattformen ger bilden en tom eller trasig adress,
+       som visas som en trasig bild. Då visas en platshållare i stället. */
+    var title = box.querySelector('#coupon-page-title');
+    if (img && title) {
+      var noImg = function () {
+        var ok = !!img.getAttribute('src') && img.complete && img.naturalWidth > 0;
+        title.classList.toggle('uc-noimg', !ok);
+      };
+      img.addEventListener('load', noImg);
+      img.addEventListener('error', noImg);
+      new MutationObserver(noImg).observe(img, { attributes: true, attributeFilter: ['src'] });
+      noImg();
+    }
   }
 
   /* ---------- Start ---------- */

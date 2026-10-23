@@ -151,12 +151,36 @@ html.uc-create-split #phase-before-coupon:not([style*="none"]) {
     display: flex !important;
     justify-content: center;
     align-items: flex-start;
-    gap: 64px;
+    gap: 48px;
 }
+/* Formulärets yta: exakt som kampanj 300 — 390px, padding 24/40/40,
+   oregelbunden kant. Kanten och färgen ritas av ::before, inte med
+   clip-path på själva ytan: clip-path klipper även plattformens
+   fixed-rutor inuti (felmeddelanden), som då skulle skäras till formen.
+   Färgen är den som valts i admin (läst av conceptColors). */
 html.uc-create-split #phase-before-coupon > .wrapper {
-    flex: 0 1 480px;
+    position: relative;
+    isolation: isolate;
+    flex: 0 0 390px;
+    width: 390px;
     min-width: 0;
-    margin: 0;
+    margin: var(--sp-7) 0;
+    padding: var(--sp-5) var(--sp-7) var(--sp-7);
+    background-color: transparent;
+}
+html.uc-create-split #phase-before-coupon > .wrapper::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    -webkit-clip-path: var(--uc-clip);
+    clip-path: var(--uc-clip);
+    background-color: var(--uc-concept-bg);
+}
+/* Fälten fyller ytans 310px, som på 300 */
+html.uc-create-split #phase-before-coupon > .wrapper :is(.input-group, .confirm_button_group) {
+    width: 100%;
+    max-width: 100%;
 }
 html.uc-create-split .uc-create__phone {
     flex: none;
@@ -242,10 +266,23 @@ html.uc-create-split #hide-preview {
     border: 0;
     margin: 0;
 }
-#coupon-page-title img[src=""],
-#coupon-page-title img:not([src]) {
-    aspect-ratio: 4 / 3 !important;    /* ingen bild vald än: en tom yta */
-    background-color: rgba(var(--uc-black-rgb), 0.12);
+/* Ingen bild vald än (scriptet sätter .uc-noimg): platshållare med
+   texten "Din bild här", knappt synlig, i stället för en trasig bild */
+#coupon-page-title.uc-noimg img {
+    display: none;
+}
+#coupon-page-title.uc-noimg::after {
+    content: 'Din bild här';
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    aspect-ratio: 4 / 3;
+    background-color: rgba(var(--uc-black-rgb), 0.08);
+    color: var(--uc-concept-ink);
+    opacity: 0.35;
+    font-family: var(--font-hand);
+    font-size: var(--fs-h3);
+    text-transform: none;
 }
 #coupon-page-message {
     margin: 0 auto var(--sp-5);
