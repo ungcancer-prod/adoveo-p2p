@@ -166,6 +166,32 @@ cite {
 body,
 body[class] {
     background-color: var(--uc-white);
+    color: var(--uc-black);            /* temats textfärg (t.ex. blå #193546) gäller inte */
+}
+/* 2.1 Mörkt är alltid Ung Cancers svarta (#282826), oavsett vad som är
+   valt i Adoveos tema. Text, rubriker, ramar, skuggor och mörka
+   överlägg. Rubrikerna ärver ytans färg, så att de blir krämvita på en
+   svart konceptwrapper och svarta överallt annars. */
+.cc-title {
+    color: inherit;                    /* temats rubrikfärg (0,1,0) */
+}
+.qr-download,
+.qr-modal-close {
+    color: var(--uc-black);
+}
+.qr-modal {
+    background-color: rgba(var(--uc-black-rgb), 0.5);
+}
+.cc-alert-box {
+    background-color: rgba(var(--uc-black-rgb), 0.75);
+}
+.cc-card {
+    box-shadow: 0 4px 8px 0 rgba(var(--uc-black-rgb), 0.2);
+}
+/* Tunna avdelare: ytans textfärg, svagt. Ljusgrå på vitt, ljus på mörkt. */
+hr,
+hr.divider {
+    border-top-color: color-mix(in srgb, currentColor 15%, transparent);
 }
 #wrap-default {
     max-width: var(--wrap-max);

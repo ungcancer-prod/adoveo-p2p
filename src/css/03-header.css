@@ -10,8 +10,8 @@
 :root {
     --uc-header-bg:     var(--uc-white);  /* samma vita som ungcancer.se */
     --uc-drawer-w:      480px;
-    --uc-drawer-rule:   #88C49B;          /* understrykningen i menyn på ungcancer.se */
-    --uc-search-rule:   rgba(0, 0, 0, 0.1);
+    --uc-drawer-rule:   var(--uc-green);  /* understrykningen i menyn (ungcancer.se har #88C49B) */
+    --uc-search-rule:   rgba(var(--uc-black-rgb), 0.1);
     --uc-ease:          cubic-bezier(0.4, 0, 0.2, 1);
 }
 /* 12.1 Behållaren. Scriptet lägger headern direkt i body. Sticky måste
@@ -142,7 +142,7 @@ body > .uc-header.uc-header-bar--hidden {
 .uc-drawer__backdrop {
     position: absolute;
     inset: 0;
-    background-color: rgba(0, 0, 0, 0.25);
+    background-color: rgba(var(--uc-black-rgb), 0.25);
     opacity: 0;
     transition: opacity 0.28s var(--uc-ease);
 }

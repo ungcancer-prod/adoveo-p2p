@@ -94,6 +94,9 @@
 .p2p-preview,
 #giftcard-preview {
     background-color: var(--uc-concept-bg);
+    color: var(--uc-concept-ink);      /* temats textfärg gäller inte */
+    border-color: var(--uc-black);     /* plattformens ram är #000 */
+    box-shadow: 0 0 20px 4px rgba(var(--uc-black-rgb), 0.75);
 }
 /* 9.5 Efter skapad: Dela = primär (fylld), Se = sekundär (kontur) */
 #after-coupon-share-text {
