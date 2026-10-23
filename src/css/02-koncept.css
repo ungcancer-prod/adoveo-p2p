@@ -1,0 +1,211 @@
+/* ============================================================
+   02 — KONCEPT: skapa-flödet, insamlingssidan, hälsningsväggen
+   ------------------------------------------------------------
+   Sektion 9–11. Scopat på P2P-sidornas fas-id och body-klass, så
+   det påverkar inte Summary eller infosidan.
+
+   Varje konceptkampanj sätter sin färg i sin EGEN Theme → Custom CSS
+   (tre rader, se adoveo/koncept-farger.md). Värdena nedan är
+   standard om en kampanj inte satt något.
+   ============================================================ */
+:root {
+    --uc-concept-bg:    var(--uc-green);
+    --uc-concept-ink:   var(--uc-black);
+    --uc-concept-frame: none;
+}
+/* =========================================
+   9. P2P — SKAPA-FLÖDET
+   Kampanjens startsida (/start/<id>/): #phase-before-coupon = formuläret
+   där insamlaren skapar sin sida, #phase-after-coupon = "nu är den skapad"
+   med dela-knappar och QR-kod. Allt scopat på fas-id, rör inte Summary.
+   ========================================= */
+/* 9.1 Ytan: konceptets färg, text och ev. ram (se KONCEPT-blocket) */
+#phase-before-coupon .wrapper,
+#phase-after-coupon .wrapper {
+    background-color: var(--uc-concept-bg);
+    color: var(--uc-concept-ink);
+    border: var(--uc-concept-frame);
+    padding: var(--sp-7) var(--sp-4);
+}
+:is(#phase-before-coupon, #phase-after-coupon) :is(.cc-title, .cc-txt) {
+    color: var(--uc-concept-ink);
+}
+/* 9.2 Rubrik + ingress */
+#coupon-heading,
+#after-coupon-heading {
+    font-size: var(--fs-h2);           /* 30 -> 32px */
+    margin: 0 auto var(--sp-5);
+    max-width: 640px;
+}
+#coupon-heading br { display: none; }  /* radbrytningar inklistrade i admin-fältet */
+#coupon-subheading,
+#after-coupon-subheading {
+    max-width: 480px;
+    margin: 0 auto var(--sp-6);
+}
+#coupon-subheading:empty { display: none; }
+/* 9.3 Platformsmålet (0 / 10 000 kr) döljs på skapa-sidan: det är
+   konceptets totalsumma, inte insamlarens, och "0 kr" är fel första
+   intryck. Ta bort regeln när det finns volym att visa upp. */
+#phase-before-coupon .progress-bar,
+#phase-before-coupon .goal-line {
+    display: none;
+}
+/* Fyllnaden är plattformsgul (#EEB600) — varumärkesfärg där den syns */
+.progress-bar .collected-now {
+    background-color: var(--uc-black);
+    color: var(--uc-cream);
+}
+/* 9.4 Formuläret: en kolumn, 320px (plattformens .input-group-bredd) */
+#phase-before-coupon .input-group {
+    margin-bottom: var(--sp-2);
+}
+/* Plattformens fält har rundade hörn — varumärket har raka */
+:is(#phase-before-coupon, #phase-swish-result) :is(.cc-input, .cc-textarea) {
+    border-radius: var(--radius);
+}
+#registration_file_upload_div {
+    justify-content: center;
+}
+/* Dubbel-id: plattformens egen #registration-file-upload-button-regel
+   ligger EFTER Custom CSS i källan och vinner annars på ordning */
+#phase-before-coupon #registration-file-upload-button {
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+    justify-content: center;
+    border: var(--uc-border);
+    font-family: var(--font-head);
+    font-size: var(--fs-h4);           /* 24 -> 20px, i nivå med fälten */
+    text-transform: uppercase;
+}
+/* Förhandsvisning (ögat) + Skapa-knappen: centrerade bredvid varandra */
+#phase-before-coupon .confirm_button_group {
+    width: 320px;
+    justify-content: center;
+    align-items: center;
+    gap: var(--sp-3);
+    margin-top: var(--sp-4);
+}
+#phase-before-coupon .confirm_button_group .cc-button {
+    margin: 0;
+}
+/* Förhandsvisningens telefonmockup får konceptets färg */
+.p2p-preview,
+#giftcard-preview {
+    background-color: var(--uc-concept-bg);
+}
+/* 9.5 Efter skapad: Dela = primär (fylld), Se = sekundär (kontur) */
+#after-coupon-share-text {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--sp-3);
+    margin-bottom: var(--sp-6);
+}
+#after-coupon-share-text .cc-button {
+    margin: 0;
+}
+.p2p-share-campaign-button.cc-button {
+    background-color: var(--uc-black);
+    color: var(--uc-cream);
+}
+.p2p-share-campaign-button.cc-button:hover {
+    background-color: var(--uc-cream);
+    color: var(--uc-black);
+}
+
+/* =========================================
+   10. P2P — INSAMLINGSSIDAN (/p/<hash>)
+   Varje insamlares egen sida. body.p2p-transaction-landing, fas
+   #phase-swish-result. Titelraden ("Insamling av {your_name}") ligger
+   som textnod i #page-subtitle, beskrivningen som <span> i samma div.
+   ========================================= */
+.p2p-transaction-landing #phase-swish-result .wrapper {
+    background-color: var(--uc-concept-bg);
+    color: var(--uc-concept-ink);
+    border: var(--uc-concept-frame);
+    padding: var(--sp-7) var(--sp-4);
+}
+.p2p-transaction-landing #phase-swish-result :is(.cc-title, .cc-txt, .cc-checkbox-label) {
+    color: var(--uc-concept-ink);
+}
+/* 10.1 Insamlarens bild */
+.p2p-transaction-landing #page-title-swish-form img {
+    width: 160px;
+    height: 160px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: var(--border-w) solid var(--uc-concept-ink);
+    margin-bottom: var(--sp-4);
+}
+/* 10.2 Titelraden blir sidans rubrik ... */
+.p2p-transaction-landing #page-subtitle {
+    font-family: var(--font-head);
+    font-size: var(--fs-h2);           /* 32px */
+    text-transform: uppercase;
+    letter-spacing: var(--track-tight);
+    line-height: var(--lh-head);
+    max-width: 640px;
+    margin: 0 auto var(--sp-6);
+}
+/* ... och beskrivningen under den läsbar brödtext med radbredd */
+.p2p-transaction-landing #page-subtitle > span {
+    display: block;
+    max-width: 520px;
+    margin: var(--sp-4) auto 0;
+    font-family: var(--font-body);
+    font-size: var(--fs-body);
+    text-transform: none;
+    letter-spacing: normal;
+    line-height: 150%;
+    white-space: pre-line;             /* insamlarens egna radbrytningar */
+}
+@media (max-width: 500px) {
+    .p2p-transaction-landing #page-subtitle { font-size: var(--fs-h3); }
+}
+/* 10.3 Gåvoformuläret */
+.p2p-transaction-landing .product_button_group {
+    justify-content: center;
+    gap: var(--sp-3);
+    margin: var(--sp-3) auto var(--sp-5);
+}
+.p2p-transaction-landing .product_button_group .cc-button {
+    margin: 0;
+}
+.p2p-transaction-landing #confirm_button_group {
+    justify-content: center;
+    margin-top: var(--sp-4);
+}
+/* 10.4 Integritetstexten: plattformsröd länk -> ärvd färg, understruken */
+#swish_form_underlay_text {
+    max-width: 480px;
+    margin-inline: auto;
+}
+#swish_form_underlay_text a {
+    color: inherit;
+    text-decoration: underline;
+}
+
+/* =========================================
+   11. P2P — HÄLSNINGSVÄGG (leaderboard på insamlingssidan)
+   Mall i admin: <blockquote>{message}</blockquote> + <cite>{name}</cite>.
+   OBS: DOM verifierad bara i tomt läge — stäm av när första gåvan
+   med hälsning finns. Testposter rensas via Transactions.
+   ========================================= */
+.p2p-transaction-landing .leaderboard {
+    max-width: 640px;
+    margin: var(--sp-7) auto 0;
+}
+.p2p-transaction-landing .leaderboard-records > * {
+    padding: var(--sp-4) 0;
+    border-top: var(--border-w) solid var(--uc-concept-ink);
+}
+.p2p-transaction-landing .leaderboard blockquote {
+    margin: 0 0 var(--sp-2);
+    color: var(--uc-concept-ink);
+}
+.p2p-transaction-landing .leaderboard cite {
+    margin: 0;
+    color: var(--uc-concept-ink);
+}

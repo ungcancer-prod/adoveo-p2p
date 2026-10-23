@@ -1,0 +1,472 @@
+/* =========================================
+   03 — HEADER, MENY & SÖK, ANKARE, INFOSIDA (sektion 12)
+   Speglar headern på ungcancer.se: logga till vänster, koncepten i
+   mitten, meny- och sökikon till höger. Under 1024px försvinner
+   mittmenyn och ikonerna bär allt. Göms när man scrollar ner, visas
+   igen när man scrollar upp.
+   Markupen byggs av src/js/uc-p2p.js (menyn ändras där).
+   Ikonerna ligger i src/icons/ och byggs in där det står @@ + namn + @@.
+   ========================================= */
+:root {
+    --uc-header-bg:     var(--uc-white);  /* samma vita som ungcancer.se */
+    --uc-drawer-w:      480px;
+    --uc-drawer-rule:   #88C49B;          /* understrykningen i menyn på ungcancer.se */
+    --uc-search-rule:   rgba(0, 0, 0, 0.1);
+    --uc-ease:          cubic-bezier(0.4, 0, 0.2, 1);
+}
+/* 12.1 Behållaren. Scriptet lägger headern direkt i body. Sticky måste
+   sitta på det som är barn till body — sticky stannar inom sin förälder.
+   Div-varianten gäller om headern ligger i Campaign Head (äldre upplägg). */
+body > div:has(> .uc-header),
+body > .uc-header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background-color: var(--uc-header-bg);
+    transition: transform 0.3s var(--uc-ease);
+}
+body > div.uc-header-bar--hidden,     /* div-fallet: matchar (0,1,2) i :has-regeln ovan */
+body > .uc-header.uc-header-bar--hidden {
+    transform: translateY(-100%);     /* sätts av scriptet vid scroll nedåt */
+}
+.uc-header {
+    padding-block: 24px;              /* 24 + 56 logga + 24 = 104px, som ungcancer.se */
+}
+.uc-header__inner {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    gap: 4px 8px;
+    max-width: 1440px;                 /* samma ram som ungcancer.se: */
+    margin-inline: auto;               /* logga 16px in, ikoner 64px in */
+}
+/* 12.2 Logga — Ung Cancers SVG-ordmärke, hämtat från ungcancer.se */
+.uc-header__logo {
+    grid-column: 1;
+    justify-self: start;
+    margin-left: 16px;
+    display: block;
+    width: 104px;
+    height: 56px;
+    background: @@LOGO@@ no-repeat center / contain;
+}
+/* Skärmläsartext (logotypens namn, ikonernas namn) */
+.uc-sr {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+/* 12.3 Koncepten i mitten (desktop) */
+.uc-header__menu {
+    grid-column: 2;
+}
+.uc-header__list {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 4px 32px;
+    margin: 0;                         /* bootstrap ger ul margin-bottom */
+    padding: 0;
+    list-style: none;
+}
+.uc-header .uc-header__link {        /* .uc-header framför: plattformens a:link (0,1,1) vinner annars */
+    font-family: var(--font-body);
+    font-size: 1.8rem;                 /* 18px (rot 10px) */
+    line-height: 1.33;
+    text-transform: uppercase;
+    color: var(--uc-black);
+    text-decoration: none;
+}
+.uc-header .uc-header__link:hover,
+.uc-header .uc-header__link[aria-current="page"] {
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 6px;
+}
+@media (max-width: 1023px) {
+    .uc-header__menu { display: none; }
+}
+/* 12.4 Ikonerna till höger: meny + sök, alla bredder (som ungcancer.se).
+   Höger marginal 64px = sajtens 8px + platsen där varukorgen ligger
+   (48px ikon + 8px mellanrum). Då står meny och sök på exakt samma
+   ställe som på ungcancer.se. Utan varukorgsplatsen: margin-right 8px. */
+.uc-header__actions {
+    grid-column: 3;
+    justify-self: end;
+    display: flex;
+    gap: 8px;
+    margin: 0 64px 0 0;
+    padding: 0;
+    list-style: none;
+}
+.uc-header__icon {
+    display: block;
+    width: 48px;
+    height: 32px;
+    background: no-repeat center / 32px 32px;
+    transition: transform 0.3s var(--uc-ease);
+}
+.uc-header__icon:hover {
+    transform: translateY(-3px);
+}
+.uc-header__icon--menu   { background-image: @@BURGER@@; }
+.uc-header__icon--search { background-image: @@SEARCH@@; }
+/* Under 1024px har ungcancer.se 4px mellan ikonerna: 8 + 48 + 4 = 60px */
+@media (max-width: 1023px) {
+    .uc-header__actions { gap: 4px; margin-right: 60px; }
+}
+/* 12.5 Paneler (meny + sök). Öppen = html.uc-nav-open / .uc-search-open
+   (script) eller :target (reserv utan script). visibility fördröjs vid
+   stängning så att panelen hinner glida ut innan den försvinner. */
+.uc-drawer {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    visibility: hidden;
+    pointer-events: none;
+    transition: visibility 0s linear 0.28s;
+}
+.uc-nav-open #uc-meny,
+.uc-search-open #uc-sok,
+.uc-drawer:target {
+    visibility: visible;
+    pointer-events: auto;
+    transition-delay: 0s;
+}
+.uc-drawer__backdrop {
+    position: absolute;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.25);
+    opacity: 0;
+    transition: opacity 0.28s var(--uc-ease);
+}
+.uc-drawer__panel {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: min(100%, var(--uc-drawer-w));
+    padding: 124px 32px 32px;          /* 60px stängrad + 64px, som ungcancer.se */
+    overflow-y: auto;
+    background-color: var(--uc-green);
+    transform: translateX(100%);
+    transition: transform 0.28s var(--uc-ease);
+}
+.uc-nav-open #uc-meny .uc-drawer__backdrop,
+.uc-search-open #uc-sok .uc-drawer__backdrop,
+.uc-drawer:target .uc-drawer__backdrop {
+    opacity: 1;
+}
+.uc-nav-open #uc-meny .uc-drawer__panel,
+.uc-search-open #uc-sok .uc-drawer__panel,
+.uc-drawer:target .uc-drawer__panel {
+    transform: none;
+}
+html.uc-nav-open,
+html.uc-search-open {
+    overflow: hidden;                  /* sidan bakom scrollar inte */
+}
+.uc-drawer__close {
+    position: absolute;
+    top: 14px;
+    right: 32px;
+    width: 32px;
+    height: 32px;
+    background: @@CLOSE@@ no-repeat center / contain;
+}
+/* Fokusramen syns vid tangentbord, inte vid klick. Scriptet flyttar
+   fokus till panelen (inte till krysset) när menyn öppnas. */
+.uc-drawer__close:focus:not(:focus-visible),
+.uc-header__icon:focus:not(:focus-visible),
+.uc-drawer__panel:focus {
+    outline: none;
+}
+/* 12.6 Menyn: nivå 1 = koncepten, nivå 2 = Så funkar det, Kontakt m.fl.
+   Vänsterställd, som på ungcancer.se. */
+.uc-drawer__list {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    text-align: left;
+}
+.uc-drawer__list + .uc-drawer__list {
+    margin-top: 64px;
+}
+.uc-drawer .uc-drawer__link {        /* samma specificitetsskäl som 12.3 */
+    display: inline-block;
+    padding: 4px 0;                    /* 4 + 36 + 4 + 2 = 46px per rad, som ungcancer.se */
+    border-bottom: var(--border-w) solid var(--uc-drawer-rule);
+    font-family: var(--font-head);
+    font-size: var(--fs-h2);           /* 32px */
+    line-height: 1.125;                /* 36px */
+    letter-spacing: -0.0125em;
+    text-transform: uppercase;
+    color: var(--uc-black);
+    text-decoration: none;
+}
+.uc-drawer .uc-drawer__list--sub .uc-drawer__link {
+    font-size: var(--fs-h3);           /* 24px */
+    letter-spacing: -0.007em;
+}
+.uc-drawer .uc-drawer__link:hover,
+.uc-drawer .uc-drawer__link[aria-current="page"] {
+    border-bottom-color: var(--uc-black);
+}
+/* 12.7 Sökpanelen — vit, som på ungcancer.se. Byggs av scriptet. */
+#uc-sok .uc-drawer__panel {
+    display: flex;
+    flex-direction: column;
+    padding: 12px 12px 0;
+    background-color: var(--uc-white);
+    text-align: left;
+}
+#uc-sok .uc-drawer__close {
+    right: 12px;
+}
+.uc-search__title {
+    margin: 4px 0 0;
+    min-height: 44px;
+    font-family: var(--font-head);
+    font-size: var(--fs-h3);           /* 24px */
+    line-height: 1.125;
+    letter-spacing: -0.007em;
+    text-transform: uppercase;
+    color: var(--uc-black);
+}
+.uc-search__form {
+    display: flex;
+    align-items: center;
+    margin: 0;
+    border-bottom: var(--border-w) solid var(--uc-search-rule);
+}
+#uc-sok .uc-search__input {
+    flex: 1;
+    min-width: 0;
+    height: 48px;
+    margin: 0;
+    padding: 8px 8px 8px 4px;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    font-family: var(--font-body);
+    font-size: var(--fs-btn);          /* 24px */
+    color: var(--uc-black);
+    -webkit-appearance: none;
+    appearance: none;
+}
+#uc-sok .uc-search__input:focus {
+    outline: none;
+}
+.uc-search__form:focus-within {
+    border-bottom-color: var(--uc-black);
+}
+#uc-sok .uc-search__input::-webkit-search-cancel-button {
+    -webkit-appearance: none;
+}
+.uc-search__submit {
+    flex: none;
+    width: 32px;
+    height: 48px;
+    padding: 0;
+    border: 0;
+    background: @@ARROW@@ no-repeat center / 32px 32px;
+    cursor: pointer;
+}
+.uc-search__results {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding-top: 32px;
+}
+.uc-search__label {
+    margin: 0 0 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--uc-search-rule);
+    font-family: var(--font-head);
+    font-size: var(--fs-body);         /* 16px */
+    text-transform: uppercase;
+    color: var(--uc-black);
+}
+.uc-search__grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 24px 12px;
+    margin: 0 0 24px;
+    padding: 0;
+    list-style: none;
+}
+#uc-sok .uc-search__card {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    color: var(--uc-black);
+    text-decoration: none;
+}
+.uc-search__img {
+    display: block;
+    aspect-ratio: 4 / 5;
+    margin-bottom: 8px;
+    overflow: hidden;
+    background-color: var(--uc-cream);
+}
+.uc-search__img img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s var(--uc-ease);
+}
+#uc-sok .uc-search__card:hover .uc-search__img img {
+    transform: scale(1.03);
+}
+.uc-search__name {
+    font-family: var(--font-head);
+    font-size: var(--fs-body);         /* 16px */
+    line-height: 1.125;
+    text-transform: uppercase;
+}
+.uc-search__sum {
+    font-family: var(--font-body);
+    font-size: 1.4rem;                 /* 14px */
+}
+.uc-search__empty {
+    margin: 0;
+    font-family: var(--font-body);
+    font-size: var(--fs-body);
+    color: var(--uc-black);
+}
+/* "Visa alla resultat" ligger kvar i underkant medan man scrollar träffarna */
+.uc-search__all {
+    position: sticky;
+    bottom: 0;
+    width: 100%;
+    margin-top: auto;
+    padding: 8px 8px 6px;
+    border: var(--uc-border);
+    background-color: var(--uc-white);
+    box-shadow: 0 12px 0 0 var(--uc-white);   /* täcker kort som scrollar under knappen */
+    font-family: var(--font-head);
+    font-size: var(--fs-btn);          /* 24px */
+    line-height: 1.125;
+    text-transform: uppercase;
+    color: var(--uc-black);
+    cursor: pointer;
+}
+.uc-search__all:hover {
+    background-color: var(--uc-black);
+    color: var(--uc-white);
+}
+.uc-search__results:has(.uc-search__all) {
+    padding-bottom: 12px;
+}
+/* 12.8 Sökfältet ovanför Pågående insamlingar (plattformens) får samma
+   form som sökpanelen: linje under, 24px text, pil i stället för "Sök".
+   Id-väljare: plattformens .fundraisersWrapper-regler är (0,3,0). */
+.fundraisersWrapper .input-group {
+    width: 100%;
+    max-width: 480px;
+    margin: 0 auto var(--sp-6);
+    align-items: center;
+    border-bottom: var(--border-w) solid var(--uc-search-rule);
+}
+.fundraisersWrapper .input-group:focus-within {
+    border-bottom-color: var(--uc-black);
+}
+.fundraisersWrapper .input-group #searchInput {
+    flex: 1;
+    width: auto;
+    min-width: 0;
+    height: 48px;
+    margin: 0;
+    padding: 8px 8px 8px 4px;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    font-family: var(--font-body);
+    font-size: var(--fs-btn);          /* 24px */
+    text-align: left;
+    color: var(--uc-black);
+}
+.fundraisersWrapper .input-group #searchInput:focus {
+    outline: none;
+}
+/* Plattformen gör platshållare genomskinliga (flytande etiketter) */
+.fundraisersWrapper .input-group #searchInput::placeholder,
+#uc-sok .uc-search__input::placeholder {
+    color: rgba(var(--uc-black-rgb), 0.6);
+    opacity: 1;
+}
+.fundraisersWrapper .input-group #searchBtn,
+.fundraisersWrapper .input-group #searchBtn:hover {
+    flex: none;
+    width: 32px;
+    max-width: none;
+    height: 48px;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: @@ARROW@@ no-repeat center / 32px 32px;
+    font-size: 0;                      /* texten "Sök" ligger kvar för skärmläsare */
+    color: transparent;
+}
+/* 12.9 Ankare. Scriptet ger varje rubrik (h1–h3) i sidans sektioner ett
+   id av sin text: "Så funkar det" -> #sa-funkar-det, "Kontakt" -> #kontakt.
+   Ett id du skriver själv i fältet går före. Avståndet ovanför en rubrik
+   man landar på = scroll-margin-top. Ändra --uc-anchor-offset för alla,
+   eller skriv en egen regel för ett enskilt ankare, t.ex.
+   #kontakt { scroll-margin-top: 64px; }
+   Scrollar man uppåt syns headern, och scriptet lägger då till dess höjd. */
+:root {
+    --uc-anchor-offset: 32px;
+}
+.p2p-main [id] {
+    scroll-margin-top: var(--uc-anchor-offset);
+}
+/* 12.10 Textsektioner på infosidan (308): .uc-info runt varje block.
+   Centrerat som resten, men med radbredd för längre text. */
+.uc-info {
+    max-width: 560px;
+    margin: 0 auto var(--sp-7);
+    text-align: center;
+}
+.uc-info :is(h2, h3) {
+    text-align: inherit;               /* plattformens rubriker är vänsterställda */
+}
+.uc-info h2 {
+    margin-bottom: var(--sp-4);
+}
+.uc-info h3 {
+    margin: var(--sp-6) 0 var(--sp-2);
+    font-size: var(--fs-h4);           /* 20px */
+}
+.uc-info .cc-txt {
+    margin: 0 0 var(--sp-3);
+    line-height: 150%;
+}
+.uc-info .cc-txt a {             /* (0,2,1): slår plattformens röda a:link */
+    color: inherit;
+    text-decoration: underline;
+}
+@media (prefers-reduced-motion: reduce) {
+    body > div:has(> .uc-header),
+    body > .uc-header,
+    .uc-drawer,
+    .uc-drawer__backdrop,
+    .uc-drawer__panel,
+    .uc-header__icon,
+    .uc-search__img img {
+        transition: none;
+    }
+}

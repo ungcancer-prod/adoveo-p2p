@@ -1,0 +1,583 @@
+/* ============================================================
+   01 — BAS: tokens, typografi, layout, knappar, kort, Swish, bilder
+   ------------------------------------------------------------
+   Sektion 0–8. Gäller alla P2P-sidor (Summary, koncept, infosida).
+   Ursprung: Summary-CSS:en 2026-07-23 (Theme → Custom CSS på 294).
+
+   KONVENTIONER
+     - Egna klasser prefixas uc- (cc- = plattformens).
+     - Media queries ligger MED sin komponent.
+     - Breakpoints är hårdkodade (768/500/370/359) — media queries
+       läser inte custom properties.
+     - Adoveos rot är 10px (html{font-size:62.5%}), inte 16px. Alla
+       --fs-* och --gap-* är därför omräknade ×1.6 och px står i
+       kommentaren. --sp-* (px) påverkas inte.
+   ============================================================ */
+/* =========================================
+   0. DESIGN TOKENS (:root)
+   ========================================= */
+:root {
+    /* --- Färg --- */
+    --uc-black: #282826;
+    --uc-white: #ffffff;
+    --uc-cream: #FCF7E3;
+    --uc-green: #8BEEA5;
+    --uc-pink:  #FFB5D8;
+    --uc-red:   #DA233C;   /* #errorText */
+    /* Kanal-token för opacitet i beredskap: rgba(var(--uc-black-rgb), .6) */
+    --uc-black-rgb: 40, 40, 38;
+    /* --- Typografi: familjer --- */
+    --font-head: Customfont1, Adoveo;
+    --font-body: Customfont2, Adoveo;
+    --font-hand: 'quickwriterslight';
+    /* --- Typografi: storlekar (rem; px i kommentar) ---
+       Adoveos plattformsrot är 10px (62.5%), inte 16px — rem-värden
+       nedan är omräknade (×1.6) för att faktiskt rendera på angiven px. */
+    --fs-h1:        4.4rem;    /* 44px */
+    --fs-h1-mobile: 3.6rem;    /* 36px */
+    --fs-h2:        3.2rem;    /* 32px */
+    --fs-h3:        2.4rem;    /* 24px */
+    --fs-h4:        2rem;      /* 20px */
+    --fs-display:   4rem;      /* 40px — handskrivna citat (blockquote / uc-quote); även P2P-steg-siffror */
+    --fs-btn:       2.4rem;    /* 24px — knappar + input */
+    --fs-body:      1.6rem;    /* 16px */
+    --fs-small:     1rem;      /* 10px */
+    /* --- Typografi: spärrning & radhöjd --- */
+    --track-tight: -0.03em;
+    --track-btn:   -0.007em;
+    --lh-head:     105%;
+    --lh-solid:    1;
+    /* --- Space-rytm (6/8/12/20/24/32/40) --- */
+    --sp-1: 6px;
+    --sp-2: 8px;
+    --sp-3: 12px;
+    --sp-4: 20px;
+    --sp-5: 24px;
+    --sp-6: 32px;
+    --sp-7: 40px;
+    /* --- Gap-skala (rem, omräknad ×1.6 av samma skäl som ovan) --- */
+    --gap-sm:   0.8rem;   /* 8px */
+    --gap-md:   2.4rem;   /* 24px */
+    --gap-lg:   3.2rem;   /* 32px — beredskap; även "Så funkar det"-stegen */
+    --gap-xl:   4.8rem;   /* 48px — beredskap */
+    --gap-2xl:  6.4rem;   /* 64px — beredskap, ej i aktivt bruk just nu */
+    --gap-card: 2.8rem;   /* 28px — P2P-kort (Summary #3): yttre grid-gap + inre content-gap */
+    /* --- Border & radius --- */
+    --border-w:  2px;
+    --uc-border: var(--border-w) solid var(--uc-black);
+    --radius:    0;
+    /* --- Transitions --- */
+    --tr-smooth: 0.2s ease-in-out;                     /* toggle-texter */
+    --tr-toggle: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    /* --- Layout / mått --- */
+    --wrap-max: 1100px;
+    --logo-max: 600px;
+    --card-max: 390px;
+    --card-min: 320px;
+    --img-max:  160px;
+    --head-img: 140px;
+    /* --- Lager & tillstånd --- */
+    --z-slider:   1;
+    --z-text:     5;
+    --z-checkbox: 10;
+    --op-muted:   0.6;
+    /* --- Övrigt --- */
+    --uc-clip: url(#shape-box);
+}
+/* =========================================
+   1. TYPOGRAFI
+   ========================================= */
+@font-face {
+    font-family: 'quickwriterslight';
+    src: url('https://content.adoveodemo.com/1744604411042_quickwriterslight.woff');
+}
+h1, h2, h3, h4 {
+    font-family: var(--font-head);
+    text-transform: uppercase;
+    letter-spacing: var(--track-tight);
+    line-height: var(--lh-head);
+}
+h1 { font-size: var(--fs-h1); }
+h2 { font-size: var(--fs-h2); }
+h3 { font-size: var(--fs-h3); }
+h4 { font-size: var(--fs-h4); }
+blockquote {
+    padding: 0;
+    margin: 0 0 var(--sp-4);
+    font-family: var(--font-hand);
+    font-size: var(--fs-display);
+    line-height: var(--lh-solid);
+    border-left: none;
+}
+cite {
+    font-family: var(--font-body);
+    font-size: var(--fs-body);
+    font-style: normal;
+    text-transform: uppercase;
+    padding: 0;
+    margin: 0 0 var(--sp-4);
+}
+.uc-pre-header {
+    font-family: var(--font-hand);
+    font-size: var(--fs-h4);
+    line-height: var(--lh-solid);
+    margin-bottom: var(--sp-7);
+}
+.uc-quote {
+    font-family: var(--font-hand);
+    font-size: var(--fs-display);
+    line-height: var(--lh-solid);
+    margin-bottom: var(--sp-7);
+}
+.uc-small {
+    font-size: var(--fs-small);
+}
+.cc-title {
+    letter-spacing: var(--track-tight);
+    line-height: var(--lh-head);
+    text-transform: uppercase;
+}
+/* .uc-title har ingen bas-regel (ärver h1) — bara mobilnedskalning */
+@media (max-width: 500px) {
+    .uc-title { font-size: var(--fs-h1-mobile); }
+}
+/* =========================================
+   2. GLOBAL LAYOUT & SEKTIONER
+   ========================================= */
+#wrap-default {
+    max-width: var(--wrap-max);
+    margin: 0 auto;
+}
+.wrapper {
+   /* -webkit-clip-path: var(--uc-clip);
+    clip-path: var(--uc-clip); */
+    min-height: 200px;
+    margin: var(--sp-3);
+}
+@media (min-width: 768px) {
+    .wrapper { margin: var(--sp-7) 0; }
+}
+.hero-img {
+    -webkit-clip-path: var(--uc-clip);
+    clip-path: var(--uc-clip);
+}
+.uc-campaign-head {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
+.uc-campaign-head img {
+    max-width: var(--head-img);
+}
+/* --- "Så funkar det"-steg (294, Summary #2) --- */
+.uc-steps {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--gap-lg);           /* 32px */
+    max-width: 900px;
+    margin-inline: auto;
+    margin-bottom: var(--sp-7);   /* ersätter tidigare <br><br> i HTML */
+}
+.uc-step {
+    flex: 1 1 220px;
+}
+.uc-step-number {
+    font-size: var(--fs-display); /* 40px */
+}
+/* =========================================
+   3. KNAPPAR, INPUT & BELOPPSKNAPPAR
+   ========================================= */
+button {
+    flex-grow: 0;
+    text-transform: uppercase;
+}
+.cc-button, .btn-primary {
+    width: auto;
+    display: inline-block;
+}
+.cc-button {
+    font-family: var(--font-head);
+    font-feature-settings: "liga" 1;
+    font-size: var(--fs-btn);
+    text-transform: uppercase;
+    letter-spacing: var(--track-btn);
+    line-height: var(--fs-btn);
+    color: var(--uc-black);
+    border: var(--uc-border);
+    margin: var(--sp-1) auto;
+    padding: var(--sp-2) var(--sp-2) var(--sp-1) var(--sp-2);
+    border-radius: var(--radius);
+}
+.cc-button:hover {
+    background-color: var(--uc-black);
+    color: var(--uc-white);
+    border: var(--uc-border);   /* defensivt mot plattformens :hover */
+}
+.cc-button:active {
+    border: var(--uc-border);   /* defensivt mot plattformens :active */
+}
+.cc-btn-third, .cc-btn-secondary {
+    color: var(--uc-black);
+}
+.cc-button-inline-product {
+    margin-bottom: var(--sp-5);
+}
+.cc-button-custom-product {
+    border-radius: var(--radius);
+}
+#send_button3 {
+    margin-bottom: var(--sp-6);
+}
+/* Länkar inuti knappar */
+.cc-button .cc-link {
+    color: var(--uc-black);
+    text-decoration: none;
+}
+.cc-button .cc-link:hover,
+.cc-button .cc-link:active,
+.cc-button .cc-link:focus {
+    color: var(--uc-white);
+    text-decoration: none;
+}
+.cc-input {
+    font-family: var(--font-head);
+    font-size: var(--fs-btn);
+    padding: var(--sp-3) var(--sp-2) 0 var(--sp-2);
+}
+/* --- Horisontella beloppsknappar (tre i rad) --- */
+/* Prefixet .cc-button-custom-product träffar bara de yttre raderna,
+   inte den nested .swish_product_row_3 inuti rad 3. */
+.cc-button-custom-product.swish_product_row_1,
+.cc-button-custom-product.swish_product_row_2,
+.cc-button-custom-product.swish_product_row_3 {
+    float: left;
+    width: calc(33.33% - 6px);
+    margin: var(--sp-1) 3px;
+    min-height: 0;            /* override 49px från cc-button-custom-product */
+}
+/* Knappen inuti fyller sin nu smalare container (button-taggen
+   krockar inte med wrapper-divarna) */
+button.cc-button-custom-product {
+    width: 100%;
+    max-width: 100%;
+}
+/* Rensa floaten så .swish-below-text inte wrappar runt knapparna */
+.swish-below-text {
+    clear: both;
+}
+.amount-qualifier-monthly,
+.amount-qualifier-onetime {
+    margin-top: -8px;
+}
+/* Säkerhetsnät för riktigt smala skärmar (typ iPhone SE 1) */
+@media (max-width: 359px) {
+    .cc-button-custom-product.swish_product_row_1,
+    .cc-button-custom-product.swish_product_row_2,
+    .cc-button-custom-product.swish_product_row_3 {
+        float: none;
+        width: 100%;
+        margin: var(--sp-1) auto;
+    }
+    .swish-below-text { clear: none; }
+}
+/* =========================================
+   4. KORT & LISTOR (inkl. P2P-paketering)
+   ========================================= */
+.campaignsDisplay {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: stretch;
+    justify-content: center;
+    gap: var(--gap-card);
+}
+.cc-card {
+    display: flex;
+    flex-direction: column;
+    min-width: var(--card-min);
+    max-width: var(--card-max);
+    gap: var(--gap-md);
+    -webkit-clip-path: var(--uc-clip);
+    clip-path: var(--uc-clip);
+    background-color: var(--uc-green);
+    border-radius: var(--radius);
+}
+.cc-card-padded {
+    padding: 0 0 var(--sp-7) 0;
+}
+.cc-media-container {
+    max-height: var(--card-max);
+}
+.cc-media-container video,
+.cc-media-container img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+.cc-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--gap-md);   /* var 1.75rem – snappat till skalan */
+    padding: var(--sp-5);
+}
+.cc-price-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--gap-sm);
+}
+.cc-price {
+    font-weight: bold;
+}
+a.uc-card {
+    display: block;
+    text-decoration: none;
+    color: var(--uc-black);
+}
+/* P2P-paketeringskort: släpp radklampen på texten */
+.campaignsDisplay .cc-card .cc-txt {
+    white-space: normal;
+    overflow: visible;
+    text-overflow: clip;
+    -webkit-line-clamp: unset;
+}
+/* P2P-paketeringskort: jämna bildytor */
+.campaignsDisplay .cc-card > div:first-child {
+    aspect-ratio: 4 / 3;
+    max-height: none;
+    overflow: hidden;
+}
+.campaignsDisplay .cc-card > div:first-child img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+/* P2P-paketeringskort: kortmått + padding (Summary #3-uppstädning) */
+.campaignsDisplay .cc-card {
+    max-width: 375px;
+    padding-inline: var(--sp-4);
+}
+/* P2P-paketeringskort: innehållswrapper under bilden */
+.uc-p2p-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--gap-card);
+}
+/* P2P-paketeringskort: "Insamlat hittills"-etiketten i cc-price-container */
+.cc-price-container .cc-txt {
+    font-size: var(--fs-h4);   /* 20px */
+}
+/* =========================================
+   5. SWISH & FORMULÄR
+   ========================================= */
+#errorText {
+    color: var(--uc-red);
+    margin-bottom: var(--sp-5);
+}
+.swish-done {
+    margin-top: var(--sp-5);
+}
+#swish_form_underlay_text {
+    margin-top: var(--sp-7);
+}
+button[name="swish-send"] {
+    background-image: url('https://content.adoveodemo.com/1764565089310_swishlogo400x400.png');
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    background-size: 30px 30px;
+    padding-right: 45px;
+}
+.uc-swish-instruction {
+    max-width: var(--card-max);
+    margin: 0 auto;
+}
+.uc-instruction-text {
+    font-size: var(--fs-body);
+    font-family: var(--font-body);
+    text-align: center;
+}
+.uc-thank-you {
+    max-width: var(--card-max);
+    margin: 0 auto;
+    text-decoration: none;
+}
+/* =========================================
+   6. BILDER & LOGOTYPER
+   ========================================= */
+.uc-logo-container {
+    text-align: center;
+    margin: 0 auto var(--sp-6) auto;
+    max-width: var(--logo-max);
+}
+.uc-logo-container img {
+    display: block;
+    margin: 0 auto;
+    background-color: transparent;
+    max-width: 100%;
+    width: 100%;
+    height: auto;
+}
+@media (min-width: 768px) {
+    .uc-logo-container img {
+        width: 50%;
+        margin: 0 auto;
+    }
+}
+.uc-image {
+    max-width: var(--img-max);
+    padding: var(--sp-4) 0 var(--sp-4) var(--sp-4);
+    margin: 0;
+}
+.uc-arrow-img {
+    background-color: transparent;
+    max-width: 16%;
+}
+.uc-app-screenshot {
+    max-width: 100%;
+    height: auto;
+    display: block;
+}
+/* =========================================
+   7. ANIMATIONER
+   ========================================= */
+/* OBS: keyframen refereras inte i denna fil — används ev. av
+   inline-style/annat fält. Ta inte bort utan att kolla. */
+@keyframes slideBackground {
+    0%   { background-position: 0% 50%; }
+    100% { background-position: 100% 50%; }
+}
+/* =========================================
+   8. GÅVO-TOGGLE (rör ej — verifierad hover-logik)
+   ========================================= */
+/* 1. Huvudbehållaren */
+.cc-button.cc-toggle {
+    display: block;
+    width: 72%;
+    max-width: 100%;
+    height: 44px;
+    padding: 0;
+    margin: var(--sp-5) auto var(--sp-2);
+    border: var(--uc-border);
+    background-color: transparent;
+    border-radius: var(--radius);
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    box-sizing: border-box;
+}
+/* Neutralisera global knapp-hover */
+.cc-button.cc-toggle:hover {
+    background-color: transparent;
+}
+/* 2. Dold checkbox */
+.cc-toggle-checkbox {
+    position: absolute;
+    opacity: 0;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    margin: 0;
+    z-index: var(--z-checkbox);
+    cursor: pointer;
+}
+/* 3. Layout för texter */
+.cc-toggle-label {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    align-items: center;
+}
+.cc-toggle-text-1,
+.cc-toggle-text-2 {
+    flex: 1;
+    text-align: center;
+    z-index: var(--z-text);
+    font-family: var(--font-head);
+    font-size: var(--fs-h4);
+    text-transform: uppercase;
+    letter-spacing: var(--track-tight);
+    white-space: nowrap;
+    transition: all var(--tr-smooth);
+    pointer-events: none;
+}
+/* 4. Den svarta slidern */
+.cc-toggle-slider {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 50%;
+    height: 100%;
+    background-color: var(--uc-black) !important;
+    z-index: var(--z-slider);
+    transition: var(--tr-toggle);
+}
+/* --- Aktiva / inaktiva lägen (bas) --- */
+/* LÄGE 1: "EN GÅNG" vald (default) */
+.cc-toggle-text-1 { color: var(--uc-white); opacity: 1; }
+.cc-toggle-text-2 { color: var(--uc-black); opacity: var(--op-muted); }
+/* LÄGE 2: "VARJE MÅNAD" vald (checked) */
+.cc-toggle-checkbox:checked + .cc-toggle-label .cc-toggle-slider {
+    transform: translateX(100%);
+}
+.cc-toggle-checkbox:checked + .cc-toggle-label .cc-toggle-text-1 {
+    color: var(--uc-black);
+    opacity: var(--op-muted);
+}
+.cc-toggle-checkbox:checked + .cc-toggle-label .cc-toggle-text-2 {
+    color: var(--uc-cream);
+    opacity: 1;
+}
+/* --- Hover-effekter (måste ligga sist för att vinna) --- */
+/* Hela knappen hovrad: tvinga inaktiva texter till 100% svart */
+.cc-button.cc-toggle:hover .cc-toggle-text-1,
+.cc-button.cc-toggle:hover .cc-toggle-text-2 {
+    opacity: 1;
+    color: var(--uc-black);
+}
+/* MEN: texten "under" slidern ska alltid förbli vit */
+.cc-toggle-checkbox:not(:checked) + .cc-toggle-label .cc-toggle-text-1 {
+    color: var(--uc-white);
+}
+.cc-toggle-checkbox:checked + .cc-toggle-label .cc-toggle-text-2 {
+    color: var(--uc-white);
+}
+/* Responsiv fix */
+@media (max-width: 370px) {
+    .cc-toggle-text-1,
+    .cc-toggle-text-2 { font-size: var(--fs-body); }
+}
+
+
+/* --- P2P-korthylla: 5 i rad på desktop --- */
+@media (min-width: 1000px) {
+
+    /* 1. Utrymmet: bredda ramen (se not nedan) */
+    #wrap-default { max-width: 1360px; }
+
+    /* 2. Låset: min-width måste nollas, annars händer ingenting */
+    .campaignsDisplay { gap: var(--sp-4); }          /* 28px → 20px */
+    .campaignsDisplay .cc-card {
+        flex: 1 1 calc(20% - 16px);                  /* 20% minus 4×gap/5 */
+        min-width: 0;
+        max-width: none;
+        padding-inline: 0;                           /* dubbel padding, se 3 */
+    }
+
+    /* 3. Innanmätet: 20px kortpadding + 24px cc-content = 44px/sida.
+          Släpp kortets, behåll innehållets (nedskalad). */
+    .campaignsDisplay .cc-content,
+    .campaignsDisplay .uc-p2p-content {
+        padding: var(--sp-4) var(--sp-3);
+        gap: var(--sp-4);
+    }
+    .campaignsDisplay .cc-card h3 { font-size: var(--fs-h4); }   /* 24 → 20px */
+    .cc-price-container .cc-txt   { font-size: var(--fs-body); } /* 20 → 16px */
+}

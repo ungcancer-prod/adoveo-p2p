@@ -1,0 +1,99 @@
+<!--
+==========================================================================
+  P2P 2026 — KONCEPT: UTMANING   (kampanj 297)
+  Template: "P2P Campaign with Donorboard"
+  Innehåll till kampanjens admin-fält, i flödesordning.
+  Kod (CSS, header, meny): laddas centralt, se adoveo/kampanjer.md.
+
+  Fälten nedan identifieras med vad som syns på sidan + DOM-id, eftersom
+  P2P-mallens admin-etiketter inte är verifierade härifrån.
+
+  TESTA SKARPT INNAN LANSERING
+    - att {description} och {your_name} renderas i titelraden
+    - om {custom_field_1} osv. går att använda som shortcode på /p/-sidan
+      (då kan t.ex. utmaningen eller levnadsåren visas under rubriken)
+    - att hälsningsväggens mall ({message}, {name}) renderar
+    - inga emoji i något fält — spara kraschar
+==========================================================================
+-->
+
+
+
+
+<!-- ---------- SKAPA: RUBRIK (#coupon-heading) ----------
+  Var "Här kan du skapa din egna insamling!" + fyra <br>. Ta bort
+  radbrytningarna i fältet (CSS:en döljer dem, men rent är bättre). -->
+SKAPA DIN UTMANING
+
+
+<!-- ---------- SKAPA: INGRESS (#coupon-subheading) ----------
+  Var tom. -->
+Ett lopp, en simtur, trettio dagar utan socker eller något helt eget. Berätta vad du ska göra och låt andra heja på dig med en gåva.
+
+
+<!-- ---------- SKAPA: FÄLTETIKETTER ----------
+    fält             etikett
+    name             Ditt eller ert namn
+                     ^ Blir rubriken: "{your_name} antar en utmaning". Var "Ditt/ert namn" — snedstreck läses som formulärsvenska.
+    custom_field_1   Vad är din utmaning? (t.ex. Göteborgsvarvet 2027)
+                     ^ NYTT fält. Utan det vet besökaren inte vad som ska göras.
+    custom_field_2   Ditt insamlingsmål (t.ex. 1 000 kr)
+                     ^ Flyttat ett steg ner.
+    phone            Ditt mobilnummer
+                     ^ Oförändrad.
+    custom_field_3   Varför gör du det här?
+                     ^ Var "Varför startar du/ni den här insamlingen?". Blir brödtexten ({description}).
+    bild             Välj en bild
+-->
+
+
+<!-- ---------- SKAPA: KNAPP (.coupon-link) ---------- -->
+SKAPA UTMANINGEN
+
+
+<!-- ---------- INSAMLINGSSIDANS TITELRAD ----------
+  Fältet som idag ger "Insamling av {your_name} {description}"
+  (syns i förhandsvisningen #giftcard_preview_p2 och som #page-subtitle
+  på /p/-sidan). CSS:en gör allt före {description} till rubrik och
+  {description} till brödtext under. -->
+{your_name} antar en utmaning {description}
+
+
+<!-- ---------- EFTER SKAPAD: RUBRIK (#after-coupon-heading) ----------
+  Var "Tack för att du skapar en insamling som stöttar vårt arbete!" -->
+NU KÖR VI
+
+
+<!-- ---------- EFTER SKAPAD: TEXT (#after-coupon-subheading) ----------
+  Knapparna "Dela din insamling" / "Se din insamling" behålls: konkreta
+  verb som beskriver vad som händer. -->
+Dela länken redan nu, inte efter målgång. Det är på vägen folk vill heja.
+
+
+<!-- ---------- INSAMLINGSSIDAN: GÅVOFORMULÄRET ----------
+  Beloppsknappar: 50 / 200 / 500 kr (oförändrat)
+  "Vem tänker du på?" (meddelandefältet) byts mot:
+    Skriv ett hejarop
+  Övriga etiketter oförändrade: "Fyll i valfritt belopp", "Ditt namn",
+  "Ditt telefonnummer", "Visa mitt namn på insamlingssidan".
+-->
+
+
+<!-- ---------- INSAMLINGSSIDAN: HÄLSNINGSVÄGG (leaderboard-mall) ----------
+  Gör leaderboarden till en vägg med givarnas hälsningar i handstil.
+  Verifiera shortcodes, och ta bort testposter via Transactions. -->
+<blockquote>{message}</blockquote>
+<cite>{name}</cite>
+
+
+<!-- ---------- INSAMLINGSSIDAN: INTEGRITETSTEXT (#swish_form_underlay_text) ----------
+  Live står det idag "behandlas av 'Organization'" — en platshållare som
+  aldrig fylldes i. Troligen organisationsnamnet i profilinställningarna;
+  annars skriv in texten nedan och behåll befintlig länk på "Läs här". -->
+När du ger en gåva behandlar Ung Cancer dina uppgifter. Läs här om hur vi behandlar dina personuppgifter.
+
+
+<!-- ---------- TACKSIDA EFTER GÅVA (End Page) ---------- -->
+TACK FÖR ATT DU HEJAR
+
+Varje krona gör skillnad för unga vuxna som möter cancer. Och för den som just nu tar sig an sin utmaning.

@@ -1,0 +1,112 @@
+<!--
+==========================================================================
+  P2P 2026 — KONCEPT: STÅ BAKOM (arbetsnamn)   (kampanj 299)
+  Template: "P2P Campaign with Donorboard"
+  Innehåll till kampanjens admin-fält, i flödesordning.
+  Kod (CSS, header, meny): laddas centralt, se adoveo/kampanjer.md.
+
+  Fälten nedan identifieras med vad som syns på sidan + DOM-id, eftersom
+  P2P-mallens admin-etiketter inte är verifierade härifrån.
+
+  TESTA SKARPT INNAN LANSERING
+    - att {description} och {your_name} renderas i titelraden
+    - om {custom_field_1} osv. går att använda som shortcode på /p/-sidan
+      (då kan t.ex. utmaningen eller levnadsåren visas under rubriken)
+    - att hälsningsväggens mall ({message}, {name}) renderar
+    - inga emoji i något fält — spara kraschar
+
+  VARNING — NAMNFÄLTET
+    Här får namnfältet ({your_name}) bära personen insamlingen gäller,
+    inte den som startar den. Det ger rätt rubrik på sidan, men om
+    Adoveo använder {your_name} i SMS/kvitto till insamlaren ("Hej
+    {your_name}...") blir det fel. Testa ett skarpt skapande först.
+    Faller det: lägg personens namn i ett custom field i stället och
+    låt rubriken vara "Insamling av {your_name}" tills vi vet om
+    {custom_field_X} går att använda som shortcode på /p/-sidan.
+==========================================================================
+-->
+
+
+
+
+<!-- ---------- SKAPA: RUBRIK (#coupon-heading) ----------
+  Var "Här kan du skapa din egna insamling!" + fyra <br>. Ta bort
+  radbrytningarna i fältet (CSS:en döljer dem, men rent är bättre). -->
+SKAPA EN INSAMLING FÖR NÅGON DU STÅR BAKOM
+
+
+<!-- ---------- SKAPA: INGRESS (#coupon-subheading) ----------
+  Var tom. -->
+För en vän, en syster, en kollega — eller för dig själv, mitt i det. Varje gåva visar att ingen behöver möta cancer ensam.
+
+
+<!-- ---------- SKAPA: FÄLTETIKETTER ----------
+    fält             etikett
+    name             Vem står du bakom? (förnamn räcker)
+                     ^ Blir rubriken: "Vi står bakom {your_name}". Startar man för sig själv skriver man sitt eget namn. SE VARNING i filhuvudet.
+    custom_field_1   Ditt namn
+                     ^ NYTT fält, så att det syns vem som startat insamlingen.
+    custom_field_2   Ditt insamlingsmål (t.ex. 1 000 kr)
+    phone            Ditt mobilnummer
+                     ^ Oförändrad.
+    custom_field_3   Berätta varför
+                     ^ Blir brödtexten ({description}).
+    bild             Välj en bild
+-->
+
+<!-- ---------- SKAPA: KRYSSRUTA (om skapa-formuläret har en) ----------
+  Obligatorisk. Finns ingen kryssruta i P2P-formuläret: lägg meningen
+  som rad under ingressen i stället, så att den åtminstone har lästs. -->
+Personen vet om insamlingen och vill att den startas
+
+
+<!-- ---------- SKAPA: KNAPP (.coupon-link) ---------- -->
+SKAPA INSAMLINGEN
+
+
+<!-- ---------- INSAMLINGSSIDANS TITELRAD ----------
+  Fältet som idag ger "Insamling av {your_name} {description}"
+  (syns i förhandsvisningen #giftcard_preview_p2 och som #page-subtitle
+  på /p/-sidan). CSS:en gör allt före {description} till rubrik och
+  {description} till brödtext under. -->
+Vi står bakom {your_name} {description}
+
+
+<!-- ---------- EFTER SKAPAD: RUBRIK (#after-coupon-heading) ----------
+  Var "Tack för att du skapar en insamling som stöttar vårt arbete!" -->
+NU ÄR NI FLER SOM STÅR BAKOM
+
+
+<!-- ---------- EFTER SKAPAD: TEXT (#after-coupon-subheading) ----------
+  Knapparna "Dela din insamling" / "Se din insamling" behålls: konkreta
+  verb som beskriver vad som händer. -->
+Dela länken. Varje gåva är också en hälsning.
+
+
+<!-- ---------- INSAMLINGSSIDAN: GÅVOFORMULÄRET ----------
+  Beloppsknappar: 50 / 200 / 500 kr (oförändrat)
+  "Vem tänker du på?" (meddelandefältet) byts mot:
+    Skriv en hälsning
+  Övriga etiketter oförändrade: "Fyll i valfritt belopp", "Ditt namn",
+  "Ditt telefonnummer", "Visa mitt namn på insamlingssidan".
+-->
+
+
+<!-- ---------- INSAMLINGSSIDAN: HÄLSNINGSVÄGG (leaderboard-mall) ----------
+  Gör leaderboarden till en vägg med givarnas hälsningar i handstil.
+  Verifiera shortcodes, och ta bort testposter via Transactions. -->
+<blockquote>{message}</blockquote>
+<cite>{name}</cite>
+
+
+<!-- ---------- INSAMLINGSSIDAN: INTEGRITETSTEXT (#swish_form_underlay_text) ----------
+  Live står det idag "behandlas av 'Organization'" — en platshållare som
+  aldrig fylldes i. Troligen organisationsnamnet i profilinställningarna;
+  annars skriv in texten nedan och behåll befintlig länk på "Läs här". -->
+När du ger en gåva behandlar Ung Cancer dina uppgifter. Läs här om hur vi behandlar dina personuppgifter.
+
+
+<!-- ---------- TACKSIDA EFTER GÅVA (End Page) ---------- -->
+TACK FÖR ATT DU STÅR BAKOM
+
+Din gåva blir gemenskap, trygghet och stöd för unga vuxna som möter cancer. Och din hälsning syns på insamlingssidan.

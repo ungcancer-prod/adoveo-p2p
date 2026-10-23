@@ -1,0 +1,113 @@
+<!--
+==========================================================================
+  P2P 2026 — KONCEPT: TILL MINNE   (kampanj 298)
+  Template: "P2P Campaign with Donorboard"
+  Innehåll till kampanjens admin-fält, i flödesordning.
+  Kod (CSS, header, meny): laddas centralt, se adoveo/kampanjer.md.
+
+  Fälten nedan identifieras med vad som syns på sidan + DOM-id, eftersom
+  P2P-mallens admin-etiketter inte är verifierade härifrån.
+
+  TESTA SKARPT INNAN LANSERING
+    - att {description} och {your_name} renderas i titelraden
+    - om {custom_field_1} osv. går att använda som shortcode på /p/-sidan
+      (då kan t.ex. utmaningen eller levnadsåren visas under rubriken)
+    - att hälsningsväggens mall ({message}, {name}) renderar
+    - inga emoji i något fält — spara kraschar
+
+  VARNING — NAMNFÄLTET
+    Här får namnfältet ({your_name}) bära personen insamlingen gäller,
+    inte den som startar den. Det ger rätt rubrik på sidan, men om
+    Adoveo använder {your_name} i SMS/kvitto till insamlaren ("Hej
+    {your_name}...") blir det fel. Testa ett skarpt skapande först.
+    Faller det: lägg personens namn i ett custom field i stället och
+    låt rubriken vara "Insamling av {your_name}" tills vi vet om
+    {custom_field_X} går att använda som shortcode på /p/-sidan.
+==========================================================================
+-->
+
+
+
+
+<!-- ---------- SKAPA: RUBRIK (#coupon-heading) ----------
+  Var "Här kan du skapa din egna insamling!" + fyra <br>. Ta bort
+  radbrytningarna i fältet (CSS:en döljer dem, men rent är bättre). -->
+SKAPA EN MINNESINSAMLING
+
+
+<!-- ---------- SKAPA: INGRESS (#coupon-subheading) ----------
+  Var tom. -->
+Hedra någon du har förlorat och låt andra som saknar hen vara med. Gåvorna går till unga vuxna som möter cancer.
+
+
+<!-- ---------- SKAPA: FÄLTETIKETTER ----------
+    fält             etikett
+    name             Vem vill du hedra? (namn)
+                     ^ Var bara "Namn" — oklart vems. Blir rubriken: "Till minne av {your_name}". SE VARNING i filhuvudet.
+    custom_field_1   Levnadsår (t.ex. 1994–2026)
+                     ^ Var "Levnadsår (ÅÅÅÅ-ÅÅÅÅ)". Exempel läses snabbare än format.
+    custom_field_2   Ditt namn
+                     ^ NYTT fält, så att det syns vem som startat insamlingen.
+    phone            Ditt mobilnummer
+                     ^ Oförändrad.
+    custom_field_3   Berätta något om hen
+                     ^ Var "Berätta något". Blir brödtexten ({description}).
+    bild             Välj en bild
+-->
+
+<!-- ---------- SKAPA: KRYSSRUTA (om skapa-formuläret har en) ----------
+  Obligatorisk. Finns ingen kryssruta i P2P-formuläret: lägg meningen
+  som rad under ingressen i stället, så att den åtminstone har lästs. -->
+Jag har stämt av insamlingen med de närmast anhöriga
+
+
+<!-- ---------- SKAPA: KNAPP (.coupon-link) ---------- -->
+SKAPA INSAMLINGEN
+
+
+<!-- ---------- INSAMLINGSSIDANS TITELRAD ----------
+  Fältet som idag ger "Insamling av {your_name} {description}"
+  (syns i förhandsvisningen #giftcard_preview_p2 och som #page-subtitle
+  på /p/-sidan). CSS:en gör allt före {description} till rubrik och
+  {description} till brödtext under. -->
+Till minne av {your_name} {description}
+
+
+<!-- ---------- EFTER SKAPAD: RUBRIK (#after-coupon-heading) ----------
+  Var "Tack för att du skapar en insamling som stöttar vårt arbete!" -->
+DIN MINNESINSAMLING ÄR SKAPAD
+
+
+<!-- ---------- EFTER SKAPAD: TEXT (#after-coupon-subheading) ----------
+  Knapparna "Dela din insamling" / "Se din insamling" behålls: konkreta
+  verb som beskriver vad som händer. -->
+Dela länken med dem som också vill minnas. Du kan ladda ner en QR-kod till minnesstunden eller dödsannonsen.
+
+
+<!-- ---------- INSAMLINGSSIDAN: GÅVOFORMULÄRET ----------
+  Beloppsknappar: 100 / 250 / 500 kr (förslag — vanliga nivåer för minnesgåvor)
+  "Vem tänker du på?" (meddelandefältet) byts mot:
+    Skriv en hälsning eller ett minne
+  Övriga etiketter oförändrade: "Fyll i valfritt belopp", "Ditt namn",
+  "Ditt telefonnummer", "Visa mitt namn på insamlingssidan".
+-->
+
+
+<!-- ---------- INSAMLINGSSIDAN: HÄLSNINGSVÄGG (leaderboard-mall) ----------
+  Gör leaderboarden till en vägg med givarnas hälsningar i handstil.
+  Verifiera shortcodes, och ta bort testposter via Transactions. -->
+<blockquote>{message}</blockquote>
+<cite>{name}</cite>
+
+
+<!-- ---------- INSAMLINGSSIDAN: INTEGRITETSTEXT (#swish_form_underlay_text) ----------
+  Live står det idag "behandlas av 'Organization'" — en platshållare som
+  aldrig fylldes i. Troligen organisationsnamnet i profilinställningarna;
+  annars skriv in texten nedan och behåll befintlig länk på "Läs här". -->
+När du ger en gåva behandlar Ung Cancer dina uppgifter. Läs här om hur vi behandlar dina personuppgifter.
+
+
+<!-- ---------- TACKSIDA EFTER GÅVA (End Page) ---------- -->
+TACK FÖR DIN MINNESGÅVA
+
+Din gåva hedrar ett liv och ger stöd till unga vuxna som möter cancer.
