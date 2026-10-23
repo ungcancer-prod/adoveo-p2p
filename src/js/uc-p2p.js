@@ -523,23 +523,20 @@
      förhandsvisning av insamlingssidan (#giftcard-preview-container, öppnas
      med ögat) och fyller den medan man skriver. På bred skärm flyttas den
      ut ur formuläret och visas hela tiden som en telefon bredvid
-     formuläret, som i kampanj 300. Under brytpunkten flyttas den tillbaka
+     konceptets färgade yta, som i kampanj 300. Under brytpunkten flyttas den tillbaka
      och ögat fungerar som vanligt. */
   var CREATE_MQ = window.matchMedia ? window.matchMedia('(min-width: 1000px)') : null;
   function createLayout() {
     var phase = document.getElementById('phase-before-coupon');
     var box = document.getElementById('giftcard-preview-container');
     var heading = document.getElementById('coupon-heading');
-    if (!phase || !box || !heading || !CREATE_MQ || document.querySelector('.uc-create')) return;
-    var col = heading.parentElement;              /* rubrik, ingress och formulär */
+    var wrap = heading.closest('.wrapper');      /* konceptets färgade yta, bara bakom formuläret */
+    if (!phase || !box || !wrap || !CREATE_MQ || document.querySelector('.uc-create__phone')) return;
     var home = box.parentElement, homeNext = box.nextSibling;
-    var grid = el('div', 'uc-create');
-    col.parentNode.insertBefore(grid, col);
-    col.classList.add('uc-create__form');
-    grid.appendChild(col);
+    /* Telefonen läggs bredvid ytan (inte i den), som i kampanj 300 */
     var phone = el('div', 'uc-create__phone');
     phone.setAttribute('aria-label', 'Så här blir din insamlingssida');
-    grid.appendChild(phone);
+    wrap.parentNode.insertBefore(phone, wrap.nextSibling);
 
     var place = function () {
       var wide = CREATE_MQ.matches;

@@ -81,11 +81,12 @@
 }
 /* Förhandsvisning (ögat) + Skapa-knappen: centrerade bredvid varandra */
 #phase-before-coupon .confirm_button_group {
+    display: flex;                     /* utan förhandsvisning ger plattformen block */
     width: 320px;
     justify-content: center;
     align-items: center;
     gap: var(--sp-3);
-    margin-top: var(--sp-4);
+    margin: var(--sp-4) auto 0;        /* centrerad även när ögat saknas */
 }
 #phase-before-coupon .confirm_button_group .cc-button {
     margin: 0;
@@ -133,30 +134,35 @@
     background-color: var(--uc-concept-logo-bg);
 }
 
-/* 9.6 Skapa-sidan på bred skärm: formuläret till vänster, insamlingssidan
-   i en telefon till höger, uppdaterad medan man skriver (som kampanj 300).
+/* 9.6 Skapa-sidan på bred skärm: konceptets yta med formuläret till
+   vänster, insamlingssidan i en telefon till höger på sidans vita
+   bakgrund, uppdaterad medan man skriver (som kampanj 300).
    Scriptet (createLayout) lägger html.uc-create-split och flyttar
-   plattformens förhandsvisning till .uc-create__phone. Under 1000px gäller
-   plattformens egen förhandsvisning bakom ögat.
+   plattformens förhandsvisning till .uc-create__phone, syskon till ytan.
+   Under 1000px gäller plattformens egen förhandsvisning bakom ögat.
    Telefonen ritas i 375 x 667 px (plattformens mått) och krymps med
    --uc-phone-scale, som inte påverkar layouten. */
 :root {
     --uc-phone-scale: 0.8;             /* 375 x 667 -> 300 x 534 px */
 }
-html.uc-create-split .uc-create {
-    display: flex;
+/* display kräver !important (plattformen visar faserna med inline-stil),
+   men bara när fasen syns: dold fas har style="display: none". */
+html.uc-create-split #phase-before-coupon:not([style*="none"]) {
+    display: flex !important;
     justify-content: center;
     align-items: flex-start;
-    gap: var(--sp-7) 64px;
+    gap: 64px;
 }
-html.uc-create-split .uc-create__form {
-    flex: 0 1 400px;
+html.uc-create-split #phase-before-coupon > .wrapper {
+    flex: 0 1 480px;
     min-width: 0;
+    margin: 0;
 }
 html.uc-create-split .uc-create__phone {
     flex: none;
     position: sticky;
     top: var(--sp-5);
+    margin-top: var(--sp-7);
     width: calc(375px * var(--uc-phone-scale));
     height: calc(667px * var(--uc-phone-scale));
 }
@@ -182,7 +188,7 @@ html.uc-create-split #giftcard-preview {
     margin: 0 !important;
     transform: scale(var(--uc-phone-scale)) !important;
     transform-origin: top left !important;
-    border: 12px solid var(--uc-concept-ink) !important;   /* telefonens ram: svart, krämvit på mörk yta */
+    border: 12px solid var(--uc-black) !important;   /* telefonens ram; telefonen står på sidans vita */
     border-radius: 48px !important;
     box-shadow: 0 24px 48px rgba(var(--uc-black-rgb), 0.25) !important;
     overflow-y: auto !important;
@@ -200,7 +206,7 @@ html.uc-create-split .uc-create__phone::before {
     height: calc(26px * var(--uc-phone-scale));
     transform: translateX(-50%);
     border-radius: 0 0 14px 14px;
-    background-color: var(--uc-concept-ink);
+    background-color: var(--uc-black);
     pointer-events: none;
 }
 /* Ögat och krysset behövs inte när telefonen alltid syns */
@@ -209,28 +215,37 @@ html.uc-create-split #hide-preview {
     display: none !important;
 }
 
-/* 9.7 Innehållet i förhandsvisningen ser ut som insamlingssidan (10.1–10.2):
-   rund bild, titelraden som rubrik, beskrivningen som brödtext.
+/* 9.7 Innehållet i förhandsvisningen: bilden utfallande överst,
+   titelraden som rubrik, beskrivningen som brödtext.
    Gäller både telefonen och plattformens popup. */
 #giftcard-preview > .wrapper {
     min-height: 100%;
     margin: 0;
-    padding: 56px var(--sp-4) var(--sp-7);   /* plats för kameran överst */
+    padding: 0 var(--sp-4) var(--sp-7);
     -webkit-clip-path: none;
     clip-path: none;
 }
+/* Insamlarens bild: utfallande till topp och sidor, i bildens egna
+   proportioner. !important: plattformens inline-stil gör den till en
+   rund 150px-bild. */
+#coupon-page-title {
+    margin: 0 calc(-1 * var(--sp-4)) var(--sp-5);
+}
 #coupon-page-title img {
     display: block;
-    width: 120px !important;           /* inline-stil från plattformen: 150px */
-    height: 120px;
-    margin: 0 auto var(--sp-4);
-    object-fit: cover;
-    border-radius: 50%;
-    border: var(--border-w) solid var(--uc-concept-ink);
+    width: 100% !important;
+    max-width: none !important;
+    height: auto;
+    aspect-ratio: auto !important;
+    object-fit: fill !important;
+    border-radius: 0 !important;
+    border: 0;
+    margin: 0;
 }
 #coupon-page-title img[src=""],
 #coupon-page-title img:not([src]) {
-    border-style: dashed;              /* ingen bild vald än */
+    aspect-ratio: 4 / 3 !important;    /* ingen bild vald än: en tom yta */
+    background-color: rgba(var(--uc-black-rgb), 0.12);
 }
 #coupon-page-message {
     margin: 0 auto var(--sp-5);
