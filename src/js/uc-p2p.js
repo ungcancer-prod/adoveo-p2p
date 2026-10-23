@@ -584,22 +584,24 @@
 
     /* Bilden: visa den valda bilden direkt, utan att vänta på uppladdningen */
     var file = document.getElementById('registration_file_upload');
-    var img = box.querySelector('#coupon-page-title img');
-    if (file && img) file.addEventListener('change', function () {
+    if (file) file.addEventListener('change', function () {
       var f = file.files && file.files[0];
-      if (f && /^image\//.test(f.type)) img.src = URL.createObjectURL(f);
+      var im = box.querySelector('#coupon-page-title img');
+      if (im && f && /^image\//.test(f.type)) im.src = URL.createObjectURL(f);
     });
     /* Ingen bild än: plattformen ger bilden en tom eller trasig adress,
-       som visas som en trasig bild. Då visas en platshållare i stället. */
+       som visas som en trasig bild. Då visas en platshållare i stället.
+       Klassen sätts på html: plattformen skriver om klasserna på rubriken. */
     var title = box.querySelector('#coupon-page-title');
-    if (img && title) {
+    if (title) {
       var noImg = function () {
-        var ok = !!img.getAttribute('src') && img.complete && img.naturalWidth > 0;
-        title.classList.toggle('uc-noimg', !ok);
+        var im = title.querySelector('img');
+        var ok = !!im && !!im.getAttribute('src') && im.complete && im.naturalWidth > 0;
+        root.classList.toggle('uc-noimg', !ok);
       };
-      img.addEventListener('load', noImg);
-      img.addEventListener('error', noImg);
-      new MutationObserver(noImg).observe(img, { attributes: true, attributeFilter: ['src'] });
+      title.addEventListener('load', noImg, true);       /* load/error bubblar inte: fånga */
+      title.addEventListener('error', noImg, true);
+      new MutationObserver(noImg).observe(title, { childList: true, subtree: true, attributes: true, attributeFilter: ['src'] });
       noImg();
     }
   }

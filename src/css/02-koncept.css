@@ -266,12 +266,12 @@ html.uc-create-split #hide-preview {
     border: 0;
     margin: 0;
 }
-/* Ingen bild vald än (scriptet sätter .uc-noimg): platshållare med
+/* Ingen bild vald än (scriptet sätter html.uc-noimg): platshållare med
    texten "Din bild här", knappt synlig, i stället för en trasig bild */
-#coupon-page-title.uc-noimg img {
+html.uc-noimg #coupon-page-title img {
     display: none;
 }
-#coupon-page-title.uc-noimg::after {
+html.uc-noimg #coupon-page-title::after {
     content: 'Din bild här';
     display: flex;
     align-items: center;
