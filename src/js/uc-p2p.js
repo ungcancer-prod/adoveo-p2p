@@ -13,12 +13,14 @@
 
   /* ---------- MENY ---------- */
   var BASE = 'https://ungcancer.adoveo.com/start/';
-  /* Nivå 1: visas i mitten av headern på desktop och överst i menypanelen */
+  /* Nivå 1: visas i mitten av headern på desktop och överst i menypanelen.
+     Det här är också listan över koncepten: id = kampanjens nummer, och
+     bg/ink = färgerna på konceptets etikett på insamlingskorten. */
   var MENU_MAIN = [
-    { text: 'Födelsedag', href: BASE + '295/?location=summary' },
-    { text: 'Utmaning',   href: BASE + '297/?location=summary' },
-    { text: 'Till minne', href: BASE + '298/?location=summary' },
-    { text: 'Pepp',       href: BASE + '299/?location=summary' }
+    { text: 'Födelsedag', id: '295', bg: 'var(--uc-pink)',  ink: 'var(--uc-black)', href: BASE + '295/?location=summary' },
+    { text: 'Utmaning',   id: '297', bg: 'var(--uc-green)', ink: 'var(--uc-black)', href: BASE + '297/?location=summary' },
+    { text: 'Till minne', id: '298', bg: 'var(--uc-black)', ink: 'var(--uc-cream)', href: BASE + '298/?location=summary' },
+    { text: 'Pepp',       id: '299', bg: 'var(--uc-cream)', ink: 'var(--uc-black)', href: BASE + '299/?location=summary' }
   ];
   /* Nivå 2: bara i menypanelen. Ankaret (#...) = rubrikens text, se README */
   var MENU_MORE = [
@@ -276,6 +278,11 @@
   }
 
   function fetchHits(q) {
+    /* Vänta in konceptfrågorna om de pågår: Adoveo tål inte samtidiga frågor */
+    var wait = conceptBusy && conceptMap ? conceptMap : Promise.resolve();
+    return wait.then(function () { return searchNow(q); });
+  }
+  function searchNow(q) {
     var fol = document.querySelector('#folder');
     var body = new URLSearchParams({
       search_name: q,
@@ -368,6 +375,150 @@
     });
   }
 
+  /* ---------- Insamlingskorten (Pågående insamlingar) ---------- */
+  /* Plattformens kort byggs om till samma uppställning som artikelkorten
+     på ungcancer.se: bild överst, textruta under, etikett med konceptet i
+     hörnet. Hela kortet är en länk som öppnas i samma fönster. Gäller både
+     listan och plattformens sökresultat, även kort som laddas med "Se fler". */
+  function p2pCode(href) {
+    var m = String(href || '').match(/\/p\/([^\/?#]+)/);
+    return m ? m[1] : '';
+  }
+  /* Vilket koncept hör insamlingen till? Plattformen säger det inte på
+     kortet, så listan hämtas en gång per koncept och kopplas på länken.
+     VIKTIGT: frågorna måste gå EN I TAGET. Adoveo blandar ihop svaren om
+     två frågor körs samtidigt (testat 2026-10-23). Därför hålls också
+     klick på "Se fler" och "Sök" kvar tills frågorna är klara, och
+     resultatet sparas i 10 minuter så att det inte hämtas vid varje sidbyte. */
+  var conceptMap = null, conceptBusy = false, heldClick = null;
+  var CONCEPT_CACHE = 'uc-koncept', CONCEPT_TTL = 10 * 60 * 1000;
+  function byId(id) {
+    return MENU_MAIN.filter(function (c) { return c.id === id; })[0] || null;
+  }
+  function loadConcepts() {
+    if (conceptMap) return conceptMap;
+    try {
+      var saved = JSON.parse(sessionStorage.getItem(CONCEPT_CACHE) || 'null');
+      var age = saved ? Date.now() - saved.t : -1;
+      if (saved && age >= 0 && CONCEPT_TTL >= age) {
+        var m0 = {};
+        Object.keys(saved.m).forEach(function (k) { var c = byId(saved.m[k]); if (c) m0[k] = c; });
+        return (conceptMap = Promise.resolve(m0));
+      }
+    } catch (e) { /* ingen sessionStorage: hämta */ }
+    var camp = (document.querySelector('#campaignId') || {}).value || SUMMARY_ID;
+    var fol = (document.querySelector('#folder') || {}).value || FOLDER;
+    var map = {}, ids = {};
+    conceptBusy = true;
+    conceptMap = MENU_MAIN.reduce(function (prev, c) {
+      return prev.then(function () {
+        var q = new URLSearchParams({ offset: 0, limit: 1000, campaign_id: camp, single_campaign_id: c.id, folder: fol });
+        return fetch('/getP2PCards?' + q, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+          .then(function (r) { return r.json(); })
+          .then(function (j) {
+            var doc = new DOMParser().parseFromString((j && j.html) || '', 'text/html');
+            doc.querySelectorAll('.cc-card a[href]').forEach(function (a) {
+              var k = p2pCode(a.getAttribute('href'));
+              if (k) { map[k] = c; ids[k] = c.id; }
+            });
+          })
+          .catch(function () { /* ett koncept utan svar: korten får ingen etikett */ });
+      });
+    }, Promise.resolve()).then(function () {
+      conceptBusy = false;
+      try { sessionStorage.setItem(CONCEPT_CACHE, JSON.stringify({ t: Date.now(), m: ids })); } catch (e) { /* ok */ }
+      if (heldClick) { var b = heldClick; heldClick = null; b.click(); }
+      return map;
+    });
+    return conceptMap;
+  }
+  document.addEventListener('click', function (e) {
+    if (!conceptBusy) return;
+    var b = e.target.closest ? e.target.closest('#viewMoreBtn, #searchBtn') : null;
+    if (!b) return;
+    e.preventDefault(); e.stopImmediatePropagation(); heldClick = b;
+  }, true);
+  document.addEventListener('keypress', function (e) {
+    if (!conceptBusy || e.key !== 'Enter' || !e.target.matches || !e.target.matches('#searchInput')) return;
+    e.preventDefault(); e.stopImmediatePropagation(); heldClick = document.getElementById('searchBtn');
+  }, true);
+  /* Texten får så många rader som ryms i rutan och slutar med ... */
+  function clampText(card) {
+    var t = card.querySelector('.uc-fcard__text');
+    if (!t) return;
+    t.style.removeProperty('-webkit-line-clamp');
+    t.style.removeProperty('max-height');
+    var lh = parseFloat(getComputedStyle(t).lineHeight) || 24;
+    var n = Math.max(1, Math.floor((t.clientHeight + 2) / lh));
+    t.style.setProperty('-webkit-line-clamp', String(n));
+    t.style.setProperty('max-height', (n * lh) + 'px');   /* annars syns en halv rad under ... */
+  }
+  /* Räkna om när kortet byter storlek (fönsterbredd, sökresultat som
+     visas, typsnitt som laddas). Kortet har fast format, så omräkningen
+     ändrar inte kortets storlek och ger ingen loop. */
+  var cardResize = window.ResizeObserver
+    ? new ResizeObserver(function (entries) { entries.forEach(function (en) { clampText(en.target); }); })
+    : null;
+  function conceptLabel(card, map) {
+    if (!map || card.querySelector('.uc-fcard__label')) return;
+    var a = card.querySelector('.uc-fcard__link');
+    var c = a ? map[p2pCode(a.getAttribute('href'))] : null;
+    if (!c) return;
+    var lab = el('span', 'uc-fcard__label', c.text);
+    lab.style.setProperty('--uc-label-bg', c.bg);
+    lab.style.setProperty('--uc-label-ink', c.ink);
+    card.appendChild(lab);
+  }
+  function upgradeCard(card, map) {
+    if (card.classList.contains('uc-fcard')) { conceptLabel(card, map); return; }
+    var a = card.querySelector('a[href]');
+    var title = card.querySelector('p.cc-title');
+    if (!a || !title) return;
+    var img = card.querySelector('img');
+    var txt = card.querySelector('p.cc-txt');
+    var sums = card.querySelectorAll('span.cc-title');
+    var sum = sums.length ? sums[sums.length - 1].textContent.trim() : '';
+    var name = title.textContent.trim();
+
+    var link = el('a', 'uc-fcard__link');
+    link.href = a.getAttribute('href').replace(/^http:/, 'https:');   /* samma fönster: inget target */
+    link.setAttribute('aria-label', name + (sum ? ', ' + sum + ' insamlat' : ''));
+    var media = el('div', 'uc-fcard__media');
+    if (img) { img.removeAttribute('style'); img.alt = ''; img.loading = 'lazy'; media.appendChild(img); }
+    var body = el('div', 'uc-fcard__body');
+    body.appendChild(el('h3', 'uc-fcard__title', name));
+    if (txt && txt.textContent.trim()) body.appendChild(el('p', 'uc-fcard__text', txt.textContent.trim()));
+    if (sum) {
+      var s = el('p', 'uc-fcard__sum');
+      s.appendChild(el('strong', null, sum));
+      s.appendChild(document.createTextNode(' insamlat'));
+      body.appendChild(s);
+    }
+    card.textContent = '';
+    card.classList.add('uc-fcard');
+    card.appendChild(link); card.appendChild(media); card.appendChild(body);
+    conceptLabel(card, map);
+    clampText(card);
+    if (cardResize) cardResize.observe(card);
+  }
+  function fundraiserCards() {
+    var boxes = document.querySelectorAll('#fundraisersDisplay, #searchDisplay');
+    if (!boxes.length) return;
+    var map = null;
+    var run = function () {
+      boxes.forEach(function (b) {
+        b.querySelectorAll('.cc-card').forEach(function (c) { upgradeCard(c, map); });
+      });
+    };
+    run();
+    loadConcepts().then(function (m) { map = m; run(); });
+    var mo = new MutationObserver(run);                  /* "Se fler" och sökresultat */
+    boxes.forEach(function (b) { mo.observe(b, { childList: true }); });
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () {
+      document.querySelectorAll('.uc-fcard').forEach(clampText);
+    });
+  }
+
   /* ---------- Start ---------- */
   function init() {
     removeOldHeaders();
@@ -389,6 +540,7 @@
     });
 
     makeAnchors();
+    fundraiserCards();
 
     /* Platshållare i plattformens sökfält, samma som i sökpanelen */
     var listSearch = onSummary() ? document.querySelector('#searchInput') : null;

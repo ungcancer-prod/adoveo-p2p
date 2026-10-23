@@ -30,6 +30,8 @@ kontrollera efteråt.
 | Färger, typsnitt, knappar, avstånd | `src/css/01-bas.css` (sektion 0–8, tokens överst) |
 | Skapa-sidan och insamlingssidorna | `src/css/02-koncept.css` (sektion 9–11) |
 | Header, menypanel, sök, ankare, infosidan | `src/css/03-header.css` (sektion 12) |
+| Korten i Pågående insamlingar (utseende) | `src/css/04-insamlingskort.css` (sektion 13) |
+| Etiketterna på korten (koncept och färg) | `src/js/uc-p2p.js`, listan `MENU_MAIN` (`id`, `bg`, `ink`) |
 | Logga och ikoner | `src/icons/*.svg` |
 | Oregelbundna kanter (formen `#shape-box`) | `src/js/uc-p2p.js`, `SHAPES`. Lägg kanten på valfritt element med `class="uc-clip"` |
 | Konceptfärgerna | Adoveos färgväljare (wrapperns bakgrund) i respektive kampanj, se `adoveo/kampanjer.md` |
@@ -48,6 +50,11 @@ innehållet → klistra in i filen och spara igen. Eller be Claude backa.
   "Så funkar det" → `#sa-funkar-det`, "Kontakt" → `#kontakt`. Menyns
   länkar bygger på det — byter man en rubrik i Adoveo måste länken
   följa med, eller så skriver man id:t själv på rubriken.
+- **Etiketterna på insamlingskorten:** Adoveo säger inte på kortet vilket
+  koncept en insamling hör till. Scriptet hämtar därför listan per koncept
+  (en fråga i taget, Adoveo blandar ihop svaren vid samtidiga frågor) och
+  sparar svaret i 10 minuter i besökarens webbläsare. Nytt koncept: lägg
+  till det i `MENU_MAIN` med kampanjens id och etikettens färger.
 - **Sök:** frågar Adoveo efter insamlingar i mappen `P2P-2026-WIP`. Byter
   mappen namn i Adoveo måste `FOLDER` i `src/js/uc-p2p.js` ändras.
 - **Specificitet:** bygget lägger `:not(uc-x)` sist i varje selektor så att

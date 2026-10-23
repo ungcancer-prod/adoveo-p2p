@@ -1,0 +1,174 @@
+/* =========================================
+   04 — INSAMLINGSKORTEN I "PÅGÅENDE INSAMLINGAR" (sektion 13)
+   Byggs om av src/js/uc-p2p.js (fundraiserCards) till samma uppställning
+   som artikelkorten på ungcancer.se: bild överst, textruta under, båda med
+   oregelbunden kant, och en etikett med konceptet i bildens hörn.
+   Fast format 4:5 (som 1080 x 1350). Hela kortet är en länk.
+   Gäller listan (#fundraisersDisplay) och plattformens sökresultat
+   (#searchDisplay). Utan script ser korten ut som förut.
+   ========================================= */
+
+/* 13.1 Rutnätet: tre i rad (plattformen laddar tre åt gången), två på
+   surfplatta, ett på mobil. Id-väljare: plattformens regler är (0,3,0). */
+#fundraisersDisplay,
+#searchDisplay {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--sp-6) var(--sp-5);      /* 32px mellan rader, 24px mellan kort */
+    align-items: start;
+    width: 100%;
+    max-width: 1220px;
+    margin-inline: auto;
+}
+/* !important: plattformen visar och döljer listorna med inline-stil
+   (jQuery skriver display: flex när de visas). Dold = style innehåller none. */
+#fundraisersDisplay:not([style*="none"]),
+#searchDisplay:not([style*="none"]) {
+    display: grid !important;
+}
+#searchDisplay > p {
+    grid-column: 1 / -1;               /* "Söker..." och "Inga träffar" */
+    text-align: center;
+}
+@media (max-width: 999px) {
+    #fundraisersDisplay,
+    #searchDisplay { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 599px) {
+    #fundraisersDisplay,
+    #searchDisplay { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* 13.2 Kortet: 4:5, bild halva höjden, textrutan resten. Kortet självt
+   har ingen yta eller kant, det har bilden och textrutan var för sig. */
+.cc-card.uc-fcard {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;                          /* vit springa mellan bild och text, som ungcancer.se */
+    aspect-ratio: 4 / 5;
+    width: 100%;
+    min-width: 0;
+    max-width: none;
+    height: auto;
+    margin: 0;
+    padding: 0;
+    background: none;
+    box-shadow: none;
+    -webkit-clip-path: none;
+    clip-path: none;
+    border-radius: 0;
+    text-align: left;
+}
+.uc-fcard__media {
+    flex: 0 0 50%;
+    overflow: hidden;
+    -webkit-clip-path: var(--uc-clip);
+    clip-path: var(--uc-clip);
+    background-color: var(--uc-cream);  /* syns om bilden saknas */
+}
+.uc-fcard__media img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s var(--uc-ease, ease);
+}
+.uc-fcard:hover .uc-fcard__media img {
+    transform: scale(1.03);
+}
+.uc-fcard__body {
+    flex: 1 1 0;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-3);                  /* 12px */
+    padding: var(--sp-5);              /* 24px */
+    -webkit-clip-path: var(--uc-clip);
+    clip-path: var(--uc-clip);
+    background-color: var(--uc-cream);
+    color: var(--uc-black);
+}
+
+/* 13.3 Text: rubrik högst två rader, brödtexten så många rader som ryms
+   (scriptet räknar ut antalet), summan alltid längst ner. */
+.uc-fcard__title {
+    flex: none;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    overflow: hidden;
+    margin: 0;
+    font-family: var(--font-head);
+    font-size: var(--fs-h2);           /* 32px, som ungcancer.se */
+    line-height: 1.125;                /* 36px */
+    letter-spacing: -0.0125em;
+    text-transform: uppercase;
+    overflow-wrap: anywhere;
+    color: inherit;
+}
+.uc-fcard:hover .uc-fcard__title {
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 4px;
+}
+.uc-fcard__text {
+    flex: 1 1 0;
+    min-height: 0;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;             /* reserv; scriptet sätter antalet som ryms */
+    overflow: hidden;
+    margin: 0;
+    font-family: var(--font-body);
+    font-size: var(--fs-body);         /* 16px */
+    line-height: 1.5;                  /* 24px */
+}
+.uc-fcard__sum {
+    flex: none;
+    margin: auto 0 0;
+    font-family: var(--font-body);
+    font-size: var(--fs-body);
+    line-height: 1.5;
+}
+.uc-fcard__sum strong {
+    font-family: var(--font-head);
+    font-weight: normal;
+    font-size: var(--fs-h3);           /* 24px */
+    text-transform: uppercase;
+}
+@media (max-width: 1199px) {
+    .uc-fcard__title { font-size: var(--fs-h3); }   /* 32 -> 24px när korten blir smala */
+}
+
+/* 13.4 Etiketten: konceptet, i konceptets färg (färgerna står i
+   MENU_MAIN i scriptet). Ligger i bildens övre vänstra hörn. */
+.uc-fcard__label {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1;
+    padding: 4px 8px;
+    -webkit-clip-path: var(--uc-clip);
+    clip-path: var(--uc-clip);
+    background-color: var(--uc-label-bg, var(--uc-green));
+    color: var(--uc-label-ink, var(--uc-black));
+    font-family: var(--font-body);
+    font-size: 1.3rem;                 /* 13px */
+    font-weight: 700;
+    line-height: 1.5;
+    letter-spacing: 0.01em;
+    text-transform: uppercase;
+    pointer-events: none;
+}
+
+/* 13.5 Hela kortet klickbart: länken täcker kortet */
+.uc-fcard__link {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+}
+.uc-fcard__link:focus-visible {
+    outline: 2px solid var(--uc-black);
+    outline-offset: 4px;
+}
