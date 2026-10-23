@@ -38,7 +38,7 @@ body > .uc-header.uc-header-bar--hidden {
     align-items: center;
     gap: 4px 8px;
     max-width: 1440px;                 /* samma ram som ungcancer.se: */
-    margin-inline: auto;               /* logga 16px in, ikoner 64px in */
+    margin-inline: auto;               /* logga 16px in, sökikonen lika långt in */
 }
 /* 12.2 Logga — Ung Cancers SVG-ordmärke, hämtat från ungcancer.se */
 .uc-header__logo {
@@ -111,16 +111,17 @@ body > .uc-header.uc-header-bar--hidden {
 @media (max-width: 1023px) {
     .uc-header__menu { display: none; }
 }
-/* 12.4 Ikonerna till höger: meny + sök, alla bredder (som ungcancer.se).
-   Höger marginal 64px = sajtens 8px + platsen där varukorgen ligger
-   (48px ikon + 8px mellanrum). Då står meny och sök på exakt samma
-   ställe som på ungcancer.se. Utan varukorgsplatsen: margin-right 8px. */
+/* 12.4 Ikonerna till höger: meny + sök, alla bredder.
+   Speglar logotypen: sökikonens högerkant står lika långt från ramens
+   högerkant som logotypens vänsterkant från vänsterkanten (16px).
+   Ikonrutan är 48px med 32px ikon i mitten (8px luft) och sökglyfen
+   slutar 2,25px före sin kant: 16 - 8 - 2,25 = ca 6px. */
 .uc-header__actions {
     grid-column: 3;
     justify-self: end;
     display: flex;
     gap: 8px;
-    margin: 0 64px 0 0;
+    margin: 0 6px 0 0;
     padding: 0;
     list-style: none;
 }
@@ -136,9 +137,9 @@ body > .uc-header.uc-header-bar--hidden {
 }
 .uc-header__icon--menu   { background-image: @@BURGER@@; }
 .uc-header__icon--search { background-image: @@SEARCH@@; }
-/* Under 1024px har ungcancer.se 4px mellan ikonerna: 8 + 48 + 4 = 60px */
+/* Under 1024px: 4px mellan ikonerna, som ungcancer.se */
 @media (max-width: 1023px) {
-    .uc-header__actions { gap: 4px; margin-right: 60px; }
+    .uc-header__actions { gap: 4px; }
 }
 /* 12.5 Paneler (meny + sök). Öppen = html.uc-nav-open / .uc-search-open
    (script) eller :target (reserv utan script). visibility fördröjs vid
