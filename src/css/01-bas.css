@@ -81,7 +81,13 @@
     --z-text:     5;
     --z-checkbox: 10;
     --op-muted:   0.6;
-    /* --- Övrigt --- */
+    /* --- Oregelbundna kanter --- */
+    /* none tills scriptet lagt in formen (då får html klassen uc-shape).
+       En clip-path som pekar på en form som saknas gör elementet
+       osynligt — så här blir kanten rak i stället om scriptet inte laddar. */
+    --uc-clip: none;
+}
+html.uc-shape {
     --uc-clip: url(#shape-box);
 }
 /* =========================================
@@ -158,6 +164,12 @@ cite {
     .wrapper { margin: var(--sp-7) 0; }
 }
 .hero-img {
+    -webkit-clip-path: var(--uc-clip);
+    clip-path: var(--uc-clip);
+}
+/* Oregelbunden kant på valfritt element: class="uc-clip".
+   Formen (#shape-box) ritas av scriptet, se SHAPES i src/js/uc-p2p.js. */
+.uc-clip {
     -webkit-clip-path: var(--uc-clip);
     clip-path: var(--uc-clip);
 }

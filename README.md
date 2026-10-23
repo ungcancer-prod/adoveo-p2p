@@ -31,6 +31,7 @@ kontrollera efteråt.
 | Skapa-sidan och insamlingssidorna | `src/css/02-koncept.css` (sektion 9–11) |
 | Header, menypanel, sök, ankare, infosidan | `src/css/03-header.css` (sektion 12) |
 | Logga och ikoner | `src/icons/*.svg` |
+| Oregelbundna kanter (formen `#shape-box`) | `src/js/uc-p2p.js`, `SHAPES`. Lägg kanten på valfritt element med `class="uc-clip"` |
 | Konceptfärgerna | ligger i respektive kampanj i Adoveo, se `adoveo/kampanjer.md` |
 | Rubriker, texter, fältetiketter | ligger i Adoveo, dokumenterade i `adoveo/inputfalt/` |
 

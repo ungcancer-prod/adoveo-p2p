@@ -30,6 +30,14 @@
     { text: 'Till ungcancer.se', href: 'https://ungcancer.se/' }
   ];
 
+  /* ---------- Former (oregelbundna kanter) ---------- */
+  /* clip-path-former i objectBoundingBox (0–1 = elementets bredd/höjd).
+     Används i CSS som url(#id), t.ex. via --uc-clip eller class="uc-clip".
+     Lägg till fler former här om olika element ska ha olika kant. */
+  var SHAPES = {
+    'shape-box': 'M0.998 0.993L0.748 0.994L0.5 0.992L0.252 1L0.006 0.992L0.003 0.747L0 0.5L0.007 0.252L0.006 0.005L0.252 0.006L0.5 0L0.748 0.009L0.998 0.001L1 0.252L0.993 0.5L0.995 0.748L0.998 0.993Z'
+  };
+
   /* ---------- Inställningar ---------- */
   var SUMMARY_URL = BASE + '294/';
   var SUMMARY_ID  = '294';                     /* sökningen frågar alltid med Summary-kampanjens id */
@@ -128,6 +136,35 @@
     body.insertBefore(drawer, body.firstChild);
     body.insertBefore(header, body.firstChild);
   }
+  /* Formerna läggs i en osynlig SVG överst i body. Finns en form redan
+     (gammal SVG i Head Markup) används den. Klassen uc-shape på html slår
+     på --uc-clip i CSS:en först när formen garanterat finns. */
+  function buildShapes() {
+    var NS = 'http://www.w3.org/2000/svg';
+    var svg = null;
+    Object.keys(SHAPES).forEach(function (id) {
+      if (document.getElementById(id)) return;
+      if (!svg) {
+        svg = document.createElementNS(NS, 'svg');
+        svg.setAttribute('width', '0');
+        svg.setAttribute('height', '0');
+        svg.setAttribute('aria-hidden', 'true');
+        svg.setAttribute('focusable', 'false');
+        svg.style.position = 'absolute';
+        svg.appendChild(document.createElementNS(NS, 'defs'));
+      }
+      var cp = document.createElementNS(NS, 'clipPath');
+      cp.setAttribute('id', id);
+      cp.setAttribute('clipPathUnits', 'objectBoundingBox');
+      var path = document.createElementNS(NS, 'path');
+      path.setAttribute('d', SHAPES[id]);
+      cp.appendChild(path);
+      svg.firstChild.appendChild(cp);
+    });
+    if (svg) document.body.insertBefore(svg, document.body.firstChild);
+    root.classList.add('uc-shape');
+  }
+
   /* En gammal header i Campaign Head (från tiden före repot) tas bort */
   function removeOldHeaders() {
     var all = document.querySelectorAll('.uc-header');
@@ -354,7 +391,7 @@
     }, { passive: true });
   }
 
-  if (document.body) buildHeader();           /* direkt, om scriptet ligger i body */
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', function () { buildHeader(); init(); });
-  else { buildHeader(); init(); }
+  if (document.body) { buildShapes(); buildHeader(); }   /* direkt, om scriptet ligger i body */
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', function () { buildShapes(); buildHeader(); init(); });
+  else { buildShapes(); buildHeader(); init(); }
 })();

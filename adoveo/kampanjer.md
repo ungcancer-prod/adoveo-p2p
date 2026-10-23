@@ -7,8 +7,9 @@ Det finns i `inputfalt/`.
 
 ## De två raderna — samma i alla kampanjer
 
-**Theme → Head Markup (for Scripts)**, under det som redan ligger där
-(SVG:n `#shape-box` ska ligga kvar):
+**Theme → Head Markup (for Scripts)** — de här två raderna och inget mer.
+SVG:n `#shape-box` som låg där tidigare ritas nu av scriptet och kan tas
+bort. (Ligger den kvar gör det inget — scriptet använder den då i stället.)
 
 ```html
 <link rel="stylesheet" href="https://ungcancer-prod.github.io/adoveo-p2p/uc-p2p.css">
