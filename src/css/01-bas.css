@@ -65,7 +65,8 @@
     /* --- Border & radius --- */
     --border-w:  2px;
     --uc-border: var(--border-w) solid var(--uc-black);
-    --radius:    0;
+    --radius:    0;                     /* knappar, kort */
+    --radius-input: 4px;                /* fält, som i kampanj 300 */
     /* --- Transitions --- */
     --tr-smooth: 0.2s ease-in-out;                     /* toggle-texter */
     --tr-toggle: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -114,6 +115,7 @@ blockquote {
     font-size: var(--fs-display);
     line-height: var(--lh-solid);
     border-left: none;
+    max-width: 32ch;
 }
 cite {
     font-family: var(--font-body);
@@ -134,6 +136,14 @@ cite {
     font-size: var(--fs-display);
     line-height: var(--lh-solid);
     margin-bottom: var(--sp-7);
+}
+.uc-subtitle {
+    font-family: var(--font-body);
+    font-size: var(--fs-body);         /* 16px */
+    line-height: 1;
+    text-transform: none;
+    max-width: 32ch;
+    margin: 0 auto;
 }
 .uc-small {
     font-size: var(--fs-small);
@@ -260,10 +270,21 @@ button {
     color: var(--uc-white);
     text-decoration: none;
 }
+/* Fält och textrutor — som i kampanj 300 (standard för Ung Cancer):
+   brödtypsnitt 20px, 2px svart kant och vit bakgrund (från temat),
+   4px rundning. Etiketten inuti fältet är plattformens .input-label
+   (16px brödtypsnitt) och fungerar som platshållare. */
+.cc-input,
+.cc-textarea {
+    font-family: var(--font-body);
+    font-size: var(--fs-h4);           /* 20px */
+    border-radius: var(--radius-input);
+}
 .cc-input {
-    font-family: var(--font-head);
-    font-size: var(--fs-btn);
     padding: var(--sp-3) var(--sp-2) 0 var(--sp-2);
+}
+.cc-textarea {
+    padding: var(--sp-3) var(--sp-2) var(--sp-2);
 }
 /* --- Horisontella beloppsknappar (tre i rad) --- */
 /* Prefixet .cc-button-custom-product träffar bara de yttre raderna,
@@ -397,6 +418,20 @@ a.uc-card {
 #errorText {
     color: var(--uc-red);
     margin-bottom: var(--sp-5);
+}
+/* Swish-felmeddelandet: brödtext, inte rubrik (från kampanj 300) */
+.swish-error {
+    font-family: var(--font-body);
+    font-size: 2.2rem;                 /* 22px */
+    font-weight: 400;
+    letter-spacing: normal;
+    line-height: normal;
+    text-transform: none !important;   /* !important som i kampanj 300 */
+}
+/* Avdelaren i formuläret (fältet Divider i Adoveo) */
+#text_divider_group {
+    font-size: 1.4rem;                 /* 14px */
+    margin: var(--sp-2) auto;
 }
 .swish-done {
     margin-top: var(--sp-5);

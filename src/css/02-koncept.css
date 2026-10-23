@@ -64,10 +64,6 @@
 #phase-before-coupon .input-group {
     margin-bottom: var(--sp-2);
 }
-/* Plattformens fält har rundade hörn — varumärket har raka */
-:is(#phase-before-coupon, #phase-swish-result) :is(.cc-input, .cc-textarea) {
-    border-radius: var(--radius);
-}
 #registration_file_upload_div {
     justify-content: center;
 }
