@@ -4,9 +4,12 @@
    Sektion 9–11. Scopat på P2P-sidornas fas-id och body-klass, så
    det påverkar inte Summary eller infosidan.
 
-   Varje konceptkampanj sätter sin färg i sin EGEN Theme → Custom CSS
-   (se adoveo/kampanjer.md). Värdena nedan är standard om en kampanj
-   inte satt något. Alla färger är Ung Cancers egna tokens.
+   KONCEPTFÄRGEN väljs i Adoveo admin (temats färg för wrappern).
+   Scriptet (src/js/uc-p2p.js, conceptColors) läser av den färgen och
+   sätter variablerna nedan: --uc-concept-bg = vald färg,
+   --uc-concept-ink = svart eller krämvit beroende på hur mörk färgen
+   är, --uc-concept-logo-bg = krämvit platta bakom logotyperna på mörk
+   yta. Värdena nedan gäller bara tills scriptet hunnit köra.
    ============================================================ */
 :root {
     --uc-concept-bg:       var(--uc-green);   /* ytan */
@@ -20,10 +23,10 @@
    där insamlaren skapar sin sida, #phase-after-coupon = "nu är den skapad"
    med dela-knappar och QR-kod. Allt scopat på fas-id, rör inte Summary.
    ========================================= */
-/* 9.1 Ytan: konceptets färg, text och ev. ram (se KONCEPT-blocket) */
+/* 9.1 Ytan: textfärg och ev. ram. Ytans FÄRG sätts i Adoveo admin
+   (temats färgväljare) — den skrivs inte över här. */
 #phase-before-coupon .wrapper,
 #phase-after-coupon .wrapper {
-    background-color: var(--uc-concept-bg);
     color: var(--uc-concept-ink);
     border: var(--uc-concept-frame);
     padding: var(--sp-7) var(--sp-4);
@@ -138,7 +141,6 @@
    som textnod i #page-subtitle, beskrivningen som <span> i samma div.
    ========================================= */
 .p2p-transaction-landing #phase-swish-result .wrapper {
-    background-color: var(--uc-concept-bg);
     color: var(--uc-concept-ink);
     border: var(--uc-concept-frame);
     padding: var(--sp-7) var(--sp-4);

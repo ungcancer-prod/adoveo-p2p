@@ -1,7 +1,7 @@
 # Kampanjerna i Adoveo — vad som ligger var
 
 All kod (CSS, header, meny, sök) laddas från det här repot. I Adoveo ligger
-bara två rader per kampanj, plus konceptfärgen på konceptkampanjerna.
+bara två rader per kampanj. Konceptfärgen väljs med Adoveos egen färgväljare.
 Allt annat i Adoveo är **innehåll**: rubriker, texter och fältetiketter.
 Det finns i `inputfalt/`.
 
@@ -20,89 +20,49 @@ bort. (Ligger den kvar gör det inget — scriptet använder den då i stället.
 
 | Fält | Varför |
 |---|---|
-| Theme → Custom CSS | All CSS kommer från repot. Undantag: konceptfärgen, se nedan. |
+| Theme → Custom CSS | All CSS kommer från repot. |
 | Theme → Custom CSS Desktop / Mobile | Låg tidigare kopior av hela CSS:en här. Ska vara tomma. |
 | Theme → Campaign Head | Headern byggs av scriptet. Ligger det kvar en gammal header här tas den bort automatiskt, men töm fältet. |
 | Klassfältet för Campaign Head | Stod `.uc-campaign-head` (med punkt). Kan tömmas. |
 
 ## Kampanjerna
 
-| Id | Vad | Theme → Custom CSS | Innehåll |
+| Id | Vad | Konceptfärg | Innehåll |
 |---|---|---|---|
-| 294 | Summary, huvudsida | tomt | `inputfalt/294-summary.html` |
-| 295 | Födelsedag | konceptfärg: rosa | `inputfalt/295-fodelsedag.html` |
-| 297 | Utmaning | konceptfärg: grön | `inputfalt/297-utmaning.html` |
-| 298 | Till minne | konceptfärg: svart | `inputfalt/298-till-minne.html` |
-| 299 | Stå bakom (arbetsnamn) | konceptfärg: vit | `inputfalt/299-sta-bakom.html` |
-| 308 | Infosida | tomt | `inputfalt/308-info.html` |
+| 294 | Summary, huvudsida | – | `inputfalt/294-summary.html` |
+| 295 | Födelsedag | rosa i färgväljaren | `inputfalt/295-fodelsedag.html` |
+| 297 | Utmaning | grön i färgväljaren | `inputfalt/297-utmaning.html` |
+| 298 | Till minne | svart i färgväljaren | `inputfalt/298-till-minne.html` |
+| 299 | Stå bakom (arbetsnamn) | vit i färgväljaren | `inputfalt/299-sta-bakom.html` |
+| 308 | Infosida | – | `inputfalt/308-info.html` |
 
 Insamlingssidorna (`/p/…`) som varje insamlare får hämtar sin kod och färg
 från sin konceptkampanj — de behöver inget eget.
 
 ## Konceptfärgen
 
-Det enda som skiljer konceptkampanjerna åt i koden. Klistras in som hela
-innehållet i kampanjens **Theme → Custom CSS**. (Insamlingssidorna avslöjar
-inte vilket koncept de hör till, därför kan färgen inte ligga i repot.)
-Alla färger är Ung Cancers egna (tokens i `src/css/01-bas.css`).
-Sidans bakgrund är alltid vit (#ffffff); färgen ligger på konceptets
-ytor (wrappern), inte på sidan.
+Väljs i **Adoveo admin**, med temats färgväljare för wrapperns bakgrund —
+ingen kod. Sidans bakgrund är alltid vit (#ffffff, från repot).
 
-| Koncept | Yta | Text | Ram |
-|---|---|---|---|
-| 295 Födelsedag | Rosa | Svart | – |
-| 297 Utmaning | Grön | Svart | – |
-| 298 Till minne | Svart | Vit | – (krämvit platta bakom logotyperna) |
-| 299 Stå bakom | Vit | Svart | – |
+Scriptet läser av den färg du valt och anpassar resten själv: på en mörk
+yta blir texten krämvit och logotyperna efter "skapa" får en krämvit
+platta; på en ljus yta blir texten svart.
 
-**295 Födelsedag**
-```css
-:root {
-    --uc-concept-bg:    var(--uc-pink);
-    --uc-concept-ink:   var(--uc-black);
-    --uc-concept-frame: none;
-}
-```
+| Koncept | Wrapperns färg i admin |
+|---|---|
+| 295 Födelsedag | Rosa `#FFB5D8` |
+| 297 Utmaning | Grön `#8BEEA5` |
+| 298 Till minne | Svart `#282826` |
+| 299 Stå bakom | Vit `#FCF7E3` |
 
-**297 Utmaning** (grönt är standard — fältet kan också lämnas tomt)
-```css
-:root {
-    --uc-concept-bg:    var(--uc-green);
-    --uc-concept-ink:   var(--uc-black);
-    --uc-concept-frame: none;
-}
-```
-
-**298 Till minne**
-```css
-:root {
-    --uc-concept-bg:      var(--uc-black);
-    --uc-concept-ink:     var(--uc-cream);
-    --uc-concept-frame:   none;
-    --uc-concept-logo-bg: var(--uc-cream);
-}
-```
-`--uc-concept-logo-bg` lägger en krämvit platta bakom 90-konto- och
-Ung Cancer-logotyperna efter att en insamling skapats. De är svarta
-bilder och syns annars inte på svart.
-
-**299 Stå bakom**
-```css
-:root {
-    --uc-concept-bg:    var(--uc-cream);
-    --uc-concept-ink:   var(--uc-black);
-    --uc-concept-frame: none;
-}
-```
-
-Mörk yta i ett nytt koncept: sätt alltid `--uc-concept-ink` till en ljus
-färg och `--uc-concept-logo-bg` till `var(--uc-cream)`.
+Alla färger är Ung Cancers egna. Theme → Custom CSS ska vara tomt i alla
+kampanjer.
 
 ## Ny kampanj
 
 1. Skapa den i Adoveo (P2P-mall eller Summary-mall).
 2. Lägg in de två raderna i Head Markup. Töm Custom CSS-fälten och Campaign Head.
-3. Konceptkampanj: lägg in en konceptfärg i Custom CSS.
+3. Konceptkampanj: välj wrapperns färg i Adoveos färgväljare.
 4. Ska den synas i menyn: lägg till den i `src/js/uc-p2p.js` (listorna `MENU_MAIN` / `MENU_MORE`).
 5. Fyll i tabellen ovan.
 

@@ -165,6 +165,24 @@
     root.classList.add('uc-shape');
   }
 
+  /* Konceptfärgen väljs i Adoveo admin och hamnar som bakgrund på
+     wrappern. Här läses den av, och text- och detaljfärger anpassas:
+     mörk yta -> krämvit text och ljus platta bakom logotyperna. */
+  function conceptColors() {
+    var w = document.querySelector('#phase-before-coupon .wrapper, #phase-after-coupon .wrapper, #phase-swish-result .wrapper');
+    if (!w) return;
+    var m = getComputedStyle(w).backgroundColor.match(/[\d.]+/g);
+    if (!m) return;
+    var alpha = m.length === 4 ? +m[3] : 1;
+    if (alpha === 0) return;                    /* genomskinlig: låt standard gälla */
+    var lin = function (c) { c = c / 255; return c > 0.04045 ? Math.pow((c + 0.055) / 1.055, 2.4) : c / 12.92; };
+    var L = 0.2126 * lin(+m[0]) + 0.7152 * lin(+m[1]) + 0.0722 * lin(+m[2]);
+    var dark = L !== Math.max(L, 0.18);          /* L under 0.18 = mörk yta */
+    root.style.setProperty('--uc-concept-bg', 'rgb(' + m[0] + ',' + m[1] + ',' + m[2] + ')');
+    root.style.setProperty('--uc-concept-ink', dark ? 'var(--uc-cream)' : 'var(--uc-black)');
+    root.style.setProperty('--uc-concept-logo-bg', dark ? 'var(--uc-cream)' : 'transparent');
+  }
+
   /* En gammal header i Campaign Head (från tiden före repot) tas bort */
   function removeOldHeaders() {
     var all = document.querySelectorAll('.uc-header');
@@ -348,6 +366,7 @@
   /* ---------- Start ---------- */
   function init() {
     removeOldHeaders();
+    conceptColors();
     var menu = document.getElementById('uc-meny');
     /* Panelerna flyttas till body: den sticky behållaren får transform vid
        scroll, och fixed inuti en transform hamnar annars fel */
