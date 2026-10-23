@@ -10,7 +10,7 @@
 :root {
     --uc-header-bg:     var(--uc-white);  /* samma vita som ungcancer.se */
     --uc-drawer-w:      480px;
-    --uc-drawer-rule:   rgba(var(--uc-black-rgb), 0.2);  /* strecken i menyn: svart ton på grönt, som ungcancer.se:s #88C49B */
+    --uc-drawer-rule:   rgba(var(--uc-black-rgb), 0.2);  /* strecken i menyn: svag svart ton */
     --uc-search-rule:   rgba(var(--uc-black-rgb), 0.1);
     --uc-ease:          cubic-bezier(0.4, 0, 0.2, 1);
 }
@@ -173,7 +173,7 @@ body > .uc-header.uc-header-bar--hidden {
     width: min(100%, var(--uc-drawer-w));
     padding: 124px 32px 32px;          /* 60px stängrad + 64px, som ungcancer.se */
     overflow-y: auto;
-    background-color: var(--uc-green);
+    background-color: var(--uc-cream);  /* menyn; sökpanelen är vit (12.7) */
     transform: translateX(100%);
     transition: transform 0.28s var(--uc-ease);
 }
