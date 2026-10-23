@@ -171,7 +171,12 @@
   function conceptColors() {
     var w = document.querySelector('#phase-before-coupon .wrapper, #phase-after-coupon .wrapper, #phase-swish-result .wrapper');
     if (!w) return;
+    /* Adoveo har en transition på wrappern: stäng av den medan färgen
+       läses, annars kan ett mellanläge läsas av */
+    var t = w.style.transition;
+    w.style.transition = 'none';
     var m = getComputedStyle(w).backgroundColor.match(/[\d.]+/g);
+    w.style.transition = t;
     if (!m) return;
     var alpha = m.length === 4 ? +m[3] : 1;
     if (alpha === 0) return;                    /* genomskinlig: låt standard gälla */
