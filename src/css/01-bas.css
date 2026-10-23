@@ -175,12 +175,19 @@ body[class] {
 .cc-title {
     color: inherit;                    /* temats rubrikfärg (0,1,0) */
 }
-.qr-download,
-.qr-modal-close {
+.qr-download {
     color: var(--uc-black);
 }
+/* !important: plattformen sätter färgerna som inline-stil (#000, rgba(0,0,0,.5)) */
+.qr-modal-close {
+    color: var(--uc-black) !important;
+}
 .qr-modal {
-    background-color: rgba(var(--uc-black-rgb), 0.5);
+    background: rgba(var(--uc-black-rgb), 0.5) !important;
+}
+/* !important: beloppsfelet har inline color: red */
+[id^="swish-form-error"] {
+    color: var(--uc-red) !important;
 }
 .cc-alert-box {
     background-color: rgba(var(--uc-black-rgb), 0.75);
@@ -188,10 +195,10 @@ body[class] {
 .cc-card {
     box-shadow: 0 4px 8px 0 rgba(var(--uc-black-rgb), 0.2);
 }
-/* Tunna avdelare: ytans textfärg, svagt. Ljusgrå på vitt, ljus på mörkt. */
+/* Tunna avdelare: svag ton av Ung Cancers svarta i stället för grå #eee */
 hr,
 hr.divider {
-    border-top-color: color-mix(in srgb, currentColor 15%, transparent);
+    border-top-color: rgba(var(--uc-black-rgb), 0.15);
 }
 #wrap-default {
     max-width: var(--wrap-max);

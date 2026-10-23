@@ -10,7 +10,7 @@
 :root {
     --uc-header-bg:     var(--uc-white);  /* samma vita som ungcancer.se */
     --uc-drawer-w:      480px;
-    --uc-drawer-rule:   var(--uc-green);  /* understrykningen i menyn (ungcancer.se har #88C49B) */
+    --uc-drawer-rule:   rgba(var(--uc-black-rgb), 0.2);  /* strecken i menyn: svart ton på grönt, som ungcancer.se:s #88C49B */
     --uc-search-rule:   rgba(var(--uc-black-rgb), 0.1);
     --uc-ease:          cubic-bezier(0.4, 0, 0.2, 1);
 }
