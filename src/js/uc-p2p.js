@@ -520,8 +520,9 @@
 
   /* ---------- Steg 1–2–3 på konceptens startsida ---------- */
   /* Samma tre steg som "Så funkar det" på Summary. På skapa-sidan är
-     Välj klart och Skapa pågår; efter skapad är Dela på tur. Välj länkar
-     tillbaka till Summary, där man väljer koncept. */
+     Välj klart och Skapa pågår; efter skapad är Dela på tur. Bara det
+     pågående steget är i full färg. Välj länkar tillbaka till Summary,
+     där man väljer koncept. */
   var STEPS = ['Välj', 'Skapa', 'Dela'];
   function stepList(current) {
     var ol = el('ol', 'uc-steps');
@@ -553,6 +554,36 @@
       if (prev && prev.classList.contains('uc-steps')) return;
       h.parentNode.insertBefore(stepList(p[1]), h);
     });
+  }
+
+  /* ---------- QR-koden på bekräftelsen ---------- */
+  /* När insamlingen är skapad ger Adoveo en QR-kod till den (svaret
+     campaign_qr_code), men visar den bara i en ruta bakom en knapp. Här
+     ritas den ut direkt under dela-knapparna, med en knapp för att ladda
+     ner den. Adoveo lägger in koden i #after-coupon-campaign-qr-img efter
+     att formuläret skickats, så bilden bevakas tills den får en adress. */
+  function inlineQr() {
+    var img = document.getElementById('after-coupon-campaign-qr-img');
+    var after = document.getElementById('after-coupon-share-text');
+    if (!img || !after) return;
+    var show = function () {
+      var src = img.getAttribute('src');
+      if (!src || document.querySelector('.uc-qr')) return;
+      var box = el('div', 'uc-qr');
+      box.appendChild(el('p', 'uc-qr__label', 'QR-kod till din insamling'));
+      var im = el('img', 'uc-qr__img');
+      im.src = src;
+      im.alt = 'QR-kod som leder till din insamling';
+      box.appendChild(im);
+      var dl = el('a', 'cc-button uc-qr__download', 'Ladda ner QR-kod');
+      dl.href = src;
+      dl.setAttribute('download', 'ung-cancer-insamling-qr.png');
+      box.appendChild(dl);
+      after.parentNode.insertBefore(box, after.nextSibling);
+      root.classList.add('uc-qr-inline');
+    };
+    show();
+    new MutationObserver(show).observe(img, { attributes: true, attributeFilter: ['src'] });
   }
 
   /* ---------- Skapa-sidan: formulär till vänster, telefon till höger ---------- */
@@ -681,6 +712,7 @@
     makeAnchors();
     fundraiserCards();
     conceptSteps();
+    inlineQr();
     createLayout();
 
     /* Platshållare i plattformens sökfält, samma som i sökpanelen */
