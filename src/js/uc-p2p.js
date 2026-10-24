@@ -582,17 +582,31 @@
       new MutationObserver(ghost).observe(msg, { childList: true, characterData: true, subtree: true });
     }
 
-    /* Bilden: visa den valda bilden direkt, utan att vänta på uppladdningen */
+    /* Bilden. Plattformen lägger aldrig in den valda bilden i
+       förhandsvisningen, och den bygger om rubriken (med tom bild) varje
+       gång något fält ändras. Därför sparas den valda bilden här och läggs
+       tillbaka efter varje ombyggnad. Källan är filen man valt (visas
+       direkt) och plattformens miniatyr bredvid Välj bild (efter uppladdning). */
+    var title = box.querySelector('#coupon-page-title');
+    var chosen = '';
+    var applyImg = function () {
+      var im = title ? title.querySelector('img') : null;
+      if (chosen && im && im.getAttribute('src') !== chosen) im.setAttribute('src', chosen);
+    };
     var file = document.getElementById('registration_file_upload');
     if (file) file.addEventListener('change', function () {
       var f = file.files && file.files[0];
-      var im = box.querySelector('#coupon-page-title img');
-      if (im && f && /^image\//.test(f.type)) im.src = URL.createObjectURL(f);
+      if (f && /^image\//.test(f.type)) { chosen = URL.createObjectURL(f); applyImg(); }
     });
+    var thumb = document.querySelector('#registration_file_upload_div .image-preview');
+    if (thumb) new MutationObserver(function () {
+      var src = thumb.getAttribute('src') || '';
+      if (/^(https?:|data:image|blob:)/.test(src) && src !== location.href) { chosen = src; applyImg(); }
+    }).observe(thumb, { attributes: true, attributeFilter: ['src'] });
+
     /* Ingen bild än: plattformen ger bilden en tom eller trasig adress,
        som visas som en trasig bild. Då visas en platshållare i stället.
        Klassen sätts på html: plattformen skriver om klasserna på rubriken. */
-    var title = box.querySelector('#coupon-page-title');
     if (title) {
       var noImg = function () {
         var im = title.querySelector('img');
@@ -601,7 +615,8 @@
       };
       title.addEventListener('load', noImg, true);       /* load/error bubblar inte: fånga */
       title.addEventListener('error', noImg, true);
-      new MutationObserver(noImg).observe(title, { childList: true, subtree: true, attributes: true, attributeFilter: ['src'] });
+      new MutationObserver(function () { applyImg(); noImg(); })
+        .observe(title, { childList: true, subtree: true, attributes: true, attributeFilter: ['src'] });
       noImg();
     }
   }
