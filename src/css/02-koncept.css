@@ -34,6 +34,74 @@
 :is(#phase-before-coupon, #phase-after-coupon) :is(.cc-title, .cc-txt) {
     color: var(--uc-concept-ink);
 }
+/* 9.1b Steg 1–2–3 ovanför rubriken (byggs av scriptet, conceptSteps).
+   Klart steg = fylld ring med bock, pågående = ring med siffra,
+   kommande = blekt. Färgerna följer ytan (ljus eller mörk). */
+.uc-steps {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--sp-2);
+    margin: 0 auto var(--sp-5);
+    padding: 0;
+    list-style: none;
+    color: var(--uc-concept-ink);
+}
+.uc-steps__step,
+.uc-steps .uc-steps__link {        /* .uc-steps framför: plattformens röda a:link */
+    display: flex;
+    align-items: center;
+    gap: var(--sp-1);
+    color: inherit;
+    text-decoration: none;
+}
+.uc-steps__step + .uc-steps__step::before {    /* strecket mellan stegen */
+    content: '';
+    width: 16px;
+    height: var(--border-w);
+    margin-right: var(--sp-1);
+    background-color: currentColor;
+    opacity: 0.35;
+}
+.uc-steps__dot {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    border: var(--border-w) solid currentColor;
+    border-radius: 50%;
+    font-family: var(--font-head);
+    font-size: 1.3rem;                 /* 13px */
+    line-height: 1;
+}
+.uc-steps__step--done .uc-steps__dot {
+    background-color: currentColor;
+}
+.uc-steps__step--done .uc-steps__dot::after {  /* bocken i ytans färg */
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-color: var(--uc-concept-bg);
+    -webkit-mask: @@CHECK@@ center / 14px no-repeat;
+    mask: @@CHECK@@ center / 14px no-repeat;
+}
+.uc-steps__label {
+    font-family: var(--font-head);
+    font-size: 1.6rem;                 /* 16px */
+    line-height: 1;
+    text-transform: uppercase;
+}
+.uc-steps__step--next {
+    opacity: 0.45;
+}
+.uc-steps .uc-steps__link:hover .uc-steps__label {
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 3px;
+}
 /* 9.2 Rubrik + ingress */
 #coupon-heading,
 #after-coupon-heading {

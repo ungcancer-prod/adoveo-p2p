@@ -518,6 +518,43 @@
     });
   }
 
+  /* ---------- Steg 1–2–3 på konceptens startsida ---------- */
+  /* Samma tre steg som "Så funkar det" på Summary. På skapa-sidan är
+     Välj klart och Skapa pågår; efter skapad är Dela på tur. Välj länkar
+     tillbaka till Summary, där man väljer koncept. */
+  var STEPS = ['Välj', 'Skapa', 'Dela'];
+  function stepList(current) {
+    var ol = el('ol', 'uc-steps');
+    ol.setAttribute('aria-label', 'Så startar du en insamling');
+    STEPS.forEach(function (text, i) {
+      var n = i + 1;
+      var state = current > n ? 'done' : (current === n ? 'current' : 'next');
+      var li = el('li', 'uc-steps__step uc-steps__step--' + state);
+      if (state === 'current') li.setAttribute('aria-current', 'step');
+      var box = li;
+      if (state === 'done' && n === 1) {
+        box = el('a', 'uc-steps__link');
+        box.href = SUMMARY_URL;
+        li.appendChild(box);
+      }
+      var dot = el('span', 'uc-steps__dot', state === 'done' ? '' : String(n));
+      if (state === 'done') dot.appendChild(el('span', 'uc-sr', 'Klart:'));
+      box.appendChild(dot);
+      box.appendChild(el('span', 'uc-steps__label', text));
+      ol.appendChild(li);
+    });
+    return ol;
+  }
+  function conceptSteps() {
+    [['coupon-heading', 2], ['after-coupon-heading', 3]].forEach(function (p) {
+      var h = document.getElementById(p[0]);
+      if (!h) return;
+      var prev = h.previousElementSibling;
+      if (prev && prev.classList.contains('uc-steps')) return;
+      h.parentNode.insertBefore(stepList(p[1]), h);
+    });
+  }
+
   /* ---------- Skapa-sidan: formulär till vänster, telefon till höger ---------- */
   /* Konceptets startsida (/start/ID/). Plattformen har redan en
      förhandsvisning av insamlingssidan (#giftcard-preview-container, öppnas
@@ -643,6 +680,7 @@
 
     makeAnchors();
     fundraiserCards();
+    conceptSteps();
     createLayout();
 
     /* Platshållare i plattformens sökfält, samma som i sökpanelen */
