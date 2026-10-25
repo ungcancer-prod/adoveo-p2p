@@ -1,0 +1,2364 @@
+/* uc-p2p.css — GENERERAD FIL, ÄNDRA INTE HÄR.
+   Källa: github.com/ungcancer-prod/adoveo-p2p (src/). Byggd 2026-10-25 10:03 UTC, lokalt. */
+
+/* ===== src/css/01-bas.css ===== */
+/* ============================================================
+   01 — BAS: tokens, typografi, layout, knappar, kort, Swish, bilder
+   ------------------------------------------------------------
+   Sektion 0–8. Gäller alla P2P-sidor (Summary, koncept, infosida).
+   Ursprung: Summary-CSS:en 2026-07-23 (Theme → Custom CSS på 294).
+
+   KONVENTIONER
+     - Egna klasser prefixas uc- (cc- = plattformens).
+     - Media queries ligger MED sin komponent.
+     - Breakpoints är hårdkodade (768/500/370/359) — media queries
+       läser inte custom properties.
+     - Adoveos rot är 10px (html{font-size:62.5%}), inte 16px. Alla
+       --fs-* och --gap-* är därför omräknade ×1.6 och px står i
+       kommentaren. --sp-* (px) påverkas inte.
+   ============================================================ */
+/* =========================================
+   0. DESIGN TOKENS (:root)
+   ========================================= */
+:where(:root) {
+    /* --- Färg --- */
+    --uc-black: #282826;
+    --uc-white: #ffffff;
+    --uc-cream: #FCF7E3;
+    --uc-green: #8BEEA5;
+    --uc-pink:  #FFB5D8;
+    --uc-red:   #DA233C;   /* #errorText */
+    /* Kanal-token för opacitet i beredskap: rgba(var(--uc-black-rgb), .6) */
+    --uc-black-rgb: 40, 40, 38;
+    /* --- Typografi: familjer --- */
+    --font-head: Customfont1, Adoveo;
+    --font-body: Customfont2, Adoveo;
+    --font-hand: 'quickwriterslight';
+    /* --- Typografi: storlekar (rem; px i kommentar) ---
+       Adoveos plattformsrot är 10px (62.5%), inte 16px — rem-värden
+       nedan är omräknade (×1.6) för att faktiskt rendera på angiven px. */
+    --fs-h1:        4.4rem;    /* 44px */
+    --fs-h1-mobile: 3.6rem;    /* 36px */
+    --fs-h2:        3.2rem;    /* 32px */
+    --fs-h3:        2.4rem;    /* 24px */
+    --fs-h4:        2rem;      /* 20px */
+    --fs-display:   4rem;      /* 40px — handskrivna citat (blockquote / uc-quote); även P2P-steg-siffror */
+    --fs-btn:       2.4rem;    /* 24px — knappar + input */
+    --fs-body:      1.6rem;    /* 16px */
+    --fs-small:     1rem;      /* 10px */
+    /* --- Typografi: spärrning & radhöjd --- */
+    --track-tight: -0.03em;
+    --track-btn:   -0.007em;
+    --lh-head:     105%;
+    --lh-solid:    1;
+    /* --- Space-rytm (6/8/12/20/24/32/40) --- */
+    --sp-1: 6px;
+    --sp-2: 8px;
+    --sp-3: 12px;
+    --sp-4: 20px;
+    --sp-5: 24px;
+    --sp-6: 32px;
+    --sp-7: 40px;
+    /* --- Gap-skala (rem, omräknad ×1.6 av samma skäl som ovan) --- */
+    --gap-sm:   0.8rem;   /* 8px */
+    --gap-md:   2.4rem;   /* 24px */
+    --gap-lg:   3.2rem;   /* 32px — beredskap; även "Så funkar det"-stegen */
+    --gap-xl:   4.8rem;   /* 48px — beredskap */
+    --gap-2xl:  6.4rem;   /* 64px — beredskap, ej i aktivt bruk just nu */
+    --gap-card: 2.8rem;   /* 28px — P2P-kort (Summary #3): yttre grid-gap + inre content-gap */
+    /* --- Border & radius --- */
+    --border-w:  2px;
+    --uc-border: var(--border-w) solid var(--uc-black);
+    --radius:    0;                     /* knappar, kort */
+    --radius-input: 4px;                /* fält, som i kampanj 300 */
+    /* --- Transitions --- */
+    --tr-smooth: 0.2s ease-in-out;                     /* toggle-texter */
+    --tr-toggle: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    /* --- Layout / mått --- */
+    --wrap-max: 1100px;
+    --logo-max: 600px;
+    --card-max: 390px;
+    --card-min: 320px;
+    --img-max:  160px;
+    --head-img: 140px;
+    /* --- Lager & tillstånd --- */
+    --z-slider:   1;
+    --z-text:     5;
+    --z-checkbox: 10;
+    --op-muted:   0.6;
+    /* --- Oregelbundna kanter --- */
+    /* none tills scriptet lagt in formen (då får html klassen uc-shape).
+       En clip-path som pekar på en form som saknas gör elementet
+       osynligt — så här blir kanten rak i stället om scriptet inte laddar. */
+    --uc-clip: none;
+}
+html.uc-shape:not(uc-x) {
+    --uc-clip: url(#shape-box);
+}
+/* =========================================
+   1. TYPOGRAFI
+   ========================================= */
+@font-face {
+    font-family: 'quickwriterslight';
+    src: url('https://content.adoveodemo.com/1744604411042_quickwriterslight.woff');
+}
+h1:not(uc-x), h2:not(uc-x), h3:not(uc-x), h4:not(uc-x) {
+    font-family: var(--font-head);
+    text-transform: uppercase;
+    letter-spacing: var(--track-tight);
+    line-height: var(--lh-head);
+}
+h1:not(uc-x) { font-size: var(--fs-h1); }
+h2:not(uc-x) { font-size: var(--fs-h2); }
+h3:not(uc-x) { font-size: var(--fs-h3); }
+h4:not(uc-x) { font-size: var(--fs-h4); }
+blockquote:not(uc-x) {
+    padding: 0;
+    margin: 0 0 var(--sp-4);
+    font-family: var(--font-hand);
+    font-size: var(--fs-display);
+    line-height: var(--lh-solid);
+    border-left: none;
+    max-width: 32ch;
+}
+cite:not(uc-x) {
+    font-family: var(--font-body);
+    font-size: var(--fs-body);
+    font-style: normal;
+    text-transform: uppercase;
+    padding: 0;
+    margin: 0 0 var(--sp-4);
+}
+.uc-pre-header:not(uc-x) {
+    font-family: var(--font-hand);
+    font-size: var(--fs-h4);
+    line-height: var(--lh-solid);
+    margin-bottom: var(--sp-7);
+}
+.uc-quote:not(uc-x) {
+    font-family: var(--font-hand);
+    font-size: var(--fs-display);
+    line-height: var(--lh-solid);
+    margin-bottom: var(--sp-7);
+}
+.uc-subtitle:not(uc-x) {
+    font-family: var(--font-body);
+    font-size: var(--fs-body);         /* 16px */
+    line-height: 1;
+    text-transform: none;
+    max-width: 32ch;
+    margin: 0 auto;
+}
+.uc-small:not(uc-x) {
+    font-size: var(--fs-small);
+}
+.cc-title:not(uc-x) {
+    letter-spacing: var(--track-tight);
+    line-height: var(--lh-head);
+    text-transform: uppercase;
+}
+/* .uc-title har ingen bas-regel (ärver h1) — bara mobilnedskalning */
+@media (max-width: 500px) {
+    .uc-title:not(uc-x) { font-size: var(--fs-h1-mobile); }
+}
+/* =========================================
+   2. GLOBAL LAYOUT & SEKTIONER
+   ========================================= */
+/* Sidans bakgrund: vit på alla P2P-sidor. Konceptens färger ligger på
+   wrappern (02-koncept.css), inte på sidan. Adoveos temainställning ger
+   body.campaign-flow sin egen färg (0,1,1) — body[class] slår den. */
+body:not(uc-x),
+body[class]:not(uc-x) {
+    background-color: var(--uc-white);
+    color: var(--uc-black);            /* temats textfärg (t.ex. blå #193546) gäller inte */
+}
+/* 2.1 Mörkt är alltid Ung Cancers svarta (#282826), oavsett vad som är
+   valt i Adoveos tema. Text, rubriker, ramar, skuggor och mörka
+   överlägg. Rubrikerna ärver ytans färg, så att de blir krämvita på en
+   svart konceptwrapper och svarta överallt annars. */
+.cc-title:not(uc-x) {
+    color: inherit;                    /* temats rubrikfärg (0,1,0) */
+}
+.qr-download:not(uc-x) {
+    color: var(--uc-black);
+}
+/* !important: plattformen sätter färgerna som inline-stil (#000, rgba(0,0,0,.5)) */
+.qr-modal-close:not(uc-x) {
+    color: var(--uc-black) !important;
+}
+.qr-modal:not(uc-x) {
+    background: rgba(var(--uc-black-rgb), 0.5) !important;
+}
+/* !important: beloppsfelet har inline color: red */
+[id^="swish-form-error"]:not(uc-x) {
+    color: var(--uc-red) !important;
+}
+.cc-alert-box:not(uc-x) {
+    background-color: rgba(var(--uc-black-rgb), 0.75);
+}
+.cc-card:not(uc-x) {
+    box-shadow: 0 4px 8px 0 rgba(var(--uc-black-rgb), 0.2);
+}
+/* Tunna avdelare: svag ton av Ung Cancers svarta i stället för grå #eee */
+hr:not(uc-x),
+hr.divider:not(uc-x) {
+    border-top-color: rgba(var(--uc-black-rgb), 0.15);
+}
+#wrap-default:not(uc-x) {
+    max-width: var(--wrap-max);
+    margin: 0 auto;
+}
+.wrapper:not(uc-x) {
+   /* -webkit-clip-path: var(--uc-clip);
+    clip-path: var(--uc-clip); */
+    min-height: 200px;
+    margin: var(--sp-3);
+}
+@media (min-width: 768px) {
+    .wrapper:not(uc-x) { margin: var(--sp-7) 0; }
+}
+.hero-img:not(uc-x) {
+    -webkit-clip-path: var(--uc-clip);
+    clip-path: var(--uc-clip);
+}
+/* Oregelbunden kant på valfritt element: class="uc-clip".
+   Formen (#shape-box) ritas av scriptet, se SHAPES i src/js/uc-p2p.js. */
+.uc-clip:not(uc-x) {
+    -webkit-clip-path: var(--uc-clip);
+    clip-path: var(--uc-clip);
+}
+.uc-campaign-head:not(uc-x) {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
+.uc-campaign-head img:not(uc-x) {
+    max-width: var(--head-img);
+}
+/* --- "Så funkar det"-steg (294, Summary #2) --- */
+.uc-steps:not(uc-x) {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--gap-lg);           /* 32px */
+    max-width: 900px;
+    margin-inline: auto;
+    margin-bottom: var(--sp-7);   /* ersätter tidigare <br><br> i HTML */
+}
+.uc-step:not(uc-x) {
+    flex: 1 1 220px;
+}
+.uc-step-number:not(uc-x) {
+    font-size: var(--fs-display); /* 40px */
+}
+/* =========================================
+   3. KNAPPAR, INPUT & BELOPPSKNAPPAR
+   ========================================= */
+button:not(uc-x) {
+    flex-grow: 0;
+    text-transform: uppercase;
+}
+.cc-button:not(uc-x), .btn-primary:not(uc-x) {
+    width: auto;
+    display: inline-block;
+}
+.cc-button:not(uc-x) {
+    font-family: var(--font-head);
+    font-feature-settings: "liga" 1;
+    font-size: var(--fs-btn);
+    text-transform: uppercase;
+    letter-spacing: var(--track-btn);
+    line-height: var(--fs-btn);
+    color: var(--uc-black);
+    border: var(--uc-border);
+    margin: var(--sp-1) auto;
+    padding: var(--sp-2) var(--sp-2) var(--sp-1) var(--sp-2);
+    border-radius: var(--radius);
+}
+/* Länkar som ser ut som knappar: texten centrerad i höjdled, som i en
+   riktig <button> (annars hamnar den högt med extra luft under) */
+a.cc-button:not(uc-x) {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+.cc-button:hover:not(uc-x) {
+    background-color: var(--uc-black);
+    color: var(--uc-white);
+    border: var(--uc-border);   /* defensivt mot plattformens :hover */
+}
+.cc-button:active:not(uc-x) {
+    border: var(--uc-border);   /* defensivt mot plattformens :active */
+}
+.cc-btn-third:not(uc-x), .cc-btn-secondary:not(uc-x) {
+    color: var(--uc-black);
+}
+.cc-button-inline-product:not(uc-x) {
+    margin-bottom: var(--sp-5);
+}
+.cc-button-custom-product:not(uc-x) {
+    border-radius: var(--radius);
+}
+#send_button3:not(uc-x) {
+    margin-bottom: var(--sp-6);
+}
+/* Länkar inuti knappar */
+.cc-button .cc-link:not(uc-x) {
+    color: var(--uc-black);
+    text-decoration: none;
+}
+.cc-button .cc-link:hover:not(uc-x),
+.cc-button .cc-link:active:not(uc-x),
+.cc-button .cc-link:focus:not(uc-x) {
+    color: var(--uc-white);
+    text-decoration: none;
+}
+/* Fält och textrutor — som i kampanj 300 (standard för Ung Cancer):
+   brödtypsnitt 20px, 2px svart kant och vit bakgrund (från temat),
+   4px rundning. Etiketten inuti fältet är plattformens .input-label
+   (16px brödtypsnitt) och fungerar som platshållare. */
+.cc-input:not(uc-x),
+.cc-textarea:not(uc-x) {
+    font-family: var(--font-body);
+    font-size: var(--fs-h4);           /* 20px */
+    border-radius: var(--radius-input);
+}
+.cc-input:not(uc-x) {
+    padding: var(--sp-3) var(--sp-2) 0 var(--sp-2);
+}
+.cc-textarea:not(uc-x) {
+    padding: var(--sp-3) var(--sp-2) var(--sp-2);
+}
+/* --- Horisontella beloppsknappar (tre i rad) --- */
+/* Prefixet .cc-button-custom-product träffar bara de yttre raderna,
+   inte den nested .swish_product_row_3 inuti rad 3. */
+.cc-button-custom-product.swish_product_row_1:not(uc-x),
+.cc-button-custom-product.swish_product_row_2:not(uc-x),
+.cc-button-custom-product.swish_product_row_3:not(uc-x) {
+    float: left;
+    width: calc(33.33% - 6px);
+    margin: var(--sp-1) 3px;
+    min-height: 0;            /* override 49px från cc-button-custom-product */
+}
+/* Knappen inuti fyller sin nu smalare container (button-taggen
+   krockar inte med wrapper-divarna) */
+button.cc-button-custom-product:not(uc-x) {
+    width: 100%;
+    max-width: 100%;
+}
+/* Rensa floaten så .swish-below-text inte wrappar runt knapparna */
+.swish-below-text:not(uc-x) {
+    clear: both;
+}
+.amount-qualifier-monthly:not(uc-x),
+.amount-qualifier-onetime:not(uc-x) {
+    margin-top: -8px;
+}
+/* Säkerhetsnät för riktigt smala skärmar (typ iPhone SE 1) */
+@media (max-width: 359px) {
+    .cc-button-custom-product.swish_product_row_1:not(uc-x),
+    .cc-button-custom-product.swish_product_row_2:not(uc-x),
+    .cc-button-custom-product.swish_product_row_3:not(uc-x) {
+        float: none;
+        width: 100%;
+        margin: var(--sp-1) auto;
+    }
+    .swish-below-text:not(uc-x) { clear: none; }
+}
+/* =========================================
+   4. KORT & LISTOR (inkl. P2P-paketering)
+   ========================================= */
+.campaignsDisplay:not(uc-x) {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: stretch;
+    justify-content: center;
+    gap: var(--gap-card);
+}
+.cc-card:not(uc-x) {
+    display: flex;
+    flex-direction: column;
+    min-width: var(--card-min);
+    max-width: var(--card-max);
+    gap: var(--gap-md);
+    -webkit-clip-path: var(--uc-clip);
+    clip-path: var(--uc-clip);
+    background-color: var(--uc-cream);
+    border-radius: var(--radius);
+}
+.cc-card-padded:not(uc-x) {
+    padding: 0 0 var(--sp-7) 0;
+}
+.cc-media-container:not(uc-x) {
+    max-height: var(--card-max);
+}
+.cc-media-container video:not(uc-x),
+.cc-media-container img:not(uc-x) {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+.cc-content:not(uc-x) {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--gap-md);   /* var 1.75rem – snappat till skalan */
+    padding: var(--sp-5);
+}
+.cc-price-container:not(uc-x) {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--gap-sm);
+}
+.cc-price:not(uc-x) {
+    font-weight: bold;
+}
+a.uc-card:not(uc-x) {
+    display: block;
+    text-decoration: none;
+    color: var(--uc-black);
+}
+/* P2P-paketeringskort: släpp radklampen på texten (plattformen ger
+   max-height 100px och -webkit-box, så femte raden la sig över nästa) */
+.campaignsDisplay .cc-card .cc-txt:not(uc-x) {
+    display: block;
+    max-height: none;
+    white-space: normal;
+    overflow: visible;
+    text-overflow: clip;
+    -webkit-line-clamp: unset;
+}
+/* P2P-paketeringskort: jämna bildytor */
+.campaignsDisplay .cc-card > div:first-child:not(uc-x) {
+    aspect-ratio: 4 / 3;
+    max-height: none;
+    overflow: hidden;
+}
+.campaignsDisplay .cc-card > div:first-child img:not(uc-x) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+/* P2P-paketeringskort: kortmått + samma luft runt bilden på alla sidor.
+   height: auto så att korten i en rad blir lika höga (plattformen låser
+   höjden annars). */
+.campaignsDisplay .cc-card:not(uc-x) {
+    position: relative;                /* för den klickbara ytan nedan */
+    height: auto;
+    max-width: 375px;
+    padding: 16px;
+}
+/* P2P-paketeringskort: innehållswrapper under bilden. Fyller kortet och
+   lägger knappen längst ner, så att knapparna står i linje. */
+.uc-p2p-content:not(uc-x) {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    gap: var(--gap-card);
+}
+.campaignsDisplay .uc-p2p-content > p:not(uc-x) {
+    margin: 0;                         /* plattformens .cc-title { margin: auto } */
+}
+.campaignsDisplay .uc-p2p-content > a:not(uc-x) {
+    margin-top: auto;
+}
+/* Hela kortet är klickbart: länkens yta sträcks över kortet. Knappen
+   blir svart när man håller över kortet, så att det syns vart klicket går. */
+.campaignsDisplay .cc-card a:not(uc-x)::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+}
+.campaignsDisplay .cc-card:hover .cc-button:not(uc-x) {
+    background-color: var(--uc-black);
+    color: var(--uc-white);
+}
+/* P2P-paketeringskort: "Insamlat hittills"-etiketten i cc-price-container */
+.cc-price-container .cc-txt:not(uc-x) {
+    font-size: var(--fs-h4);   /* 20px */
+}
+/* =========================================
+   5. SWISH & FORMULÄR
+   ========================================= */
+#errorText:not(uc-x) {
+    color: var(--uc-red);
+    margin-bottom: var(--sp-5);
+}
+/* Swish-felmeddelandet: brödtext, inte rubrik (från kampanj 300) */
+.swish-error:not(uc-x) {
+    font-family: var(--font-body);
+    font-size: 2.2rem;                 /* 22px */
+    font-weight: 400;
+    letter-spacing: normal;
+    line-height: normal;
+    text-transform: none !important;   /* !important som i kampanj 300 */
+}
+/* Avdelaren i formuläret (fältet Divider i Adoveo) */
+#text_divider_group:not(uc-x) {
+    font-size: 1.4rem;                 /* 14px */
+    margin: var(--sp-2) auto;
+}
+.swish-done:not(uc-x) {
+    margin-top: var(--sp-5);
+}
+#swish_form_underlay_text:not(uc-x) {
+    margin-top: var(--sp-7);
+}
+button[name="swish-send"]:not(uc-x) {
+    background-image: url('https://content.adoveodemo.com/1764565089310_swishlogo400x400.png');
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    background-size: 30px 30px;
+    padding-right: 45px;
+}
+.uc-swish-instruction:not(uc-x) {
+    max-width: var(--card-max);
+    margin: 0 auto;
+}
+.uc-instruction-text:not(uc-x) {
+    font-size: var(--fs-body);
+    font-family: var(--font-body);
+    text-align: center;
+}
+.uc-thank-you:not(uc-x) {
+    max-width: var(--card-max);
+    margin: 0 auto;
+    text-decoration: none;
+}
+/* =========================================
+   6. BILDER & LOGOTYPER
+   ========================================= */
+.uc-logo-container:not(uc-x) {
+    text-align: center;
+    margin: 0 auto var(--sp-6) auto;
+    max-width: var(--logo-max);
+}
+.uc-logo-container img:not(uc-x) {
+    display: block;
+    margin: 0 auto;
+    background-color: transparent;
+    max-width: 100%;
+    width: 100%;
+    height: auto;
+}
+@media (min-width: 768px) {
+    .uc-logo-container img:not(uc-x) {
+        width: 50%;
+        margin: 0 auto;
+    }
+}
+.uc-image:not(uc-x) {
+    max-width: var(--img-max);
+    padding: var(--sp-4) 0 var(--sp-4) var(--sp-4);
+    margin: 0;
+}
+.uc-arrow-img:not(uc-x) {
+    background-color: transparent;
+    max-width: 16%;
+}
+.uc-app-screenshot:not(uc-x) {
+    max-width: 100%;
+    height: auto;
+    display: block;
+}
+/* =========================================
+   7. ANIMATIONER
+   ========================================= */
+/* OBS: keyframen refereras inte i denna fil — används ev. av
+   inline-style/annat fält. Ta inte bort utan att kolla. */
+@keyframes slideBackground {
+    0%   { background-position: 0% 50%; }
+    100% { background-position: 100% 50%; }
+}
+/* =========================================
+   8. GÅVO-TOGGLE (rör ej — verifierad hover-logik)
+   ========================================= */
+/* 1. Huvudbehållaren */
+.cc-button.cc-toggle:not(uc-x) {
+    display: block;
+    width: 72%;
+    max-width: 100%;
+    height: 44px;
+    padding: 0;
+    margin: var(--sp-5) auto var(--sp-2);
+    border: var(--uc-border);
+    background-color: transparent;
+    border-radius: var(--radius);
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    box-sizing: border-box;
+}
+/* Neutralisera global knapp-hover */
+.cc-button.cc-toggle:hover:not(uc-x) {
+    background-color: transparent;
+}
+/* 2. Dold checkbox */
+.cc-toggle-checkbox:not(uc-x) {
+    position: absolute;
+    opacity: 0;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    margin: 0;
+    z-index: var(--z-checkbox);
+    cursor: pointer;
+}
+/* 3. Layout för texter */
+.cc-toggle-label:not(uc-x) {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    align-items: center;
+}
+.cc-toggle-text-1:not(uc-x),
+.cc-toggle-text-2:not(uc-x) {
+    flex: 1;
+    text-align: center;
+    z-index: var(--z-text);
+    font-family: var(--font-head);
+    font-size: var(--fs-h4);
+    text-transform: uppercase;
+    letter-spacing: var(--track-tight);
+    white-space: nowrap;
+    transition: all var(--tr-smooth);
+    pointer-events: none;
+}
+/* 4. Den svarta slidern */
+.cc-toggle-slider:not(uc-x) {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 50%;
+    height: 100%;
+    background-color: var(--uc-black) !important;
+    z-index: var(--z-slider);
+    transition: var(--tr-toggle);
+}
+/* --- Aktiva / inaktiva lägen (bas) --- */
+/* LÄGE 1: "EN GÅNG" vald (default) */
+.cc-toggle-text-1:not(uc-x) { color: var(--uc-white); opacity: 1; }
+.cc-toggle-text-2:not(uc-x) { color: var(--uc-black); opacity: var(--op-muted); }
+/* LÄGE 2: "VARJE MÅNAD" vald (checked) */
+.cc-toggle-checkbox:checked + .cc-toggle-label .cc-toggle-slider:not(uc-x) {
+    transform: translateX(100%);
+}
+.cc-toggle-checkbox:checked + .cc-toggle-label .cc-toggle-text-1:not(uc-x) {
+    color: var(--uc-black);
+    opacity: var(--op-muted);
+}
+.cc-toggle-checkbox:checked + .cc-toggle-label .cc-toggle-text-2:not(uc-x) {
+    color: var(--uc-cream);
+    opacity: 1;
+}
+/* --- Hover-effekter (måste ligga sist för att vinna) --- */
+/* Hela knappen hovrad: tvinga inaktiva texter till 100% svart */
+.cc-button.cc-toggle:hover .cc-toggle-text-1:not(uc-x),
+.cc-button.cc-toggle:hover .cc-toggle-text-2:not(uc-x) {
+    opacity: 1;
+    color: var(--uc-black);
+}
+/* MEN: texten "under" slidern ska alltid förbli vit */
+.cc-toggle-checkbox:not(:checked) + .cc-toggle-label .cc-toggle-text-1:not(uc-x) {
+    color: var(--uc-white);
+}
+.cc-toggle-checkbox:checked + .cc-toggle-label .cc-toggle-text-2:not(uc-x) {
+    color: var(--uc-white);
+}
+/* Responsiv fix */
+@media (max-width: 370px) {
+    .cc-toggle-text-1:not(uc-x),
+    .cc-toggle-text-2:not(uc-x) { font-size: var(--fs-body); }
+}
+
+
+/* --- P2P-korthylla: 5 i rad på desktop --- */
+@media (min-width: 1000px) {
+
+    /* 1. Utrymmet: bredda ramen (se not nedan) */
+    #wrap-default:not(uc-x) { max-width: 1360px; }
+
+    /* 2. Låset: min-width måste nollas, annars händer ingenting */
+    .campaignsDisplay:not(uc-x) { gap: var(--sp-4); }          /* 28px → 20px */
+    .campaignsDisplay .cc-card:not(uc-x) {
+        flex: 1 1 calc(20% - 16px);                  /* 20% minus 4×gap/5 */
+        min-width: 0;
+        max-width: none;
+    }
+
+    /* 3. Innanmätet: kortets 16px runt bilden + innehållets egen,
+          nedskalade padding under den. */
+    .campaignsDisplay .cc-content:not(uc-x),
+    .campaignsDisplay .uc-p2p-content:not(uc-x) {
+        padding: var(--sp-4) var(--sp-3);
+        gap: var(--sp-4);
+    }
+    .campaignsDisplay .cc-card h3:not(uc-x) { font-size: var(--fs-h4); }   /* 24 → 20px */
+    .cc-price-container .cc-txt:not(uc-x)   { font-size: var(--fs-body); } /* 20 → 16px */
+}
+
+
+/* ===== src/css/02-koncept.css ===== */
+/* ============================================================
+   02 — KONCEPT: skapa-flödet, insamlingssidan, hälsningsväggen
+   ------------------------------------------------------------
+   Sektion 9–11. Scopat på P2P-sidornas fas-id och body-klass, så
+   det påverkar inte Summary eller infosidan.
+
+   KONCEPTFÄRGEN väljs i Adoveo admin (temats färg för wrappern).
+   Scriptet (src/js/uc-p2p.js, conceptColors) läser av den färgen och
+   sätter variablerna nedan: --uc-concept-bg = vald färg,
+   --uc-concept-ink = svart eller krämvit beroende på hur mörk färgen
+   är, --uc-concept-logo-bg = krämvit platta bakom logotyperna på mörk
+   yta. Värdena nedan gäller bara tills scriptet hunnit köra.
+   ============================================================ */
+:where(:root) {
+    --uc-concept-bg:       var(--uc-green);   /* ytan */
+    --uc-concept-ink:      var(--uc-black);   /* text på ytan */
+    --uc-concept-frame:    none;              /* ram runt ytan */
+    --uc-concept-logo-bg:  transparent;       /* platta bakom svarta logotyper på mörk yta */
+}
+/* =========================================
+   9. P2P — SKAPA-FLÖDET
+   Kampanjens startsida (/start/<id>/): #phase-before-coupon = formuläret
+   där insamlaren skapar sin sida, #phase-after-coupon = "nu är den skapad"
+   med dela-knappar och QR-kod. Allt scopat på fas-id, rör inte Summary.
+   ========================================= */
+/* 9.1 Ytan: textfärg och ev. ram. Ytans FÄRG sätts i Adoveo admin
+   (temats färgväljare) — den skrivs inte över här. */
+#phase-before-coupon .wrapper:not(uc-x),
+#phase-after-coupon .wrapper:not(uc-x) {
+    color: var(--uc-concept-ink);
+    border: var(--uc-concept-frame);
+    padding: var(--sp-7) var(--sp-4);
+}
+:is(#phase-before-coupon, #phase-after-coupon) :is(.cc-title, .cc-txt):not(uc-x) {
+    color: var(--uc-concept-ink);
+}
+/* 9.1b Steg 1–2–3 ovanför rubriken (byggs av scriptet, conceptSteps).
+   Egen klass, .uc-progress: .uc-steps är "Så funkar det" på Summary (01-bas).
+   Bara pågående steg i full färg. Klart = blekt med bock, kommande =
+   blekt med siffra. Färgerna följer ytan (ljus eller mörk). */
+.uc-progress:not(uc-x) {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--sp-2);
+    margin: 0 auto var(--sp-5);
+    padding: 0;
+    list-style: none;
+    color: var(--uc-concept-ink);
+}
+.uc-progress__step:not(uc-x),
+.uc-progress .uc-progress__link:not(uc-x) {        /* .uc-progress framför: plattformens röda a:link */
+    display: flex;
+    align-items: center;
+    gap: var(--sp-1);
+    color: inherit;
+    text-decoration: none;
+}
+.uc-progress__step + .uc-progress__step:not(uc-x)::before {    /* strecket mellan stegen */
+    content: '';
+    width: 16px;
+    height: var(--border-w);
+    margin-right: var(--sp-1);
+    background-color: currentColor;
+    opacity: 0.35;
+}
+.uc-progress__dot:not(uc-x) {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    border: var(--border-w) solid currentColor;
+    border-radius: 50%;
+    font-family: var(--font-head);
+    font-size: 1.3rem;                 /* 13px */
+    line-height: 1;
+}
+.uc-progress__step--done .uc-progress__dot:not(uc-x) {
+    background-color: currentColor;
+}
+.uc-progress__step--done .uc-progress__dot:not(uc-x)::after {  /* bocken i ytans färg */
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-color: var(--uc-concept-bg);
+    -webkit-mask: url("data:image/svg+xml,%3Csvg viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M9.5 16.6 4.9 12l-1.8 1.8 6.4 6.4L21 8.7l-1.8-1.8z' fill='%23282826'/%3E%3C/svg%3E") center / 14px no-repeat;
+    mask: url("data:image/svg+xml,%3Csvg viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M9.5 16.6 4.9 12l-1.8 1.8 6.4 6.4L21 8.7l-1.8-1.8z' fill='%23282826'/%3E%3C/svg%3E") center / 14px no-repeat;
+}
+.uc-progress__label:not(uc-x) {
+    font-family: var(--font-head);
+    font-size: 1.6rem;                 /* 16px */
+    line-height: 1;
+    text-transform: uppercase;
+}
+.uc-progress__step--done:not(uc-x),
+.uc-progress__step--next:not(uc-x) {
+    opacity: 0.45;
+}
+.uc-progress .uc-progress__link:hover .uc-progress__label:not(uc-x) {
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 3px;
+}
+/* 9.2 Rubrik + ingress */
+#coupon-heading:not(uc-x),
+#after-coupon-heading:not(uc-x) {
+    font-size: var(--fs-h2);           /* 30 -> 32px */
+    margin: 0 auto var(--sp-5);
+    max-width: 640px;
+}
+#coupon-heading br:not(uc-x) { display: none; }  /* radbrytningar inklistrade i admin-fältet */
+#coupon-subheading:not(uc-x),
+#after-coupon-subheading:not(uc-x) {
+    max-width: 480px;
+    margin: 0 auto var(--sp-6);
+}
+#coupon-subheading:empty:not(uc-x) { display: none; }
+/* 9.3 Platformsmålet (0 / 10 000 kr) döljs på skapa-sidan: det är
+   konceptets totalsumma, inte insamlarens, och "0 kr" är fel första
+   intryck. Ta bort regeln när det finns volym att visa upp. */
+#phase-before-coupon .progress-bar:not(uc-x),
+#phase-before-coupon .goal-line:not(uc-x) {
+    display: none;
+}
+/* Fyllnaden är plattformsgul (#EEB600) — varumärkesfärg där den syns */
+.progress-bar .collected-now:not(uc-x) {
+    background-color: var(--uc-black);
+    color: var(--uc-cream);
+}
+/* 9.4 Formuläret: en kolumn, 320px (plattformens .input-group-bredd) */
+#phase-before-coupon .input-group:not(uc-x) {
+    margin-bottom: var(--sp-2);
+}
+#registration_file_upload_div:not(uc-x) {
+    justify-content: center;
+}
+/* Dubbel-id: plattformens egen #registration-file-upload-button-regel
+   ligger EFTER Custom CSS i källan och vinner annars på ordning */
+#phase-before-coupon #registration-file-upload-button:not(uc-x) {
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+    justify-content: center;
+    border: var(--uc-border);
+    font-family: var(--font-head);
+    font-size: var(--fs-h4);           /* 24 -> 20px, i nivå med fälten */
+    text-transform: uppercase;
+}
+/* Förhandsvisning (ögat) + Skapa-knappen: centrerade bredvid varandra */
+#phase-before-coupon .confirm_button_group:not(uc-x) {
+    display: flex;                     /* utan förhandsvisning ger plattformen block */
+    width: 320px;
+    justify-content: center;
+    align-items: center;
+    gap: var(--sp-3);
+    margin: var(--sp-4) auto 0;        /* centrerad även när ögat saknas */
+}
+#phase-before-coupon .confirm_button_group .cc-button:not(uc-x) {
+    margin: 0;
+}
+/* Förhandsvisningens telefonmockup får konceptets färg */
+.p2p-preview:not(uc-x),
+#giftcard-preview:not(uc-x) {
+    background-color: var(--uc-concept-bg);
+    color: var(--uc-concept-ink);      /* temats textfärg gäller inte */
+    border-color: var(--uc-black);     /* plattformens ram är #000 */
+    box-shadow: 0 0 20px 4px rgba(var(--uc-black-rgb), 0.75);
+}
+/* 9.5 Efter skapad: Dela = primär (fylld), Se = sekundär (kontur) */
+#after-coupon-share-text:not(uc-x) {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--sp-3);
+    margin-bottom: var(--sp-6);
+}
+#after-coupon-share-text .cc-button:not(uc-x) {
+    margin: 0;
+}
+.p2p-share-campaign-button.cc-button:not(uc-x) {      /* fylld i ytans textfärg: syns på både ljus och mörk yta */
+    background-color: var(--uc-concept-ink);
+    border-color: var(--uc-concept-ink);
+    color: var(--uc-concept-bg);
+}
+.p2p-share-campaign-button.cc-button:hover:not(uc-x) {
+    background-color: var(--uc-concept-bg);
+    color: var(--uc-concept-ink);
+}
+/* Integritetstext + logotyper under knapparna (innehåll från admin) */
+#after-coupon-subheading a:not(uc-x) {
+    color: inherit;                    /* plattformsröd länk -> ytans textfärg */
+    text-decoration: underline;
+}
+/* Plattan läggs på diven runt bilden: bilden har en inline-stil från
+   admin (background-color) som annars bara !important slår. */
+#after-coupon-subheading div:has(> img):not(uc-x) {
+    width: fit-content;
+    max-width: 100%;
+    margin: var(--sp-5) auto 0;
+    padding: var(--sp-2) var(--sp-4);
+    background-color: var(--uc-concept-logo-bg);
+}
+
+/* 9.5b QR-koden på bekräftelsen (byggs av scriptet, inlineQr): under
+   dela-knapparna, på vit platta så att den går att läsa även på mörk yta.
+   Adoveos egen "Visa QR-kod"-knapp behövs då inte. !important: Adoveo
+   visar knappen med inline-stil. */
+.uc-qr:not(uc-x) {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--sp-3);
+    margin: 0 auto var(--sp-6);
+}
+.uc-qr__label:not(uc-x) {
+    margin: 0;
+    font-family: var(--font-head);
+    font-size: var(--fs-h4);           /* 20px */
+    line-height: var(--lh-head);
+    text-transform: uppercase;
+    color: var(--uc-concept-ink);
+}
+.uc-qr__img:not(uc-x) {
+    display: block;
+    width: 200px;
+    height: auto;
+    padding: var(--sp-3);
+    background-color: var(--uc-white);
+}
+.uc-qr .uc-qr__download:not(uc-x) {             /* .uc-qr framför: plattformens röda a:link */
+    margin: 0;
+    color: var(--uc-black);
+    text-decoration: none;
+}
+.uc-qr .uc-qr__download:hover:not(uc-x) {
+    color: var(--uc-white);
+}
+html.uc-qr-inline #after-coupon-campaign-qr-button:not(uc-x) {
+    display: none !important;
+}
+
+/* 9.6 Skapa-sidan på bred skärm: konceptets yta med formuläret till
+   vänster, insamlingssidan i en telefon till höger på sidans vita
+   bakgrund, uppdaterad medan man skriver (som kampanj 300).
+   Scriptet (createLayout) lägger html.uc-create-split och flyttar
+   plattformens förhandsvisning till .uc-create__phone, syskon till ytan.
+   Under 1000px gäller plattformens egen förhandsvisning bakom ögat.
+   Telefonen ritas i 375 x 667 px (plattformens mått) och krymps med
+   --uc-phone-scale, som inte påverkar layouten. */
+:where(:root) {
+    --uc-phone-scale: 0.8;             /* 375 x 667 -> 300 x 534 px */
+}
+/* display kräver !important (plattformen visar faserna med inline-stil),
+   men bara när fasen syns: dold fas har style="display: none". */
+html.uc-create-split #phase-before-coupon:not([style*="none"]):not(uc-x) {
+    display: flex !important;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 48px;
+}
+/* Formulärets yta: exakt som kampanj 300 — 390px, padding 24/40/40,
+   oregelbunden kant. Kanten och färgen ritas av ::before, inte med
+   clip-path på själva ytan: clip-path klipper även plattformens
+   fixed-rutor inuti (felmeddelanden), som då skulle skäras till formen.
+   Färgen är den som valts i admin (läst av conceptColors). */
+html.uc-create-split #phase-before-coupon > .wrapper:not(uc-x) {
+    position: relative;
+    isolation: isolate;
+    flex: 0 0 390px;
+    width: 390px;
+    min-width: 0;
+    margin: var(--sp-7) 0;
+    padding: var(--sp-5) var(--sp-7) var(--sp-7);
+    background-color: transparent;
+}
+html.uc-create-split #phase-before-coupon > .wrapper:not(uc-x)::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    -webkit-clip-path: var(--uc-clip);
+    clip-path: var(--uc-clip);
+    background-color: var(--uc-concept-bg);
+}
+/* Fälten fyller ytans 310px, som på 300 */
+html.uc-create-split #phase-before-coupon > .wrapper :is(.input-group, .confirm_button_group):not(uc-x) {
+    width: 100%;
+    max-width: 100%;
+}
+html.uc-create-split .uc-create__phone:not(uc-x) {
+    flex: none;
+    position: sticky;
+    top: var(--sp-5);
+    margin-top: var(--sp-7);
+    width: calc(375px * var(--uc-phone-scale));
+    height: calc(667px * var(--uc-phone-scale));
+}
+/* !important: plattformen skriver en stilmall vid körning
+   (#giftcard-preview 375 x 667, scale 0.5, rutan absolut och dold) som
+   ligger efter vår CSS. Gäller bara i tvåspaltsläget. */
+html.uc-create-split #giftcard-preview-container:not(uc-x) {
+    display: block !important;
+    position: static !important;
+    inset: auto !important;
+    width: 100% !important;
+    height: 100% !important;
+    max-height: none !important;
+    margin: 0 !important;
+    transform: none !important;
+}
+html.uc-create-split #giftcard-preview:not(uc-x) {
+    position: relative !important;
+    width: 375px !important;
+    height: 667px !important;
+    max-width: none !important;
+    max-height: none !important;
+    margin: 0 !important;
+    transform: scale(var(--uc-phone-scale)) !important;
+    transform-origin: top left !important;
+    border: 12px solid var(--uc-black) !important;   /* telefonens ram; telefonen står på sidans vita */
+    border-radius: 48px !important;
+    box-shadow: 0 24px 48px rgba(var(--uc-black-rgb), 0.25) !important;
+    overflow-y: auto !important;
+    scrollbar-width: none;
+}
+html.uc-create-split #giftcard-preview:not(uc-x)::-webkit-scrollbar { display: none; }
+/* Kameran överst i telefonen (ligger på rutan, så den scrollar inte med) */
+html.uc-create-split .uc-create__phone:not(uc-x)::before {
+    content: '';
+    position: absolute;
+    top: calc(12px * var(--uc-phone-scale));
+    left: 50%;
+    z-index: 3;
+    width: calc(110px * var(--uc-phone-scale));
+    height: calc(26px * var(--uc-phone-scale));
+    transform: translateX(-50%);
+    border-radius: 0 0 14px 14px;
+    background-color: var(--uc-black);
+    pointer-events: none;
+}
+/* Ögat och krysset behövs inte när telefonen alltid syns */
+html.uc-create-split #giftcard-preview-button:not(uc-x),
+html.uc-create-split #hide-preview:not(uc-x) {
+    display: none !important;
+}
+
+/* 9.7 Innehållet i förhandsvisningen: bilden utfallande överst,
+   titelraden som rubrik, beskrivningen som brödtext.
+   Gäller både telefonen och plattformens popup. */
+#giftcard-preview > .wrapper:not(uc-x) {
+    min-height: 100%;
+    margin: 0;
+    padding: 0 var(--sp-4) var(--sp-7);
+    -webkit-clip-path: none;
+    clip-path: none;
+}
+/* Insamlarens bild: utfallande till topp och sidor, i bildens egna
+   proportioner. !important: plattformens inline-stil gör den till en
+   rund 150px-bild. */
+#coupon-page-title:not(uc-x) {
+    margin: 0 calc(-1 * var(--sp-4)) var(--sp-5);
+}
+#coupon-page-title img:not(uc-x) {
+    display: block;
+    width: 100% !important;
+    max-width: none !important;
+    height: auto;
+    aspect-ratio: auto !important;
+    object-fit: fill !important;
+    border-radius: 0 !important;
+    border: 0;
+    margin: 0;
+}
+/* Ingen bild vald än (scriptet sätter html.uc-noimg): platshållare med
+   texten "Din bild här", knappt synlig, i stället för en trasig bild */
+html.uc-noimg #coupon-page-title img:not(uc-x) {
+    display: none;
+}
+html.uc-noimg #coupon-page-title:not(uc-x)::after {
+    content: 'Din bild här';
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    aspect-ratio: 4 / 3;
+    background-color: rgba(var(--uc-black-rgb), 0.08);
+    color: var(--uc-concept-ink);
+    opacity: 0.35;
+    font-family: var(--font-hand);
+    font-size: var(--fs-h3);
+    text-transform: none;
+}
+#coupon-page-message:not(uc-x) {
+    margin: 0 auto var(--sp-5);
+    font-family: var(--font-head);
+    font-size: var(--fs-h3);           /* 24px i en 375px-skärm */
+    line-height: var(--lh-head);
+    letter-spacing: var(--track-tight);
+    text-transform: uppercase;
+    color: var(--uc-concept-ink);
+}
+#coupon-page-message br:not(uc-x) { display: none; }
+#coupon-page-message .uc-ghost:not(uc-x) {
+    opacity: 0.5;                      /* fältets etikett tills man skrivit något */
+}
+#coupon-page-message > span:not(.uc-ghost):not(uc-x) {
+    display: block;
+    margin-top: var(--sp-3);
+    font-family: var(--font-body);
+    font-size: var(--fs-body) !important;   /* inline 16px */
+    line-height: 150%;
+    letter-spacing: normal;
+    text-transform: none;
+    white-space: pre-line;
+}
+
+/* =========================================
+   10. P2P — INSAMLINGSSIDAN (/p/<hash>)
+   Varje insamlares egen sida. body.p2p-transaction-landing, fas
+   #phase-swish-result. Plattformen ger en smal spalt; scriptet
+   (fundraiserPage) bygger rubrik, summa, knapp och beskrivning till
+   .uc-fund__head och sätter .uc-fund på wrappern. Då blir sidan:
+     desktop: blocket till vänster (rubriken går in över bilden),
+              bild, "Din gåva", formulär och vägg till höger
+     mobil:   bild, rubrik, summa, knapp, beskrivning (kortad med
+              Läs mer), formulär, vägg
+   10.0 gäller också om scriptet inte hunnit/kunnat köra.
+   ========================================= */
+/* 10.0 Grund (utan scriptet): plattformens spalt, centrerad */
+.p2p-transaction-landing #phase-swish-result .wrapper:not(uc-x) {
+    color: var(--uc-concept-ink);
+    border: var(--uc-concept-frame);
+    padding: var(--sp-7) var(--sp-4);
+}
+.p2p-transaction-landing #phase-swish-result :is(.cc-title, .cc-txt, .cc-checkbox-label):not(uc-x) {
+    color: var(--uc-concept-ink);
+}
+.p2p-transaction-landing .wrapper:not(.uc-fund) #page-title-swish-form img:not(uc-x) {
+    width: 160px;
+    height: 160px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: var(--border-w) solid var(--uc-concept-ink);
+    margin-bottom: var(--sp-4);
+}
+.p2p-transaction-landing #page-subtitle:not(uc-x) {
+    font-family: var(--font-head);
+    font-size: var(--fs-h2);           /* 32px */
+    text-transform: uppercase;
+    letter-spacing: var(--track-tight);
+    line-height: var(--lh-head);
+    max-width: 640px;
+    margin: 0 auto var(--sp-6);
+}
+.p2p-transaction-landing #page-subtitle > span:not(uc-x) {
+    display: block;
+    max-width: 520px;
+    margin: var(--sp-4) auto 0;
+    font-family: var(--font-body);
+    font-size: var(--fs-body);
+    text-transform: none;
+    letter-spacing: normal;
+    line-height: 150%;
+    white-space: pre-line;             /* insamlarens egna radbrytningar */
+}
+.p2p-transaction-landing .product_button_group:not(uc-x) {
+    justify-content: center;
+    gap: var(--sp-3);
+    margin: var(--sp-3) auto var(--sp-5);
+}
+.p2p-transaction-landing .product_button_group .cc-button:not(uc-x) {
+    margin: 0;
+}
+.p2p-transaction-landing #confirm_button_group:not(uc-x) {
+    justify-content: center;
+    margin-top: var(--sp-4);
+}
+#swish_form_underlay_text:not(uc-x) {
+    max-width: 480px;
+    margin-inline: auto;
+}
+#swish_form_underlay_text a:not(uc-x) {          /* plattformsröd länk -> ärvd färg, understruken */
+    color: inherit;
+    text-decoration: underline;
+}
+
+/* 10.1 Hela bredden: konceptets färg från kant till kant. Plattformen
+   stryper #wrap-default till admins wrapperbredd. html.uc-fund-page
+   sätts av scriptet. */
+html.uc-fund-page #wrap-default:not(uc-x) {
+    width: 100%;
+    max-width: none;
+    margin: 0;
+}
+.p2p-transaction-landing #phase-swish-result > .wrapper.uc-fund:not(uc-x) {
+    --uc-fund-side:  310px;                        /* vänsterspalten */
+    --uc-fund-gap:   clamp(40px, 8vw, 128px);
+    --uc-fund-form:  320px;                        /* formulärets bredd */
+    --uc-fund-lines: 6;                            /* mobil: rader före Läs mer */
+    display: grid;
+    grid-template-columns: minmax(0, var(--uc-fund-side)) minmax(0, 1fr);
+    column-gap: var(--uc-fund-gap);
+    align-items: start;
+    container-type: inline-size;                   /* cqi nedan = innehållets bredd */
+    box-sizing: border-box;
+    width: 100%;
+    max-width: none;
+    min-height: 80vh;
+    margin: 0;
+    padding: 64px max(var(--sp-6), calc((100% - 1200px) / 2)) 96px;
+    text-align: left;
+}
+.uc-fund > *:not(uc-x) {
+    grid-column: 2;
+    min-width: 0;
+}
+.uc-fund > .uc-fund__source:not(uc-x) {
+    display: none;                     /* titelraden: innehållet är flyttat till .uc-fund__head */
+}
+
+/* 10.2 Bilden: stående 4:5, oregelbunden kant */
+.uc-fund #page-title-swish-form:not(uc-x) {
+    margin: 0;
+    padding: 0;
+}
+.uc-fund #page-title-swish-form img:not(uc-x) {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 4 / 5;
+    object-fit: cover;
+    margin: 0;
+    border: 0;
+    border-radius: 0;
+    clip-path: var(--uc-clip);
+}
+.uc-fund--noimg #page-title-swish-form:not(uc-x) {
+    display: none;
+}
+
+/* 10.3 Vänsterspalten. Börjar en bit ner i bilden (ca en fjärdedel av
+   bildens höjd) och spänner över alla rader till höger. */
+.uc-fund > .uc-fund__head:not(uc-x) {
+    grid-column: 1;
+    grid-row: 1 / span 12;
+    position: relative;
+    z-index: 2;                        /* rubriken ligger över bilden */
+    padding-top: calc((100cqi - var(--uc-fund-side) - var(--uc-fund-gap)) * 0.3);
+}
+.uc-fund--noimg > .uc-fund__head:not(uc-x) {
+    padding-top: 0;
+}
+/* Rubriken: handstil i rött, får gå in över bilden */
+.uc-fund .uc-fund__title:not(uc-x) {
+    width: max-content;
+    max-width: min(860px, 72cqi);
+    margin: 0;
+    font-family: var(--font-hand);
+    font-weight: normal;
+    font-size: clamp(4.8rem, 8cqi, 11.2rem);       /* 48–112px */
+    line-height: 1.02;
+    letter-spacing: normal;
+    text-transform: uppercase;
+    text-wrap: balance;
+    overflow-wrap: break-word;
+    color: var(--uc-red);
+}
+/* "10 000 KR insamlat" */
+.uc-fund .uc-fund__sum:not(uc-x) {
+    margin: var(--sp-5) 0 0;
+    font-family: var(--font-body);
+    font-size: var(--fs-h4);           /* 20px */
+    line-height: 1.2;
+    color: var(--uc-concept-ink);
+}
+.uc-fund .uc-fund__sum strong:not(uc-x) {
+    font-family: var(--font-head);
+    font-weight: normal;
+    font-size: var(--fs-h2);           /* 32px */
+    letter-spacing: var(--track-tight);
+    text-transform: uppercase;
+}
+/* Gåva & hälsning: kontur i ytans textfärg (syns på ljus och mörk yta) */
+.uc-fund .uc-fund__cta:not(uc-x) {
+    margin: var(--sp-5) 0 0;
+    color: var(--uc-concept-ink);
+    border-color: var(--uc-concept-ink);
+    text-decoration: none;
+}
+.uc-fund .uc-fund__cta:hover:not(uc-x) {
+    background-color: var(--uc-concept-ink);
+    border-color: var(--uc-concept-ink);
+    color: var(--uc-concept-bg);
+}
+/* Beskrivningen */
+.uc-fund__desc:not(uc-x) {
+    margin-top: var(--sp-7);
+}
+.uc-fund .uc-fund__desc-text:not(uc-x) {
+    display: block;
+    margin: 0;
+    font-family: var(--font-body);
+    font-size: var(--fs-h4);           /* 20px */
+    line-height: 1.5;
+    white-space: pre-line;             /* insamlarens egna radbrytningar */
+    overflow-wrap: break-word;
+    color: var(--uc-concept-ink);
+}
+.uc-fund__more:not(uc-x) {
+    display: none;                     /* bara mobil, och bara när texten är kortad */
+}
+
+/* 10.4 "Din gåva" + formuläret: vänsterställt under bilden */
+.uc-fund .uc-fund__give:not(uc-x) {
+    margin: 64px 0 var(--sp-5);
+    font-size: var(--fs-h1);           /* 44px */
+    text-align: left;
+    color: var(--uc-concept-ink);
+}
+.uc-fund--noimg .uc-fund__give:not(uc-x) {
+    margin-top: 0;
+}
+.uc-fund :is(.show_swish_reward_form, #showText, #errorText, #swish_form_underlay_text):not(uc-x) {
+    width: 100%;
+    max-width: var(--uc-fund-form);
+    margin-left: 0;
+    margin-right: 0;
+}
+.uc-fund #swish_form_underlay_text:not(uc-x) {
+    margin-top: var(--sp-4);
+    text-align: left;
+}
+
+/* 10.5 Mobil: en spalt, bilden kant i kant, rubriken in över bildens nederkant */
+@media (max-width: 799px) {
+    .p2p-transaction-landing #phase-swish-result > .wrapper.uc-fund:not(uc-x) {
+        grid-template-columns: minmax(0, 1fr);
+        min-height: 0;
+        padding: 0 0 64px;
+    }
+    .uc-fund > *:not(uc-x),
+    .uc-fund > .uc-fund__head:not(uc-x) {
+        grid-column: 1;
+        grid-row: auto;
+        padding-inline: var(--sp-4);
+    }
+    .uc-fund > #page-title-swish-form:not(uc-x) {
+        padding: 0;
+    }
+    .uc-fund #page-title-swish-form img:not(uc-x) {
+        aspect-ratio: 1 / 1;
+    }
+    .uc-fund > .uc-fund__head:not(uc-x) {
+        padding-top: 0;
+        margin-top: -0.55em;           /* rubriken lägger sig över bildens nederkant */
+        font-size: clamp(4.4rem, 13vw, 7.2rem);        /* = rubrikens storlek, för em ovan */
+    }
+    .uc-fund--noimg > .uc-fund__head:not(uc-x) {
+        margin-top: var(--sp-6);
+    }
+    .uc-fund .uc-fund__title:not(uc-x) {
+        max-width: 100%;
+        font-size: 1em;
+    }
+    .uc-fund .uc-fund__desc-text:not(uc-x) {
+        font-size: var(--fs-body);     /* 16px */
+    }
+    .uc-fund__desc:not(uc-x) {
+        margin-top: var(--sp-6);
+    }
+    /* Kortad beskrivning: --uc-fund-lines rader, sedan Läs mer */
+    .uc-fund__desc:not(.is-open) .uc-fund__desc-text:not(uc-x) {
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: var(--uc-fund-lines);
+        overflow: hidden;
+    }
+    .uc-fund__desc.is-long .uc-fund__more:not(uc-x),
+    .uc-fund__desc.is-open .uc-fund__more:not(uc-x) {
+        display: inline-block;
+        margin: var(--sp-2) 0 0;
+        padding: 0;
+        border: 0;
+        background: none;
+        font-family: var(--font-body);
+        font-size: var(--fs-body);
+        text-decoration: underline;
+        text-underline-offset: 3px;
+        color: var(--uc-concept-ink);
+        cursor: pointer;
+    }
+    .uc-fund .uc-fund__give:not(uc-x) {
+        margin-top: var(--sp-7);
+        font-size: var(--fs-h2);       /* 32px */
+    }
+    .uc-fund :is(.show_swish_reward_form, #showText, #errorText, #swish_form_underlay_text):not(uc-x) {
+        max-width: none;
+    }
+}
+
+/* =========================================
+   11. P2P — HÄLSNINGSVÄGG (leaderboarden på insamlingssidan)
+   Som minnesväggen i kampanj 289: lappar med tejp, lite snett, huller
+   om buller i spalter. Scriptet (greetingWall) gör om varje post till
+   .uc-note > figure.uc-note__paper > blockquote (hälsningen) +
+   figcaption (avsändaren) och placerar lapparna (position absolute).
+   Här bara lappens utseende. Spaltbredd och luft: WALL i uc-p2p.js.
+   ========================================= */
+.p2p-transaction-landing .leaderboard:not(uc-x) {
+    width: 100%;
+    max-width: none;
+    margin: 64px 0 0;
+}
+.p2p-transaction-landing .leaderboard-container:not(uc-x) {
+    width: 100%;
+    box-sizing: border-box;
+}
+.p2p-transaction-landing .leaderboard-records:not(uc-x) {
+    position: relative;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+}
+.p2p-transaction-landing .leaderboard-records > .uc-note:not(uc-x) {
+    position: absolute;
+    box-sizing: border-box;
+    width: max-content;
+    max-width: var(--uc-note-max, 240px);
+    margin: 0;
+    padding: 0;
+    border: 0;
+}
+.p2p-transaction-landing .leaderboard-records > .uc-note--empty:not(uc-x) {
+    display: none;
+}
+/* Lappen */
+.uc-note__paper:not(uc-x) {
+    --uc-note-fs: 32px;
+    position: relative;
+    box-sizing: border-box;
+    margin: 0;
+    padding: 22px 20px 16px;
+    text-align: center;
+    overflow-wrap: break-word;
+    color: #0B0D10;
+    background-color: #FCFDFF;
+    box-shadow: 0 2px 6px rgba(40,40,38,.12), 0 8px 20px rgba(40,40,38,.08);
+}
+.uc-note .uc-note__msg:not(uc-x) {
+    max-width: none;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    font-family: var(--font-hand);
+    font-size: var(--uc-note-fs);
+    line-height: 1.05;
+    color: inherit;
+}
+/* Avsändaren: egen rad längst ner */
+.uc-note .uc-note__from:not(uc-x) {
+    margin: 12px 0 0;
+    font-family: var(--font-body);
+    font-size: 13px;
+    line-height: 1.3;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+    color: rgba(40,40,38,.72);
+}
+.uc-note .uc-note__from:not(uc-x)::before {
+    content: "\2013\00a0";             /* "– " */
+}
+/* Bara avsändare, ingen hälsning: namnet blir lappen */
+.uc-note--nomsg .uc-note__from:not(uc-x) {
+    margin: 0;
+    font-family: var(--font-hand);
+    font-size: calc(var(--uc-note-fs) * .8);
+    letter-spacing: normal;
+    color: inherit;
+}
+.uc-note--nomsg .uc-note__from:not(uc-x)::before {
+    content: none;
+}
+/* Tejp: grundbit + 4-cykel (från 289) */
+.uc-note__paper:not(uc-x)::before {
+    content: "";
+    position: absolute;
+    top: -10px;
+    left: 50%;
+    width: 70px;
+    height: 22px;
+    transform: translateX(-50%) rotate(-2deg);
+    background: rgba(252,247,227,.45);
+    border-left: 1px dashed rgba(40,40,38,.08);
+    border-right: 1px dashed rgba(40,40,38,.08);
+    box-shadow: 0 1px 2px rgba(40,40,38,.08);
+}
+.uc-note:nth-child(4n+1) .uc-note__paper:not(uc-x)::before { transform: translateX(-50%) rotate(3deg); width: 58px; }
+.uc-note:nth-child(4n+2) .uc-note__paper:not(uc-x)::before { left: 18%; transform: rotate(-38deg); width: 64px; top: -8px; }
+.uc-note:nth-child(4n+3) .uc-note__paper:not(uc-x)::before { transform: translateX(-50%) rotate(-1deg); width: 86px; }
+.uc-note:nth-child(4n+4) .uc-note__paper:not(uc-x)::before { left: auto; right: 4%; transform: rotate(40deg); width: 60px; top: -9px; }
+.uc-note:nth-child(7n+3) .uc-note__paper:not(uc-x)::after {
+    content: "";
+    position: absolute;
+    bottom: -9px;
+    left: 55%;
+    width: 54px;
+    height: 20px;
+    transform: rotate(2deg);
+    background: rgba(252,247,227,.6);
+    box-shadow: 0 1px 2px rgba(40,40,38,.08);
+}
+/* Lutning (5-cykel) */
+.uc-note:nth-child(5n+1) .uc-note__paper:not(uc-x) { transform: rotate(-2.1deg); }
+.uc-note:nth-child(5n+2) .uc-note__paper:not(uc-x) { transform: rotate(1.6deg); }
+.uc-note:nth-child(5n+3) .uc-note__paper:not(uc-x) { transform: rotate(-.7deg); }
+.uc-note:nth-child(5n+4) .uc-note__paper:not(uc-x) { transform: rotate(2.4deg); }
+.uc-note:nth-child(5n)   .uc-note__paper:not(uc-x) { transform: rotate(-1.3deg); }
+/* Olika pennor och papper (11-cykel) */
+.uc-note:nth-child(11n+2)  .uc-note__paper:not(uc-x) { --uc-note-fs: 27px; color: #0B0D10; background-color: #FAFCFE; }
+.uc-note:nth-child(11n+3)  .uc-note__paper:not(uc-x) { --uc-note-fs: 30px; color: #595959; background-color: #F9FAF9; }
+.uc-note:nth-child(11n+4)  .uc-note__paper:not(uc-x) { --uc-note-fs: 30px; color: #2A2D30; letter-spacing: .3px; background-color: #F8F8F6; }
+.uc-note:nth-child(11n+5)  .uc-note__paper:not(uc-x) { --uc-note-fs: 36px; background-color: #FEFEFE; }
+.uc-note:nth-child(11n+6)  .uc-note__paper:not(uc-x) { --uc-note-fs: 30px; color: #1A1F26; letter-spacing: .5px; background-color: #FBFBFA; }
+.uc-note:nth-child(11n+7)  .uc-note__paper:not(uc-x) { --uc-note-fs: 27px; color: #111315; background-color: #FBFAF4; }
+.uc-note:nth-child(11n+8)  .uc-note__paper:not(uc-x) { --uc-note-fs: 30px; color: #595959; letter-spacing: .7px; background-color: #FFFEFA; }
+.uc-note:nth-child(11n+9)  .uc-note__paper:not(uc-x) { --uc-note-fs: 30px; color: #303234; letter-spacing: .5px; background-color: #FFFDFB; }
+.uc-note:nth-child(11n+10) .uc-note__paper:not(uc-x) { --uc-note-fs: 36px; background-color: #FEFCF5; }
+.uc-note:nth-child(11n+11) .uc-note__paper:not(uc-x) { --uc-note-fs: 30px; color: #2E3640; letter-spacing: .2px; background-color: #FDFBF3; }
+/* Smal vägg (mobil): mindre lappar, två spalter */
+.uc-wall--small .uc-note__paper:not(uc-x) {
+    padding: 18px 14px 12px;
+}
+.uc-wall--small .uc-note .uc-note__msg:not(uc-x) {
+    font-size: calc(var(--uc-note-fs) * .72);
+}
+.uc-wall--small .uc-note .uc-note__from:not(uc-x) {
+    font-size: 11px;
+}
+.uc-wall--small .uc-note--nomsg .uc-note__from:not(uc-x) {
+    font-size: calc(var(--uc-note-fs) * .6);
+}
+
+
+/* ===== src/css/03-header.css ===== */
+/* =========================================
+   03 — HEADER, MENY & SÖK, ANKARE, INFOSIDA (sektion 12)
+   Speglar headern på ungcancer.se: logga till vänster, koncepten i
+   mitten, meny- och sökikon till höger. Under 1024px försvinner
+   mittmenyn och ikonerna bär allt. Göms när man scrollar ner, visas
+   igen när man scrollar upp.
+   Markupen byggs av src/js/uc-p2p.js (menyn ändras där).
+   Ikonerna ligger i src/icons/ och byggs in där det står @@ + namn + @@.
+   ========================================= */
+:where(:root) {
+    --uc-header-bg:     var(--uc-white);  /* samma vita som ungcancer.se */
+    --uc-drawer-w:      480px;
+    --uc-drawer-rule:   rgba(var(--uc-black-rgb), 0.2);  /* strecken i menyn: svag svart ton */
+    --uc-search-rule:   rgba(var(--uc-black-rgb), 0.1);
+    --uc-ease:          cubic-bezier(0.4, 0, 0.2, 1);
+}
+/* 12.1 Behållaren. Scriptet lägger headern direkt i body. Sticky måste
+   sitta på det som är barn till body — sticky stannar inom sin förälder.
+   Div-varianten gäller om headern ligger i Campaign Head (äldre upplägg). */
+body > div:has(> .uc-header):not(uc-x),
+body > .uc-header:not(uc-x) {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background-color: var(--uc-header-bg);
+    transition: transform 0.3s var(--uc-ease);
+}
+body > div.uc-header-bar--hidden:not(uc-x),     /* div-fallet: matchar (0,1,2) i :has-regeln ovan */
+body > .uc-header.uc-header-bar--hidden:not(uc-x) {
+    transform: translateY(-100%);     /* sätts av scriptet vid scroll nedåt */
+}
+.uc-header:not(uc-x) {
+    padding-block: 24px;              /* 24 + 56 logga + 24 = 104px, som ungcancer.se */
+}
+.uc-header__inner:not(uc-x) {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    gap: 4px 8px;
+    max-width: 1440px;                 /* samma ram som ungcancer.se: */
+    margin-inline: auto;               /* logga 16px in, sökikonen lika långt in */
+}
+/* 12.2 Logga — Ung Cancers SVG-ordmärke, hämtat från ungcancer.se */
+.uc-header__logo:not(uc-x) {
+    grid-column: 1;
+    justify-self: start;
+    margin-left: 16px;
+    display: block;
+    width: 104px;
+    height: 56px;
+    background: url("data:image/svg+xml,%3Csvg width='104' height='56' viewBox='0 0 104 56' fill='none' xmlns='http://www.w3.org/2000/svg'%3E %3Cpath d='M103.803 36.0524C102.356 35.7627 100.235 35.7821 98.8661 37.5586V35.9945H93.9681V55.5365H98.8661V43.6221C98.8661 41.9421 99.5024 41.0924 101.411 41.0345C103.263 40.9765 103.803 41.3821 103.803 41.3821V36.0524ZM82.533 39.7793C85.1941 39.7793 86.8332 41.4593 87.0646 43.6607H78.2328C78.4835 41.4207 80.0454 39.7793 82.533 39.7793ZM92.059 47.3296C92.1361 46.48 92.1361 45.8041 92.1361 45.3214C92.1361 39.4703 88.453 35.6469 82.5716 35.6469C76.9215 35.6469 72.9684 39.9531 72.9684 45.8041C72.9684 52.0221 77.0565 55.8455 82.9572 55.8455C87.701 55.8455 90.3235 53.2193 91.4998 50.7669L87.8938 48.5848C86.8718 50.1876 85.4448 51.5007 82.9765 51.5007C80.1997 51.5007 78.3871 49.9365 78.1171 47.3296H92.059ZM66.2578 51.4234C63.4424 51.4234 61.0127 49.2607 61.0127 45.7655C61.0127 42.5214 63.0182 40.0689 66.2385 40.0689C68.1669 40.0689 69.4396 40.9186 70.2495 41.6717L73.0648 38.2731C71.8886 37.0758 69.7481 35.6469 66.1999 35.6469C60.3571 35.6469 56.134 40.1076 56.134 45.8041C56.134 51.4621 60.0678 55.8455 66.2385 55.8455C69.5938 55.8455 71.8886 54.3393 73.0648 53.1034L70.3652 49.8207C69.4588 50.5545 68.2247 51.4234 66.2578 51.4234ZM49.7319 55.5172H54.6299V42.6179C54.6299 38.8524 53.1065 35.7434 48.5363 35.7434C46.1259 35.7434 44.8918 36.8441 44.4097 37.4234V35.9558H39.5117V55.4979H44.4097V43.1779C44.4097 41.3241 45.3546 40.0689 47.1094 40.0689C48.9027 40.0689 49.7319 41.2662 49.7319 43.1779V55.5172ZM26.5147 49.0869C26.5147 47.5227 27.6524 46.3062 29.3301 46.3062C30.9692 46.3062 32.184 47.4455 32.184 49.0869C32.184 50.7283 30.9884 51.9062 29.3686 51.9062C27.691 51.9062 26.5147 50.7283 26.5147 49.0869ZM21.9252 49.1255C21.9252 53.1807 24.7985 55.7683 28.713 55.7683C30.9692 55.7683 32.2804 54.8607 32.8396 54.2621V55.4979H36.9277V43.1779C36.9277 38.8331 35.1729 35.7241 29.5615 35.7241C24.972 35.7241 22.7351 38.1765 22.6387 41.8648H27.2089C27.2089 40.7641 27.7488 39.6055 29.5808 39.6055C31.4127 39.6055 32.1262 40.8027 32.1262 42.4827V43.4676C31.6248 43.1393 30.4099 42.6565 28.6551 42.6565C24.5863 42.6952 21.9252 45.4758 21.9252 49.1255ZM18.6471 49.1255C17.5865 50.0331 15.7931 51.2496 13.2477 51.2496C8.50399 51.2496 5.32222 47.6772 5.32222 42.8883C5.32222 38.1379 8.27258 34.4883 13.1706 34.4883C15.5039 34.4883 17.3744 35.5117 18.5314 36.5352L21.5203 32.731C19.5148 30.9352 16.738 29.7765 13.132 29.7765C5.24509 29.7765 0 35.5117 0 42.9269C0 50.3807 5.1101 56 13.2477 56C16.8923 56 19.6691 54.571 21.5974 52.6786L18.6471 49.1255Z' fill='%23282826'%3E%3C/path%3E %3Cpath d='M44.3903 15.5255C44.3903 12.2428 46.5115 9.75172 49.7897 9.75172C52.9907 9.75172 55.1504 12.2428 55.1504 15.5255C55.1504 18.7697 53.0678 21.2607 49.7897 21.2607C46.6272 21.2607 44.3903 18.8083 44.3903 15.5255ZM55.2661 7.55035C54.032 6.23724 51.9494 5.38759 49.4233 5.38759C43.5804 5.38759 39.4923 9.8869 39.4923 15.5448C39.4923 21.4924 43.5804 25.5862 49.5968 25.5862C52.3736 25.5862 54.1477 24.389 54.9962 23.3848V23.6359C54.9576 26.4938 52.5086 27.7297 49.4426 27.7297C46.9936 27.7297 44.8917 26.9572 43.7154 26.3007L42.1534 30.1821C43.754 31.0897 46.3572 31.9393 49.4233 31.9393C55.4783 31.9393 59.8556 29.3131 59.8556 21.9559V5.73517H55.2661V7.55035ZM33.3023 25.2772H38.2003V12.3779C38.2003 8.61241 36.6769 5.50345 32.1068 5.50345C29.6963 5.50345 28.4622 6.60414 27.9801 7.18345V5.71586H23.0821V25.2772H27.9801V12.9572C27.9801 11.1034 28.925 9.84828 30.6798 9.84828C32.4732 9.84828 33.3023 11.0455 33.3023 12.9572V25.2772ZM10.76 25.7407C17.355 25.7407 20.8645 21.3572 20.8645 15.371V0H15.793V15.3903C15.793 18.6731 14.1539 21.0097 10.8372 21.0097C7.36616 21.0097 5.8042 18.7503 5.8042 15.429V0H0.732666V15.4097C0.732666 21.6276 3.89515 25.7407 10.76 25.7407Z' fill='%23282826'%3E%3C/path%3E %3C/svg%3E") no-repeat center / contain;
+    position: relative;                /* för "Min insamling" nedan */
+}
+/* "Min insamling" i handstil under logotypen, nuddar "Cancer".
+   Skärmläsare läser "Ung Cancer Min insamling". */
+.uc-header__logo:not(uc-x)::after {
+    content: 'Min insamling';
+    position: absolute;
+    left: 20px;
+    top: 57px;
+    white-space: nowrap;
+    font-family: var(--font-hand);
+    font-size: 22px;
+    line-height: 1;
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    color: var(--uc-red);
+    transform: rotate(-7deg);
+    transform-origin: left center;
+    pointer-events: none;
+}
+/* Skärmläsartext (logotypens namn, ikonernas namn) */
+.uc-sr:not(uc-x) {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+/* 12.3 Koncepten i mitten (desktop) */
+.uc-header__menu:not(uc-x) {
+    grid-column: 2;
+}
+.uc-header__list:not(uc-x) {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 4px 32px;
+    margin: 0;                         /* bootstrap ger ul margin-bottom */
+    padding: 0;
+    list-style: none;
+}
+.uc-header .uc-header__link:not(uc-x) {        /* .uc-header framför: plattformens a:link (0,1,1) vinner annars */
+    font-family: var(--font-body);
+    font-size: 1.8rem;                 /* 18px (rot 10px) */
+    line-height: 1.33;
+    text-transform: uppercase;
+    color: var(--uc-black);
+    text-decoration: none;
+}
+.uc-header .uc-header__link:hover:not(uc-x),
+.uc-header .uc-header__link[aria-current="page"]:not(uc-x) {
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 6px;
+}
+@media (max-width: 1023px) {
+    .uc-header__menu:not(uc-x) { display: none; }
+}
+/* 12.4 Ikonerna till höger: meny + sök, alla bredder.
+   Speglar logotypen: sökikonens högerkant står lika långt från ramens
+   högerkant som logotypens vänsterkant från vänsterkanten (16px).
+   Ikonrutan är 48px med 32px ikon i mitten (8px luft) och sökglyfen
+   slutar 2,25px före sin kant: 16 - 8 - 2,25 = ca 6px. */
+.uc-header__actions:not(uc-x) {
+    grid-column: 3;
+    justify-self: end;
+    display: flex;
+    gap: 8px;
+    margin: 0 6px 0 0;
+    padding: 0;
+    list-style: none;
+}
+.uc-header__icon:not(uc-x) {
+    display: block;
+    width: 48px;
+    height: 32px;
+    background: no-repeat center / 32px 32px;
+    transition: transform 0.3s var(--uc-ease);
+}
+.uc-header__icon:hover:not(uc-x) {
+    transform: translateY(-3px);
+}
+.uc-header__icon--menu:not(uc-x)   { background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 32 32' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M4 5.33334H28V8.00001H4V5.33334ZM4 14.6667H28V17.3333H4V14.6667ZM4 24H28V26.6667H4V24Z' fill='%23282826'/%3E%3C/svg%3E"); }
+.uc-header__icon--search:not(uc-x) { background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 32 32' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M24.0413 22.1557L29.7516 27.866L27.866 29.7516L22.1557 24.0413C20.1025 25.684 17.4987 26.6667 14.6667 26.6667C8.04266 26.6667 2.66666 21.2907 2.66666 14.6667C2.66666 8.04266 8.04266 2.66666 14.6667 2.66666C21.2907 2.66666 26.6667 8.04266 26.6667 14.6667C26.6667 17.4987 25.684 20.1025 24.0413 22.1557ZM21.3663 21.1664C22.9967 19.4861 24 17.1941 24 14.6667C24 9.50999 19.8233 5.33332 14.6667 5.33332C9.50999 5.33332 5.33332 9.50999 5.33332 14.6667C5.33332 19.8233 9.50999 24 14.6667 24C17.1941 24 19.4861 22.9967 21.1664 21.3663L21.3663 21.1664Z' fill='%23282826'/%3E%3C/svg%3E"); }
+/* Under 1024px: 4px mellan ikonerna, som ungcancer.se */
+@media (max-width: 1023px) {
+    .uc-header__actions:not(uc-x) { gap: 4px; }
+}
+/* 12.5 Paneler (meny + sök). Öppen = html.uc-nav-open / .uc-search-open
+   (script) eller :target (reserv utan script). visibility fördröjs vid
+   stängning så att panelen hinner glida ut innan den försvinner. */
+.uc-drawer:not(uc-x) {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    visibility: hidden;
+    pointer-events: none;
+    transition: visibility 0s linear 0.28s;
+}
+.uc-nav-open #uc-meny:not(uc-x),
+.uc-search-open #uc-sok:not(uc-x),
+.uc-drawer:target:not(uc-x) {
+    visibility: visible;
+    pointer-events: auto;
+    transition-delay: 0s;
+}
+.uc-drawer__backdrop:not(uc-x) {
+    position: absolute;
+    inset: 0;
+    background-color: rgba(var(--uc-black-rgb), 0.25);
+    opacity: 0;
+    transition: opacity 0.28s var(--uc-ease);
+}
+.uc-drawer__panel:not(uc-x) {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    width: min(100%, var(--uc-drawer-w));
+    padding: 124px 32px 32px;          /* 60px stängrad + 64px, som ungcancer.se */
+    overflow-y: auto;
+    background-color: var(--uc-cream);  /* menyn; sökpanelen är vit (12.7) */
+    transform: translateX(100%);
+    transition: transform 0.28s var(--uc-ease);
+}
+.uc-nav-open #uc-meny .uc-drawer__backdrop:not(uc-x),
+.uc-search-open #uc-sok .uc-drawer__backdrop:not(uc-x),
+.uc-drawer:target .uc-drawer__backdrop:not(uc-x) {
+    opacity: 1;
+}
+.uc-nav-open #uc-meny .uc-drawer__panel:not(uc-x),
+.uc-search-open #uc-sok .uc-drawer__panel:not(uc-x),
+.uc-drawer:target .uc-drawer__panel:not(uc-x) {
+    transform: none;
+}
+html.uc-nav-open:not(uc-x),
+html.uc-search-open:not(uc-x) {
+    overflow: hidden;                  /* sidan bakom scrollar inte */
+}
+.uc-drawer__close:not(uc-x) {
+    position: absolute;
+    top: 14px;
+    right: 32px;
+    width: 32px;
+    height: 32px;
+    background: url("data:image/svg+xml,%3Csvg viewBox='0 0 32 32' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M14.1145 16L3.72397 5.6094L5.60958 3.72379L16.0001 14.1143L26.3907 3.72379L28.2763 5.6094L17.8857 16L28.2763 26.3904L26.3907 28.2761L16.0001 17.8856L5.60958 28.2761L3.72397 26.3904L14.1145 16Z' fill='%23282826'/%3E%3C/svg%3E") no-repeat center / contain;
+}
+/* Fokusramen syns vid tangentbord, inte vid klick. Scriptet flyttar
+   fokus till panelen (inte till krysset) när menyn öppnas. */
+.uc-drawer__close:focus:not(:focus-visible):not(uc-x),
+.uc-header__icon:focus:not(:focus-visible):not(uc-x),
+.uc-drawer__panel:focus:not(uc-x) {
+    outline: none;
+}
+/* 12.6 Menyn: nivå 1 = koncepten, nivå 2 = Så funkar det, Kontakt m.fl.
+   Vänsterställd, som på ungcancer.se. */
+.uc-drawer__list:not(uc-x) {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    text-align: left;
+}
+.uc-drawer__list + .uc-drawer__list:not(uc-x) {
+    margin-top: 64px;
+}
+.uc-drawer .uc-drawer__link:not(uc-x) {        /* samma specificitetsskäl som 12.3 */
+    display: inline-block;
+    padding: 4px 0;                    /* 4 + 36 + 4 + 2 = 46px per rad, som ungcancer.se */
+    border-bottom: var(--border-w) solid var(--uc-drawer-rule);
+    font-family: var(--font-head);
+    font-size: var(--fs-h2);           /* 32px */
+    line-height: 1.125;                /* 36px */
+    letter-spacing: -0.0125em;
+    text-transform: uppercase;
+    color: var(--uc-black);
+    text-decoration: none;
+}
+.uc-drawer .uc-drawer__list--sub .uc-drawer__link:not(uc-x) {
+    font-size: var(--fs-h3);           /* 24px */
+    letter-spacing: -0.007em;
+}
+.uc-drawer .uc-drawer__link:hover:not(uc-x),
+.uc-drawer .uc-drawer__link[aria-current="page"]:not(uc-x) {
+    border-bottom-color: var(--uc-black);
+}
+/* 12.7 Sökpanelen — vit, som på ungcancer.se. Byggs av scriptet. */
+#uc-sok .uc-drawer__panel:not(uc-x) {
+    display: flex;
+    flex-direction: column;
+    padding: 12px 12px 0;
+    background-color: var(--uc-white);
+    text-align: left;
+}
+#uc-sok .uc-drawer__close:not(uc-x) {
+    right: 12px;
+}
+.uc-search__title:not(uc-x) {
+    margin: 4px 0 0;
+    min-height: 44px;
+    font-family: var(--font-head);
+    font-size: var(--fs-h3);           /* 24px */
+    line-height: 1.125;
+    letter-spacing: -0.007em;
+    text-transform: uppercase;
+    color: var(--uc-black);
+}
+.uc-search__form:not(uc-x) {
+    display: flex;
+    align-items: center;
+    margin: 0;
+    border-bottom: var(--border-w) solid var(--uc-search-rule);
+}
+#uc-sok .uc-search__input:not(uc-x) {
+    flex: 1;
+    min-width: 0;
+    height: 48px;
+    margin: 0;
+    padding: 8px 8px 8px 4px;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    font-family: var(--font-body);
+    font-size: var(--fs-btn);          /* 24px */
+    color: var(--uc-black);
+    -webkit-appearance: none;
+    appearance: none;
+}
+#uc-sok .uc-search__input:focus:not(uc-x) {
+    outline: none;
+}
+.uc-search__form:focus-within:not(uc-x) {
+    border-bottom-color: var(--uc-black);
+}
+#uc-sok .uc-search__input:not(uc-x)::-webkit-search-cancel-button {
+    -webkit-appearance: none;
+}
+.uc-search__submit:not(uc-x) {
+    flex: none;
+    width: 32px;
+    height: 48px;
+    padding: 0;
+    border: 0;
+    background: url("data:image/svg+xml,%3Csvg viewBox='0 0 32 32' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M21.5621 14.6665L14.4101 7.51452L16.2957 5.62891L26.6667 15.9999L16.2957 26.3707L14.4101 24.4851L21.5621 17.3332H5.33334V14.6665H21.5621Z' fill='%23282826'/%3E%3C/svg%3E") no-repeat center / 32px 32px;
+    cursor: pointer;
+}
+.uc-search__results:not(uc-x) {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding-top: 32px;
+}
+.uc-search__label:not(uc-x) {
+    margin: 0 0 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--uc-search-rule);
+    font-family: var(--font-head);
+    font-size: var(--fs-body);         /* 16px */
+    text-transform: uppercase;
+    color: var(--uc-black);
+}
+.uc-search__grid:not(uc-x) {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 24px 12px;
+    margin: 0 0 24px;
+    padding: 0;
+    list-style: none;
+}
+#uc-sok .uc-search__card:not(uc-x) {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    color: var(--uc-black);
+    text-decoration: none;
+}
+.uc-search__img:not(uc-x) {
+    display: block;
+    aspect-ratio: 4 / 5;
+    margin-bottom: 8px;
+    overflow: hidden;
+    background-color: var(--uc-cream);
+}
+.uc-search__img img:not(uc-x) {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s var(--uc-ease);
+}
+#uc-sok .uc-search__card:hover .uc-search__img img:not(uc-x) {
+    transform: scale(1.03);
+}
+.uc-search__name:not(uc-x) {
+    font-family: var(--font-head);
+    font-size: var(--fs-body);         /* 16px */
+    line-height: 1.125;
+    text-transform: uppercase;
+}
+.uc-search__sum:not(uc-x) {
+    font-family: var(--font-body);
+    font-size: 1.4rem;                 /* 14px */
+}
+.uc-search__empty:not(uc-x) {
+    margin: 0;
+    font-family: var(--font-body);
+    font-size: var(--fs-body);
+    color: var(--uc-black);
+}
+/* "Visa alla resultat" ligger kvar i underkant medan man scrollar träffarna */
+.uc-search__all:not(uc-x) {
+    position: sticky;
+    bottom: 0;
+    width: 100%;
+    margin-top: auto;
+    padding: 8px 8px 6px;
+    border: var(--uc-border);
+    background-color: var(--uc-white);
+    box-shadow: 0 12px 0 0 var(--uc-white);   /* täcker kort som scrollar under knappen */
+    font-family: var(--font-head);
+    font-size: var(--fs-btn);          /* 24px */
+    line-height: 1.125;
+    text-transform: uppercase;
+    color: var(--uc-black);
+    cursor: pointer;
+}
+.uc-search__all:hover:not(uc-x) {
+    background-color: var(--uc-black);
+    color: var(--uc-white);
+}
+.uc-search__results:has(.uc-search__all):not(uc-x) {
+    padding-bottom: 12px;
+}
+/* 12.8 Sökfältet ovanför Pågående insamlingar (plattformens) får samma
+   form som sökpanelen: linje under, 24px text, pil i stället för "Sök".
+   Id-väljare: plattformens .fundraisersWrapper-regler är (0,3,0). */
+.fundraisersWrapper .input-group:not(uc-x) {
+    width: 100%;
+    max-width: 480px;
+    margin: 0 auto var(--sp-6);
+    align-items: center;
+    border-bottom: var(--border-w) solid var(--uc-search-rule);
+}
+.fundraisersWrapper .input-group:focus-within:not(uc-x) {
+    border-bottom-color: var(--uc-black);
+}
+.fundraisersWrapper .input-group #searchInput:not(uc-x) {
+    flex: 1;
+    width: auto;
+    min-width: 0;
+    height: 48px;
+    margin: 0;
+    padding: 8px 8px 8px 4px;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    font-family: var(--font-body);
+    font-size: var(--fs-btn);          /* 24px */
+    text-align: left;
+    color: var(--uc-black);
+}
+.fundraisersWrapper .input-group #searchInput:focus:not(uc-x) {
+    outline: none;
+}
+/* Plattformen gör platshållare genomskinliga (flytande etiketter) */
+.fundraisersWrapper .input-group #searchInput:not(uc-x)::placeholder,
+#uc-sok .uc-search__input:not(uc-x)::placeholder {
+    color: rgba(var(--uc-black-rgb), 0.6);
+    opacity: 1;
+}
+.fundraisersWrapper .input-group #searchBtn:not(uc-x),
+.fundraisersWrapper .input-group #searchBtn:hover:not(uc-x) {
+    flex: none;
+    width: 32px;
+    max-width: none;
+    height: 48px;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: url("data:image/svg+xml,%3Csvg viewBox='0 0 32 32' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M21.5621 14.6665L14.4101 7.51452L16.2957 5.62891L26.6667 15.9999L16.2957 26.3707L14.4101 24.4851L21.5621 17.3332H5.33334V14.6665H21.5621Z' fill='%23282826'/%3E%3C/svg%3E") no-repeat center / 32px 32px;
+    font-size: 0;                      /* texten "Sök" ligger kvar för skärmläsare */
+    color: transparent;
+}
+/* 12.9 Ankare. Scriptet ger varje rubrik (h1–h3) i sidans sektioner ett
+   id av sin text: "Så funkar det" -> #sa-funkar-det, "Kontakt" -> #kontakt.
+   Ett id du skriver själv i fältet går före. Avståndet ovanför en rubrik
+   man landar på = scroll-margin-top. Ändra --uc-anchor-offset för alla,
+   eller skriv en egen regel för ett enskilt ankare, t.ex.
+   #kontakt { scroll-margin-top: 64px; }
+   Scrollar man uppåt syns headern, och scriptet lägger då till dess höjd. */
+:where(:root) {
+    --uc-anchor-offset: 32px;
+}
+.p2p-main [id]:not(uc-x) {
+    scroll-margin-top: var(--uc-anchor-offset);
+}
+/* 12.10 Textsektioner på infosidan (308): .uc-info runt varje block.
+   Centrerat som resten, men med radbredd för längre text. */
+.uc-info:not(uc-x) {
+    max-width: 560px;
+    margin: 0 auto var(--sp-7);
+    text-align: center;
+}
+.uc-info :is(h2, h3):not(uc-x) {
+    text-align: inherit;               /* plattformens rubriker är vänsterställda */
+}
+.uc-info h2:not(uc-x) {
+    margin-bottom: var(--sp-4);
+}
+.uc-info h3:not(uc-x) {
+    margin: var(--sp-6) 0 var(--sp-2);
+    font-size: var(--fs-h4);           /* 20px */
+}
+.uc-info .cc-txt:not(uc-x) {
+    margin: 0 0 var(--sp-3);
+    line-height: 150%;
+}
+.uc-info .cc-txt a:not(uc-x) {             /* (0,2,1): slår plattformens röda a:link */
+    color: inherit;
+    text-decoration: underline;
+}
+@media (prefers-reduced-motion: reduce) {
+    body > div:has(> .uc-header):not(uc-x),
+    body > .uc-header:not(uc-x),
+    .uc-drawer:not(uc-x),
+    .uc-drawer__backdrop:not(uc-x),
+    .uc-drawer__panel:not(uc-x),
+    .uc-header__icon:not(uc-x),
+    .uc-search__img img:not(uc-x) {
+        transition: none;
+    }
+}
+
+
+/* ===== src/css/04-insamlingskort.css ===== */
+/* =========================================
+   04 — INSAMLINGSKORTEN I "PÅGÅENDE INSAMLINGAR" (sektion 13)
+   Byggs om av src/js/uc-p2p.js (fundraiserCards) till samma uppställning
+   som artikelkorten på ungcancer.se: bild överst, textruta under, båda med
+   oregelbunden kant, och en etikett med konceptet i bildens hörn.
+   Fast format 4:5 (som 1080 x 1350). Hela kortet är en länk.
+   Gäller listan (#fundraisersDisplay) och plattformens sökresultat
+   (#searchDisplay). Utan script ser korten ut som förut.
+   ========================================= */
+
+/* 13.1 Rutnätet: tre i rad (plattformen laddar tre åt gången), två på
+   surfplatta, ett på mobil. Id-väljare: plattformens regler är (0,3,0). */
+#fundraisersDisplay:not(uc-x),
+#searchDisplay:not(uc-x) {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--sp-6) var(--sp-5);      /* 32px mellan rader, 24px mellan kort */
+    align-items: start;
+    width: 100%;
+    max-width: 1220px;
+    margin-inline: auto;
+}
+/* !important: plattformen visar och döljer listorna med inline-stil
+   (jQuery skriver display: flex när de visas). Dold = style innehåller none. */
+#fundraisersDisplay:not([style*="none"]):not(uc-x),
+#searchDisplay:not([style*="none"]):not(uc-x) {
+    display: grid !important;
+}
+#searchDisplay > p:not(uc-x) {
+    grid-column: 1 / -1;               /* "Söker..." och "Inga träffar" */
+    text-align: center;
+}
+@media (max-width: 999px) {
+    #fundraisersDisplay:not(uc-x),
+    #searchDisplay:not(uc-x) { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 599px) {
+    #fundraisersDisplay:not(uc-x),
+    #searchDisplay:not(uc-x) { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* 13.2 Kortet: 4:5, bild halva höjden, textrutan resten. Kortet självt
+   har ingen yta eller kant, det har bilden och textrutan var för sig. */
+.cc-card.uc-fcard:not(uc-x) {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 0;                            /* springan kommer av de oregelbundna kanterna, som ungcancer.se */
+    aspect-ratio: 4 / 5;
+    width: 100%;
+    min-width: 0;
+    max-width: none;
+    height: auto;
+    margin: 0;
+    padding: 0;
+    background: none;
+    box-shadow: none;
+    -webkit-clip-path: none;
+    clip-path: none;
+    border-radius: 0;
+    text-align: left;
+}
+.uc-fcard__media:not(uc-x) {
+    flex: 0 0 50%;
+    overflow: hidden;
+    -webkit-clip-path: var(--uc-clip);
+    clip-path: var(--uc-clip);
+    background-color: var(--uc-cream);  /* syns om bilden saknas */
+}
+.uc-fcard__media img:not(uc-x) {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s var(--uc-ease, ease);
+}
+.uc-fcard:hover .uc-fcard__media img:not(uc-x) {
+    transform: scale(1.03);
+}
+.uc-fcard__body:not(uc-x) {
+    flex: 1 1 0;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--sp-3);                  /* 12px */
+    padding: var(--sp-5);              /* 24px */
+    -webkit-clip-path: var(--uc-clip);
+    clip-path: var(--uc-clip);
+    background-color: var(--uc-card-bg, var(--uc-cream));   /* konceptets färg, satt av scriptet */
+    color: var(--uc-card-ink, var(--uc-black));
+    transition: background-color 0.2s, color 0.2s;
+}
+
+/* 13.3 Text: rubrik högst två rader, brödtexten så många rader som ryms
+   (scriptet räknar ut antalet), summan alltid längst ner. */
+.uc-fcard__title:not(uc-x) {
+    flex: none;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    overflow: hidden;
+    margin: 0;
+    font-family: var(--font-head);
+    font-size: var(--fs-h2);           /* 32px, som ungcancer.se */
+    line-height: 1.125;                /* 36px */
+    letter-spacing: -0.0125em;
+    text-transform: uppercase;
+    overflow-wrap: anywhere;
+    color: inherit;
+}
+.uc-fcard:hover .uc-fcard__title:not(uc-x) {
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 4px;
+}
+.uc-fcard__text:not(uc-x) {
+    flex: 1 1 0;
+    min-height: 0;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;             /* reserv; scriptet sätter antalet som ryms */
+    overflow: hidden;
+    margin: 0;
+    font-family: var(--font-body);
+    font-size: var(--fs-body);         /* 16px */
+    line-height: 1.5;                  /* 24px */
+}
+.uc-fcard__sum:not(uc-x) {
+    flex: none;
+    margin: auto 0 0;
+    font-family: var(--font-body);
+    font-size: var(--fs-body);
+    line-height: 1.5;
+}
+.uc-fcard__sum strong:not(uc-x) {
+    font-family: var(--font-head);
+    font-weight: normal;
+    font-size: var(--fs-h3);           /* 24px */
+    text-transform: uppercase;
+}
+@media (max-width: 1199px) {
+    .uc-fcard__title:not(uc-x) { font-size: var(--fs-h3); }   /* 32 -> 24px när korten blir smala */
+}
+
+/* 13.4 Etiketten: konceptet, i konceptets färg (samma som textrutan;
+   färgerna står i MENU_MAIN i scriptet). Ligger i bildens övre vänstra hörn. */
+.uc-fcard__label:not(uc-x) {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1;
+    padding: 4px 8px;
+    -webkit-clip-path: var(--uc-clip);
+    clip-path: var(--uc-clip);
+    background-color: var(--uc-card-bg, var(--uc-green));
+    color: var(--uc-card-ink, var(--uc-black));
+    font-family: var(--font-body);
+    font-size: 1.3rem;                 /* 13px */
+    font-weight: 700;
+    line-height: 1.5;
+    letter-spacing: 0.01em;
+    text-transform: uppercase;
+    pointer-events: none;
+}
+
+/* 13.5 Hela kortet klickbart: länken täcker kortet */
+.uc-fcard__link:not(uc-x) {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+}
+.uc-fcard__link:focus-visible:not(uc-x) {
+    outline: 2px solid var(--uc-black);
+    outline-offset: 4px;
+}
+
+
+/* ===== src/css/05-summary-hero.css ===== */
+/* =========================================
+   05 — SUMMARY-HERON (sektion 14)
+   Första sektionen på Summary (294): rubrik och ingress från admin blir
+   en hero med hjärtat av "JA!" till vänster. Byggs av
+   src/js/uc-p2p.js (buildHero); hjärtat är src/assets/hjarta.svg och
+   bär sin egen animation (bubblorna växer fram uppifrån och ned).
+   Knappen leder till konceptkorten (#valj-koncept).
+   ========================================= */
+
+/* 14.1 Ytan: sidans vita, hjärtat och texten bredvid varandra */
+.cc-section.uc-hero:not(uc-x) {
+    display: flex;
+    flex-direction: row;               /* plattformens sektioner är kolumner */
+    align-items: center;
+    justify-content: center;
+    gap: var(--sp-7) 64px;
+    min-height: min(600px, 75vh);
+    margin: -20px 0 0;                 /* 20px högre upp, alla skärmar */
+    padding: var(--sp-7) var(--sp-4);
+    text-align: left;
+}
+.uc-hero > .divider:not(uc-x) {
+    display: none;                     /* avdelaren från admin behövs inte i heron */
+}
+
+/* 14.2 Hjärtat */
+.uc-hero__art:not(uc-x) {
+    flex: 0 1 480px;
+    min-width: 0;
+}
+.uc-hero__art img:not(uc-x) {
+    display: block;
+    width: 100%;
+    height: auto;
+}
+
+/* 14.3 Texten: rubriken i röd, ingressen svart, knappen under */
+.uc-hero__text:not(uc-x) {
+    flex: 0 1 440px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--sp-5);
+}
+.uc-hero #page-title:not(uc-x) {
+    margin: 0;
+    font-size: clamp(4rem, 5.6vw, 7.2rem);   /* 40–72px */
+    line-height: 1;
+    text-align: left;
+    text-wrap: balance;
+    color: var(--uc-red);
+}
+.uc-hero #page-title + .cc-txt:not(uc-x) {
+    max-width: 24ch;
+    margin: 0;
+    font-size: var(--fs-h4);           /* 20px */
+    line-height: 1.3;
+    text-align: left;
+    text-wrap: balance;                /* jämna rader, ingen ensam sista rad */
+    color: var(--uc-black);
+}
+.uc-hero .uc-hero__cta:not(uc-x) {               /* .uc-hero framför: plattformens röda a:link */
+    margin: var(--sp-2) 0 0;
+    color: var(--uc-black);
+    text-decoration: none;
+}
+.uc-hero .uc-hero__cta:hover:not(uc-x) {
+    color: var(--uc-white);
+}
+
+/* 14.4 Smal skärm: hjärtat överst, texten centrerad under */
+@media (max-width: 799px) {
+    .cc-section.uc-hero:not(uc-x) {
+        flex-direction: column;
+        gap: var(--sp-6);
+        min-height: 0;
+        padding: var(--sp-5) 0 var(--sp-6);   /* sidans egen marginal räcker på sidorna */
+        text-align: center;
+    }
+    .uc-hero__art:not(uc-x) {
+        flex: none;
+        width: min(320px, 80%);
+    }
+    .uc-hero__text:not(uc-x) {
+        flex: none;
+        width: 100%;
+        align-items: center;
+    }
+    .uc-hero #page-title:not(uc-x),
+    .uc-hero #page-title + .cc-txt:not(uc-x) {
+        text-align: center;
+    }
+    .uc-hero #page-title + .cc-txt:not(uc-x) {
+        max-width: 30ch;
+    }
+}
+
+/* 14.5 Tillsammans har vi samlat in: summan av alla koncept, direkt under
+   heron. Byggs av scriptet (buildTotal), som räknar ihop beloppen på
+   konceptkorten. */
+.uc-total:not(uc-x) {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--sp-2);
+    margin: 0 auto var(--sp-7);
+    padding: var(--sp-6) var(--sp-4);
+    text-align: center;
+    color: var(--uc-black);
+}
+.uc-total__hand:not(uc-x) {
+    margin: 0;
+    font-family: var(--font-hand);
+    font-size: var(--fs-h4);           /* 20px */
+    line-height: 1.2;
+    text-transform: uppercase;
+    text-wrap: balance;
+}
+.uc-total__sum:not(uc-x) {
+    margin: 0;
+    font-family: var(--font-head);
+    font-size: clamp(4.8rem, 8vw, 9.6rem);   /* 48–96px */
+    line-height: 1;
+    letter-spacing: var(--track-tight);
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+@media (max-width: 799px) {
+    .uc-total:not(uc-x) {
+        padding: var(--sp-5) 0;
+    }
+    .uc-total__hand:not(uc-x) {
+        font-size: var(--fs-body);     /* 16px */
+    }
+}
