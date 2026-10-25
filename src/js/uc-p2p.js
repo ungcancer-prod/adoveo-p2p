@@ -636,7 +636,7 @@
     var phase = document.getElementById('phase-before-coupon');
     var box = document.getElementById('giftcard-preview-container');
     var heading = document.getElementById('coupon-heading');
-    var wrap = heading.closest('.wrapper');      /* konceptets färgade yta, bara bakom formuläret */
+    var wrap = heading ? heading.closest('.wrapper') : null;   /* konceptets färgade yta, bara bakom formuläret */
     if (!phase || !box || !wrap || !CREATE_MQ || document.querySelector('.uc-create__phone')) return;
     var home = box.parentElement, homeNext = box.nextSibling;
     /* Telefonen läggs bredvid ytan (inte i den), som i kampanj 300 */
@@ -747,12 +747,11 @@
       if (u.pathname.replace(/\/$/, '') === here) a.setAttribute('aria-current', 'page');
     });
 
-    buildHero();
-    makeAnchors();
-    fundraiserCards();
-    conceptSteps();
-    inlineQr();
-    createLayout();
+    /* Varje del körs för sig: kraschar en, fungerar resten ändå
+       (t.ex. att headern göms vid scroll) */
+    [buildHero, makeAnchors, fundraiserCards, conceptSteps, inlineQr, createLayout].forEach(function (fn) {
+      try { fn(); } catch (e) { if (window.console) console.warn('[uc-p2p] ' + fn.name, e); }
+    });
 
     /* Platshållare i plattformens sökfält, samma som i sökpanelen */
     var listSearch = onSummary() ? document.querySelector('#searchInput') : null;
