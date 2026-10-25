@@ -1,4 +1,5 @@
-// Bygger dist/uc-p2p.css och dist/uc-p2p.js av filerna i src/.
+// Bygger dist/uc-p2p.css och dist/uc-p2p.js av filerna i src/, och
+// kopierar src/assets/* (bilder) till dist/.
 // Körs automatiskt av GitHub Actions vid varje ändring (se .github/workflows).
 // Lokalt: node build/build.mjs   (inga beroenden behövs)
 //
@@ -13,7 +14,7 @@
 //     så att en kampanjs Custom CSS alltid kan skriva över variablerna,
 //     t.ex. konceptfärgen. @font-face/@keyframes lämnas orörda.
 
-import { readFileSync, writeFileSync, readdirSync, mkdirSync } from 'node:fs';
+import { readFileSync, writeFileSync, readdirSync, mkdirSync, copyFileSync, existsSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -143,9 +144,13 @@ const js = readFileSync(join(SRC, 'js', 'uc-p2p.js'), 'utf8');
 mkdirSync(OUT, { recursive: true });
 writeFileSync(join(OUT, 'uc-p2p.css'), banner('uc-p2p.css') + css);
 writeFileSync(join(OUT, 'uc-p2p.js'), banner('uc-p2p.js') + js);
+// Bilder och annat som sidorna laddar direkt (t.ex. hjärtat i Summary-heron)
+const ASSETS = join(SRC, 'assets');
+const assets = existsSync(ASSETS) ? readdirSync(ASSETS).filter(f => !f.startsWith('.')) : [];
+assets.forEach(f => copyFileSync(join(ASSETS, f), join(OUT, f)));
 writeFileSync(join(OUT, 'index.html'),
   '<!doctype html><meta charset="utf-8"><title>Ung Cancer P2P — filer</title>' +
   '<p>Filerna som laddas på Ung Cancers P2P-sidor på Adoveo:</p><ul>' +
   '<li><a href="uc-p2p.css">uc-p2p.css</a></li><li><a href="uc-p2p.js">uc-p2p.js</a></li></ul>' +
   `<p>Byggd ${stamp}, ${sha}. Källa: <a href="https://github.com/ungcancer-prod/adoveo-p2p">github.com/ungcancer-prod/adoveo-p2p</a></p>\n`);
-console.log(`Byggt: ${cssFiles.join(', ')} -> dist/uc-p2p.css (${css.length} tecken), dist/uc-p2p.js`);
+console.log(`Byggt: ${cssFiles.join(', ')} -> dist/uc-p2p.css (${css.length} tecken), dist/uc-p2p.js` + (assets.length ? `, ${assets.join(', ')}` : ''));

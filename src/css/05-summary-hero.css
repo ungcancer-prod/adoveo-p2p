@@ -1,0 +1,93 @@
+/* =========================================
+   05 — SUMMARY-HERON (sektion 14)
+   Första sektionen på Summary (294): rubrik och ingress från admin blir
+   en hero på rosa yta, med hjärtat av "JA!" till vänster. Byggs av
+   src/js/uc-p2p.js (buildHero); hjärtat är src/assets/hjarta.svg och
+   bär sin egen animation (bubblorna växer fram uppifrån och ned).
+   Knappen leder till konceptkorten (#valj-koncept).
+   ========================================= */
+
+/* 14.1 Ytan: rosa i hela fönstrets bredd. Skuggan målar ytan utanför
+   sektionen och clip-path klipper den upptill och nertill, så att ingen
+   horisontell scroll uppstår. */
+.cc-section.uc-hero {
+    display: flex;
+    flex-direction: row;               /* plattformens sektioner är kolumner */
+    align-items: center;
+    justify-content: center;
+    gap: var(--sp-7) 64px;
+    min-height: min(640px, 80vh);
+    margin: 0 0 var(--sp-7);
+    padding: var(--sp-7) var(--sp-4);
+    background-color: var(--uc-pink);
+    box-shadow: 0 0 0 100vmax var(--uc-pink);
+    clip-path: inset(0 -100vmax);
+    text-align: left;
+}
+.uc-hero > .divider {
+    display: none;                     /* avdelaren från admin behövs inte i heron */
+}
+
+/* 14.2 Hjärtat */
+.uc-hero__art {
+    flex: 0 1 480px;
+    min-width: 0;
+}
+.uc-hero__art img {
+    display: block;
+    width: 100%;
+    height: auto;
+}
+
+/* 14.3 Texten: rubriken i röd, ingressen svart, knappen under */
+.uc-hero__text {
+    flex: 0 1 440px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--sp-5);
+}
+.uc-hero #page-title {
+    margin: 0;
+    font-size: clamp(4rem, 5.6vw, 7.2rem);   /* 40–72px */
+    line-height: 1;
+    text-align: left;
+    color: var(--uc-red);
+}
+.uc-hero #page-title + .cc-txt {
+    max-width: 24ch;
+    margin: 0;
+    font-size: var(--fs-h4);           /* 20px */
+    line-height: 1.3;
+    text-align: left;
+    color: var(--uc-black);
+}
+.uc-hero .uc-hero__cta {               /* .uc-hero framför: plattformens röda a:link */
+    margin: var(--sp-2) 0 0;
+    color: var(--uc-black);
+    text-decoration: none;
+}
+.uc-hero .uc-hero__cta:hover {
+    color: var(--uc-white);
+}
+
+/* 14.4 Smal skärm: hjärtat överst, texten centrerad under */
+@media (max-width: 799px) {
+    .cc-section.uc-hero {
+        flex-direction: column;
+        min-height: 0;
+        text-align: center;
+    }
+    .uc-hero__art {
+        flex: none;
+        width: min(320px, 80%);
+    }
+    .uc-hero__text {
+        flex: none;
+        align-items: center;
+    }
+    .uc-hero #page-title,
+    .uc-hero #page-title + .cc-txt {
+        text-align: center;
+    }
+}

@@ -31,6 +31,7 @@ kontrollera efteråt.
 | Skapa-sidan och insamlingssidorna | `src/css/02-koncept.css` (sektion 9–11) |
 | Header, menypanel, sök, ankare, infosidan | `src/css/03-header.css` (sektion 12) |
 | Korten i Pågående insamlingar (utseende) | `src/css/04-insamlingskort.css` (sektion 13) |
+| Heron överst på Summary (hjärtat, rubriken, Starta) | `src/css/05-summary-hero.css` (sektion 14), bilden `src/assets/hjarta.svg`, knappens text i `HERO_CTA` i `src/js/uc-p2p.js` |
 | Etiketterna på korten (koncept och färg) | `src/js/uc-p2p.js`, listan `MENU_MAIN` (`id`, `bg`, `ink`) |
 | Logga och ikoner | `src/icons/*.svg` |
 | Oregelbundna kanter (formen `#shape-box`) | `src/js/uc-p2p.js`, `SHAPES`. Lägg kanten på valfritt element med `class="uc-clip"` |
@@ -38,6 +39,7 @@ kontrollera efteråt.
 | Rubriker, texter, fältetiketter | ligger i Adoveo, dokumenterade i `adoveo/inputfalt/` |
 
 `dist/` skapas av bygget och ska inte ändras — den finns inte ens i repot.
+Bilder i `src/assets/` kopieras av bygget och publiceras bredvid CSS:en och JS:en.
 
 ## Backa en ändring
 

@@ -10,6 +10,9 @@
 (function () {
   if (window.ucHeaderInit) return;            /* lås mot dubbel-init */
   window.ucHeaderInit = true;
+  /* Mappen scriptet ligger i (GitHub Pages). Bilder i src/assets hamnar där. */
+  var SELF = document.currentScript && document.currentScript.src;
+  var ASSETS = SELF ? SELF.replace(/[^\/]*$/, '') : 'https://ungcancer-prod.github.io/adoveo-p2p/';
 
   /* ---------- MENY ---------- */
   var BASE = 'https://ungcancer.adoveo.com/start/';
@@ -31,6 +34,10 @@
     { text: 'Din integritet',    href: BASE + '308/#din-integritet' },
     { text: 'Till ungcancer.se', href: 'https://ungcancer.se/' }
   ];
+
+  /* ---------- Summary-heron ---------- */
+  /* Knappen i heron leder till korten där man väljer koncept */
+  var HERO_CTA = { text: 'Starta', href: '#valj-koncept' };
 
   /* ---------- Former (oregelbundna kanter) ---------- */
   /* clip-path-former i objectBoundingBox (0–1 = elementets bredd/höjd).
@@ -248,6 +255,10 @@
       var id = slug(h.textContent);
       if (id && !document.getElementById(id)) h.id = id;
     });
+    /* Konceptkorten har ingen rubrik: ankra sektionen (heroknappen går dit) */
+    var cards = document.querySelector('.p2p-main .campaignsDisplay .cc-card');
+    var cardSec = cards ? cards.closest('.cc-section') : null;
+    if (cardSec && !cardSec.id && !document.getElementById('valj-koncept')) cardSec.id = 'valj-koncept';
     /* Listan Pågående insamlingar har ingen rubrik-tagg: ankra sektionen */
     var list = document.querySelector('.fundraisersWrapper');
     var sec = list ? list.closest('.cc-section') : null;
@@ -518,6 +529,33 @@
     });
   }
 
+  /* ---------- Summary-heron: hjärtat till vänster, rubriken till höger ---------- */
+  /* Första sektionen på Summary (rubrik + ingress från admin) blir en hero
+     på rosa yta. Hjärtat (src/assets/hjarta.svg) ritas upp bubbla för
+     bubbla; animationen ligger i själva SVG-filen. Bara på 294. */
+  function buildHero() {
+    if (!onSummary() || document.querySelector('.uc-hero')) return;
+    var h1 = document.getElementById('page-title');
+    var sec = h1 ? h1.closest('.cc-section') : null;
+    if (!sec) return;
+    sec.classList.add('uc-hero');
+    var art = el('div', 'uc-hero__art');
+    var img = el('img');
+    img.src = ASSETS + 'hjarta.svg';
+    img.alt = '';                               /* dekor: rubriken bär budskapet */
+    img.width = 600; img.height = 597;
+    art.appendChild(img);
+    var text = el('div', 'uc-hero__text');
+    var sub = h1.nextElementSibling && h1.nextElementSibling.matches('p') ? h1.nextElementSibling : null;
+    text.appendChild(h1);
+    if (sub) text.appendChild(sub);
+    var cta = el('a', 'cc-button uc-hero__cta', HERO_CTA.text);
+    cta.href = HERO_CTA.href;
+    text.appendChild(cta);
+    sec.insertBefore(text, sec.firstChild);
+    sec.insertBefore(art, text);
+  }
+
   /* ---------- Steg 1–2–3 på konceptens startsida ---------- */
   /* Samma tre steg som "Så funkar det" på Summary. På skapa-sidan är
      Välj klart och Skapa pågår; efter skapad är Dela på tur. Bara det
@@ -525,23 +563,23 @@
      där man väljer koncept. */
   var STEPS = ['Välj', 'Skapa', 'Dela'];
   function stepList(current) {
-    var ol = el('ol', 'uc-steps');
+    var ol = el('ol', 'uc-progress');
     ol.setAttribute('aria-label', 'Så startar du en insamling');
     STEPS.forEach(function (text, i) {
       var n = i + 1;
       var state = current > n ? 'done' : (current === n ? 'current' : 'next');
-      var li = el('li', 'uc-steps__step uc-steps__step--' + state);
+      var li = el('li', 'uc-progress__step uc-progress__step--' + state);
       if (state === 'current') li.setAttribute('aria-current', 'step');
       var box = li;
       if (state === 'done' && n === 1) {
-        box = el('a', 'uc-steps__link');
+        box = el('a', 'uc-progress__link');
         box.href = SUMMARY_URL;
         li.appendChild(box);
       }
-      var dot = el('span', 'uc-steps__dot', state === 'done' ? '' : String(n));
+      var dot = el('span', 'uc-progress__dot', state === 'done' ? '' : String(n));
       if (state === 'done') dot.appendChild(el('span', 'uc-sr', 'Klart:'));
       box.appendChild(dot);
-      box.appendChild(el('span', 'uc-steps__label', text));
+      box.appendChild(el('span', 'uc-progress__label', text));
       ol.appendChild(li);
     });
     return ol;
@@ -551,7 +589,7 @@
       var h = document.getElementById(p[0]);
       if (!h) return;
       var prev = h.previousElementSibling;
-      if (prev && prev.classList.contains('uc-steps')) return;
+      if (prev && prev.classList.contains('uc-progress')) return;
       h.parentNode.insertBefore(stepList(p[1]), h);
     });
   }
@@ -709,6 +747,7 @@
       if (u.pathname.replace(/\/$/, '') === here) a.setAttribute('aria-current', 'page');
     });
 
+    buildHero();
     makeAnchors();
     fundraiserCards();
     conceptSteps();
