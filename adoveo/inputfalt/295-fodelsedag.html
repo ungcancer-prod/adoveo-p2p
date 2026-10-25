@@ -81,10 +81,16 @@ Dela länken med alla som brukar fråga vad du önskar dig.
 
 
 <!-- ---------- INSAMLINGSSIDAN: HÄLSNINGSVÄGG (leaderboard-mall) ----------
-  Gör leaderboarden till en vägg med givarnas hälsningar i handstil.
-  Verifiera shortcodes, och ta bort testposter via Transactions. -->
-<blockquote>{message}</blockquote>
-<cite>{name}</cite>
+  Väggen byggs av scriptet (greetingWall): varje gåva blir en lapp med
+  hälsningen i handstil och avsändaren på en rad längst ner, som
+  minnesväggen i kampanj 289. Beloppet visas inte.
+  Scriptet läser hälsningen ur <blockquote> (eller <i>) och avsändaren
+  ur <cite> (eller första <b>), så både nuvarande mall
+    <b>{sender_name}</b> gav <b>{amount} kr</b> <br> <i>{message}</i>
+  och den renare mallen nedan fungerar. Byt gärna till den nedan.
+  OBS: shortcoden heter {sender_name} (inte {name}).
+  Testposter tas bort via Transactions. -->
+<blockquote>{message}</blockquote><cite>{sender_name}</cite>
 
 
 <!-- ---------- INSAMLINGSSIDAN: INTEGRITETSTEXT (#swish_form_underlay_text) ----------

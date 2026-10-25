@@ -39,6 +39,20 @@
   /* Knappen i heron leder till korten där man väljer koncept */
   var HERO_CTA = { text: 'Starta', href: '#valj-koncept' };
 
+  /* ---------- Insamlingssidan (/p/...) ---------- */
+  /* Texterna som scriptet lägger till. Rubrik, beskrivning och bild
+     kommer från insamlaren; formulärets etiketter från admin. */
+  var FUND_TEXT = {
+    cta: 'Gåva & hälsning',        /* knappen under summan, leder till formuläret */
+    give: 'Din gåva',              /* rubriken ovanför formuläret */
+    collected: 'insamlat',
+    more: 'Läs mer',               /* mobil: beskrivningen kortas, se --uc-fund-lines i CSS */
+    less: 'Visa mindre'
+  };
+  /* Hälsningsväggen: lappens maxbredd (= spaltbredd), luft och
+     "huller om buller". Under SMALL px bred vägg används SLOT_SMALL. */
+  var WALL = { SLOT: 240, SLOT_SMALL: 160, SMALL: 600, GAP_X: 12, GAP_Y: 16, JIT_X: 8, JIT_Y: 6, TOP: 14 };
+
   /* ---------- Former (oregelbundna kanter) ---------- */
   /* clip-path-former i objectBoundingBox (0–1 = elementets bredd/höjd).
      Används i CSS som url(#id), t.ex. via --uc-clip eller class="uc-clip".
@@ -291,6 +305,16 @@
     }
   }
 
+  /* Adoveo blandar ihop svaren om två frågor till /getP2PCards m.fl.
+     körs samtidigt (se loadConcepts). Alla våra frågor går därför i
+     samma kö, en i taget. */
+  var adoveoLine = Promise.resolve();
+  function inLine(job) {
+    var p = adoveoLine.then(job);
+    adoveoLine = p.catch(function () { /* nästa fråga får köra ändå */ });
+    return p;
+  }
+
   function fetchHits(q) {
     /* Vänta in konceptfrågorna om de pågår: Adoveo tål inte samtidiga frågor */
     var wait = conceptBusy && conceptMap ? conceptMap : Promise.resolve();
@@ -303,9 +327,11 @@
       campaign_id: SUMMARY_ID,                 /* alltid 294, oavsett sida */
       folder: (fol && fol.value) || FOLDER
     });
-    return fetch('/searchP2PCardsData', {
-      method: 'POST', body: body, headers: { 'X-Requested-With': 'XMLHttpRequest' }
-    }).then(function (r) { return r.json(); }).then(function (j) {
+    return inLine(function () {
+      return fetch('/searchP2PCardsData', {
+        method: 'POST', body: body, headers: { 'X-Requested-With': 'XMLHttpRequest' }
+      }).then(function (r) { return r.json(); });
+    }).then(function (j) {
       var doc = new DOMParser().parseFromString((j && j.html) || '', 'text/html');
       return Array.prototype.map.call(doc.querySelectorAll('.cc-card'), function (c) {
         var link = c.querySelector('a');
@@ -427,8 +453,10 @@
     conceptMap = MENU_MAIN.reduce(function (prev, c) {
       return prev.then(function () {
         var q = new URLSearchParams({ offset: 0, limit: 1000, campaign_id: camp, single_campaign_id: c.id, folder: fol });
-        return fetch('/getP2PCards?' + q, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
-          .then(function (r) { return r.json(); })
+        return inLine(function () {
+          return fetch('/getP2PCards?' + q, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+            .then(function (r) { return r.json(); });
+        })
           .then(function (j) {
             var doc = new DOMParser().parseFromString((j && j.html) || '', 'text/html');
             doc.querySelectorAll('.cc-card a[href]').forEach(function (a) {
@@ -766,6 +794,201 @@
     }
   }
 
+  /* ---------- Insamlingssidan: rubrik, bild, summa, formulär ---------- */
+  /* Varje insamlares sida (/p/<kod>). Plattformen ger en smal spalt:
+     bild, titelrad (#page-subtitle: rubriken som text, beskrivningen
+     som <span>), formulär och hälsningsvägg. Här byggs rubriken,
+     summan, knappen och beskrivningen ihop till ett block (.uc-fund__head)
+     och CSS:en lägger sidan i två spalter: blocket till vänster, bild,
+     formulär och vägg till höger. Plattformens element ligger kvar där
+     de är, så Swish-flödet fungerar som förut. */
+  function fundraiserPage() {
+    var wrap = document.querySelector('.p2p-transaction-landing #phase-swish-result > .wrapper');
+    var sub = document.getElementById('page-subtitle');
+    var media = document.getElementById('page-title-swish-form');
+    if (!wrap || !sub || !media || wrap.classList.contains('uc-fund')) return;
+
+    /* Titelraden: texten före <span> är rubriken, <span> beskrivningen */
+    var desc = sub.querySelector('span');
+    var title = '';
+    for (var n = sub.firstChild; n && n !== desc; n = n.nextSibling) {
+      if (n.nodeType === 3) title += n.nodeValue;
+    }
+    title = title.replace(/\s+/g, ' ').trim();
+
+    var head = el('div', 'uc-fund__head');
+    head.appendChild(el('h1', 'uc-fund__title', title));
+    var sum = el('p', 'uc-fund__sum');
+    var sumNum = el('strong', null, ' ');
+    sum.appendChild(sumNum);
+    sum.appendChild(document.createTextNode(' ' + FUND_TEXT.collected));
+    head.appendChild(sum);
+    var cta = el('a', 'cc-button uc-fund__cta', FUND_TEXT.cta);
+    cta.href = '#din-gava';
+    head.appendChild(cta);
+    if (desc && desc.textContent.trim()) {
+      var box = el('div', 'uc-fund__desc');
+      desc.className = 'uc-fund__desc-text';
+      box.appendChild(desc);
+      var more = el('button', 'uc-fund__more', FUND_TEXT.more);
+      more.type = 'button';
+      more.setAttribute('aria-expanded', 'false');
+      box.appendChild(more);
+      head.appendChild(box);
+    }
+    sub.classList.add('uc-fund__source');           /* tom nu: döljs i CSS */
+    media.parentNode.insertBefore(head, media.nextSibling);
+
+    /* Rubriken ovanför formuläret. Före #showText, så att Swish-
+       instruktionen hamnar under den när man tryckt på Swisha. */
+    var form = document.querySelector('#phase-swish-result .show_swish_reward_form');
+    var before = document.getElementById('showText') || form;
+    if (before && before.parentNode === wrap && !document.getElementById('din-gava')) {
+      var h2 = el('h2', 'uc-fund__give', FUND_TEXT.give);
+      h2.id = 'din-gava';
+      wrap.insertBefore(h2, before);
+    }
+
+    wrap.classList.add('uc-fund');
+    root.classList.add('uc-fund-page');
+
+    /* Ingen bild (insamlaren laddade inte upp någon): bildytan tas bort */
+    var img = media.querySelector('img');
+    var noImg = function () {
+      var bad = !img || !img.getAttribute('src') || (img.complete && img.naturalWidth === 0);
+      wrap.classList.toggle('uc-fund--noimg', bad);
+    };
+    if (img) img.removeAttribute('style');           /* plattformen: 150px rund, inline */
+    if (img) { img.alt = ''; img.addEventListener('load', noImg); img.addEventListener('error', noImg); }
+    noImg();
+
+    fundDescription(head);
+    fundSum(sumNum, sum);
+  }
+
+  /* Mobil: beskrivningen visar --uc-fund-lines rader (CSS) och en
+     Läs mer-knapp. Knappen visas bara om texten faktiskt är längre. */
+  function fundDescription(head) {
+    var box = head.querySelector('.uc-fund__desc');
+    if (!box) return;
+    var text = box.querySelector('.uc-fund__desc-text');
+    var more = box.querySelector('.uc-fund__more');
+    var check = function () {
+      if (box.classList.contains('is-open')) return;
+      box.classList.remove('is-long');
+      box.classList.toggle('is-long', text.scrollHeight - text.clientHeight > 2);
+    };
+    more.addEventListener('click', function () {
+      var open = !box.classList.contains('is-open');
+      box.classList.toggle('is-open', open);
+      more.textContent = open ? FUND_TEXT.less : FUND_TEXT.more;
+      more.setAttribute('aria-expanded', open ? 'true' : 'false');
+      if (!open) { check(); box.scrollIntoView({ block: 'nearest' }); }
+    });
+    check();
+    if (window.ResizeObserver) new ResizeObserver(check).observe(text);
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(check);
+  }
+
+  /* Summan: sidan visar den inte. Den står på insamlingens kort i
+     listan för konceptet (samma fråga som etiketterna på Summary). */
+  function fundSum(num, row) {
+    var code = p2pCode(location.pathname);
+    var camp = (document.getElementById('campaign-id') || {}).value;
+    if (!code || !camp) { row.hidden = true; return; }
+    var q = new URLSearchParams({ offset: 0, limit: 1000, campaign_id: SUMMARY_ID, single_campaign_id: camp, folder: FOLDER });
+    inLine(function () {
+      return fetch('/getP2PCards?' + q, { headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+        .then(function (r) { return r.json(); });
+    }).then(function (j) {
+      var doc = new DOMParser().parseFromString((j && j.html) || '', 'text/html');
+      var hit = null;
+      doc.querySelectorAll('.cc-card').forEach(function (c) {
+        var a = c.querySelector('a[href]');
+        if (a && p2pCode(a.getAttribute('href')) === code) hit = c;
+      });
+      var sums = hit ? hit.querySelectorAll('span.cc-title') : [];
+      if (!sums.length) { row.hidden = true; return; }
+      num.textContent = kr(amountOf(sums[sums.length - 1].textContent));
+    }).catch(function () { row.hidden = true; });
+  }
+
+  /* ---------- Hälsningsväggen (leaderboarden på insamlingssidan) ---------- */
+  /* Som minnesväggen i kampanj 289: lappar med tejp, huller om buller i
+     spalter (kortaste spalten först). Varje lapp: hälsningen i handstil
+     och avsändaren på en egen rad längst ner.
+     Plattformens leaderboard.js ritar varje post som div.lead_container
+     med avatar + p.leaderboard_info (mallen i admin, med {message} och
+     {sender_name} ifyllda). Mallen kan vara den nuvarande
+     ("<b>{sender_name}</b> gav <b>{amount} kr</b> <br> <i>{message}</i>")
+     eller "<blockquote>{message}</blockquote><cite>{sender_name}</cite>":
+     hälsningen tas ur blockquote/i, avsändaren ur cite/första b.
+     leaderboard.js tömmer och ritar om listan ibland — då görs allt om. */
+  function wallRnd(i, salt) {                     /* samma lapp hamnar likadant varje gång */
+    var x = Math.sin((i + 1) * 9301 + salt * 49297) * 233280;
+    return x - Math.floor(x);
+  }
+  function toNote(item) {
+    if (item.classList.contains('uc-note')) return;
+    var info = item.querySelector('.leaderboard_info');
+    var msgEl = info ? info.querySelector('blockquote, i, em') : null;
+    var fromEl = info ? info.querySelector('cite, b, strong') : null;
+    var msg = msgEl ? msgEl.textContent.trim() : (info && !fromEl ? info.textContent.trim() : '');
+    var from = fromEl ? fromEl.textContent.trim() : '';
+    item.textContent = '';
+    item.removeAttribute('style');                  /* svar från insamlaren har inline-flex */
+    item.classList.add('uc-note');
+    if (!msg && !from) { item.classList.add('uc-note--empty'); return; }
+    var paper = el('figure', 'uc-note__paper');
+    if (msg) paper.appendChild(el('blockquote', 'uc-note__msg', msg));
+    else item.classList.add('uc-note--nomsg');
+    if (from) paper.appendChild(el('figcaption', 'uc-note__from', from));
+    item.appendChild(paper);
+  }
+  function layoutWall(box) {
+    var notes = Array.prototype.filter.call(box.children, function (n) {
+      return n.classList.contains('uc-note') && !n.classList.contains('uc-note--empty');
+    });
+    var cw = box.clientWidth;
+    if (!notes.length || !cw) { box.style.height = ''; return; }
+    var slot = WALL.SMALL > cw ? WALL.SLOT_SMALL : WALL.SLOT;
+    box.classList.toggle('uc-wall--small', WALL.SMALL > cw);
+    box.style.setProperty('--uc-note-max', slot + 'px');
+    var cols = Math.max(1, Math.floor((cw + WALL.GAP_X) / (slot + WALL.GAP_X)));
+    var blockW = cols * slot + (cols - 1) * WALL.GAP_X;
+    var offX = Math.max(0, (cw - blockW) / 2);      /* spalterna centrerade */
+    var colH = [];
+    for (var k = 0; k !== cols; k++) colH.push(WALL.TOP);
+    notes.forEach(function (n, i) {
+      var c = 0;
+      for (var j = 1; j !== cols; j++) if (colH[c] > colH[j]) c = j;   /* kortaste spalten */
+      var jx = (wallRnd(i, 1) - 0.5) * 2 * WALL.JIT_X;
+      var jy = wallRnd(i, 2) * WALL.JIT_Y;
+      var x = offX + c * (slot + WALL.GAP_X) + (slot - n.offsetWidth) / 2 + jx;
+      n.style.left = Math.round(x) + 'px';
+      n.style.top = Math.round(colH[c] + jy) + 'px';
+      colH[c] = colH[c] + jy + n.offsetHeight + WALL.GAP_Y;
+    });
+    box.style.height = Math.round(Math.max.apply(null, colH)) + 'px';
+  }
+  function greetingWall() {
+    var box = document.querySelector('.p2p-transaction-landing .leaderboard-records');
+    if (!box) return;
+    var t = null;
+    var render = function () {
+      Array.prototype.forEach.call(box.children, toNote);
+      layoutWall(box);
+    };
+    var later = function (d) { clearTimeout(t); t = setTimeout(render, d); };
+    /* Bara childList: lapparnas position är stil-ändringar och triggar
+       inte observern, alltså ingen loop */
+    new MutationObserver(function () { later(30); }).observe(box, { childList: true });
+    if (window.ResizeObserver) new ResizeObserver(function () { later(80); }).observe(box);
+    else window.addEventListener('resize', function () { later(120); });
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(function () { later(0); });
+    render();
+  }
+
   /* ---------- Start ---------- */
   function init() {
     removeOldHeaders();
@@ -788,7 +1011,7 @@
 
     /* Varje del körs för sig: kraschar en, fungerar resten ändå
        (t.ex. att headern göms vid scroll) */
-    [buildHero, formatPrices, buildTotal, makeAnchors, fundraiserCards, conceptSteps, inlineQr, createLayout].forEach(function (fn) {
+    [buildHero, formatPrices, buildTotal, makeAnchors, fundraiserCards, conceptSteps, inlineQr, createLayout, fundraiserPage, greetingWall].forEach(function (fn) {
       try { fn(); } catch (e) { if (window.console) console.warn('[uc-p2p] ' + fn.name, e); }
     });
 

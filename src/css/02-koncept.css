@@ -419,9 +419,16 @@ html.uc-noimg #coupon-page-title::after {
 /* =========================================
    10. P2P — INSAMLINGSSIDAN (/p/<hash>)
    Varje insamlares egen sida. body.p2p-transaction-landing, fas
-   #phase-swish-result. Titelraden ("Insamling av {your_name}") ligger
-   som textnod i #page-subtitle, beskrivningen som <span> i samma div.
+   #phase-swish-result. Plattformen ger en smal spalt; scriptet
+   (fundraiserPage) bygger rubrik, summa, knapp och beskrivning till
+   .uc-fund__head och sätter .uc-fund på wrappern. Då blir sidan:
+     desktop: blocket till vänster (rubriken går in över bilden),
+              bild, "Din gåva", formulär och vägg till höger
+     mobil:   bild, rubrik, summa, knapp, beskrivning (kortad med
+              Läs mer), formulär, vägg
+   10.0 gäller också om scriptet inte hunnit/kunnat köra.
    ========================================= */
+/* 10.0 Grund (utan scriptet): plattformens spalt, centrerad */
 .p2p-transaction-landing #phase-swish-result .wrapper {
     color: var(--uc-concept-ink);
     border: var(--uc-concept-frame);
@@ -430,8 +437,7 @@ html.uc-noimg #coupon-page-title::after {
 .p2p-transaction-landing #phase-swish-result :is(.cc-title, .cc-txt, .cc-checkbox-label) {
     color: var(--uc-concept-ink);
 }
-/* 10.1 Insamlarens bild */
-.p2p-transaction-landing #page-title-swish-form img {
+.p2p-transaction-landing .wrapper:not(.uc-fund) #page-title-swish-form img {
     width: 160px;
     height: 160px;
     object-fit: cover;
@@ -439,7 +445,6 @@ html.uc-noimg #coupon-page-title::after {
     border: var(--border-w) solid var(--uc-concept-ink);
     margin-bottom: var(--sp-4);
 }
-/* 10.2 Titelraden blir sidans rubrik ... */
 .p2p-transaction-landing #page-subtitle {
     font-family: var(--font-head);
     font-size: var(--fs-h2);           /* 32px */
@@ -449,7 +454,6 @@ html.uc-noimg #coupon-page-title::after {
     max-width: 640px;
     margin: 0 auto var(--sp-6);
 }
-/* ... och beskrivningen under den läsbar brödtext med radbredd */
 .p2p-transaction-landing #page-subtitle > span {
     display: block;
     max-width: 520px;
@@ -461,10 +465,6 @@ html.uc-noimg #coupon-page-title::after {
     line-height: 150%;
     white-space: pre-line;             /* insamlarens egna radbrytningar */
 }
-@media (max-width: 500px) {
-    .p2p-transaction-landing #page-subtitle { font-size: var(--fs-h3); }
-}
-/* 10.3 Gåvoformuläret */
 .p2p-transaction-landing .product_button_group {
     justify-content: center;
     gap: var(--sp-3);
@@ -477,35 +477,373 @@ html.uc-noimg #coupon-page-title::after {
     justify-content: center;
     margin-top: var(--sp-4);
 }
-/* 10.4 Integritetstexten: plattformsröd länk -> ärvd färg, understruken */
 #swish_form_underlay_text {
     max-width: 480px;
     margin-inline: auto;
 }
-#swish_form_underlay_text a {
+#swish_form_underlay_text a {          /* plattformsröd länk -> ärvd färg, understruken */
     color: inherit;
     text-decoration: underline;
 }
 
+/* 10.1 Hela bredden: konceptets färg från kant till kant. Plattformen
+   stryper #wrap-default till admins wrapperbredd. html.uc-fund-page
+   sätts av scriptet. */
+html.uc-fund-page #wrap-default {
+    width: 100%;
+    max-width: none;
+    margin: 0;
+}
+.p2p-transaction-landing #phase-swish-result > .wrapper.uc-fund {
+    --uc-fund-side:  310px;                        /* vänsterspalten */
+    --uc-fund-gap:   clamp(40px, 8vw, 128px);
+    --uc-fund-form:  320px;                        /* formulärets bredd */
+    --uc-fund-lines: 6;                            /* mobil: rader före Läs mer */
+    display: grid;
+    grid-template-columns: minmax(0, var(--uc-fund-side)) minmax(0, 1fr);
+    column-gap: var(--uc-fund-gap);
+    align-items: start;
+    container-type: inline-size;                   /* cqi nedan = innehållets bredd */
+    box-sizing: border-box;
+    width: 100%;
+    max-width: none;
+    min-height: 80vh;
+    margin: 0;
+    padding: 64px max(var(--sp-6), calc((100% - 1200px) / 2)) 96px;
+    text-align: left;
+}
+.uc-fund > * {
+    grid-column: 2;
+    min-width: 0;
+}
+.uc-fund > .uc-fund__source {
+    display: none;                     /* titelraden: innehållet är flyttat till .uc-fund__head */
+}
+
+/* 10.2 Bilden: stående 4:5, oregelbunden kant */
+.uc-fund #page-title-swish-form {
+    margin: 0;
+    padding: 0;
+}
+.uc-fund #page-title-swish-form img {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 4 / 5;
+    object-fit: cover;
+    margin: 0;
+    border: 0;
+    border-radius: 0;
+    clip-path: var(--uc-clip);
+}
+.uc-fund--noimg #page-title-swish-form {
+    display: none;
+}
+
+/* 10.3 Vänsterspalten. Börjar en bit ner i bilden (ca en fjärdedel av
+   bildens höjd) och spänner över alla rader till höger. */
+.uc-fund > .uc-fund__head {
+    grid-column: 1;
+    grid-row: 1 / span 12;
+    position: relative;
+    z-index: 2;                        /* rubriken ligger över bilden */
+    padding-top: calc((100cqi - var(--uc-fund-side) - var(--uc-fund-gap)) * 0.3);
+}
+.uc-fund--noimg > .uc-fund__head {
+    padding-top: 0;
+}
+/* Rubriken: handstil i rött, får gå in över bilden */
+.uc-fund .uc-fund__title {
+    width: max-content;
+    max-width: min(860px, 72cqi);
+    margin: 0;
+    font-family: var(--font-hand);
+    font-weight: normal;
+    font-size: clamp(4.8rem, 9cqi, 11.2rem);       /* 48–112px */
+    line-height: 1.02;
+    letter-spacing: normal;
+    text-transform: uppercase;
+    text-wrap: balance;
+    overflow-wrap: break-word;
+    color: var(--uc-red);
+}
+/* "10 000 KR insamlat" */
+.uc-fund .uc-fund__sum {
+    margin: var(--sp-5) 0 0;
+    font-family: var(--font-body);
+    font-size: var(--fs-h4);           /* 20px */
+    line-height: 1.2;
+    color: var(--uc-concept-ink);
+}
+.uc-fund .uc-fund__sum strong {
+    font-family: var(--font-head);
+    font-weight: normal;
+    font-size: var(--fs-h2);           /* 32px */
+    letter-spacing: var(--track-tight);
+    text-transform: uppercase;
+}
+/* Gåva & hälsning: kontur i ytans textfärg (syns på ljus och mörk yta) */
+.uc-fund .uc-fund__cta {
+    margin: var(--sp-5) 0 0;
+    color: var(--uc-concept-ink);
+    background-color: transparent;     /* temat ger knappar vit fyllning på mobil */
+    border-color: var(--uc-concept-ink);
+    text-decoration: none;
+}
+.uc-fund .uc-fund__cta:hover {
+    background-color: var(--uc-concept-ink);
+    border-color: var(--uc-concept-ink);
+    color: var(--uc-concept-bg);
+}
+/* Beskrivningen */
+.uc-fund__desc {
+    margin-top: var(--sp-7);
+}
+.uc-fund .uc-fund__desc-text {
+    display: block;
+    margin: 0;
+    font-family: var(--font-body);
+    font-size: var(--fs-h4) !important;   /* 20px; plattformen har inline 16px */
+    line-height: 1.5;
+    white-space: pre-line;             /* insamlarens egna radbrytningar */
+    overflow-wrap: break-word;
+    color: var(--uc-concept-ink);
+}
+.uc-fund__more {
+    display: none;                     /* bara mobil, och bara när texten är kortad */
+}
+
+/* 10.4 "Din gåva" + formuläret: vänsterställt under bilden */
+.uc-fund .uc-fund__give {
+    margin: 64px 0 var(--sp-5);
+    font-size: var(--fs-h1);           /* 44px */
+    text-align: left;
+    color: var(--uc-concept-ink);
+}
+.uc-fund--noimg .uc-fund__give {
+    margin-top: 0;
+}
+.uc-fund :is(.show_swish_reward_form, #showText, #errorText, #swish_form_underlay_text) {
+    width: 100%;
+    max-width: var(--uc-fund-form);
+    margin-left: 0;
+    margin-right: 0;
+}
+.uc-fund #swish_form_underlay_text {
+    margin-top: var(--sp-4);
+    text-align: left;
+}
+
+/* 10.5 Mobil: en spalt, bilden kant i kant, rubriken in över bildens nederkant */
+@media (max-width: 799px) {
+    .p2p-transaction-landing #phase-swish-result > .wrapper.uc-fund {
+        grid-template-columns: minmax(0, 1fr);
+        min-height: 0;
+        padding: 0 0 64px;
+    }
+    .uc-fund > *,
+    .uc-fund > .uc-fund__head {
+        grid-column: 1;
+        grid-row: auto;
+        padding-inline: var(--sp-4);
+    }
+    .uc-fund > #page-title-swish-form {
+        padding: 0;
+    }
+    .uc-fund #page-title-swish-form img {
+        aspect-ratio: 1 / 1;
+    }
+    .uc-fund > .uc-fund__head {
+        padding-top: 0;
+        margin-top: -0.55em;           /* rubriken lägger sig över bildens nederkant */
+        font-size: clamp(4.4rem, 13vw, 7.2rem);        /* = rubrikens storlek, för em ovan */
+    }
+    .uc-fund--noimg > .uc-fund__head {
+        margin-top: var(--sp-6);
+    }
+    .uc-fund .uc-fund__title {
+        max-width: 100%;
+        font-size: 1em;
+    }
+    .uc-fund .uc-fund__desc-text {
+        font-size: var(--fs-body) !important;   /* 16px (se ovan) */
+    }
+    .uc-fund__desc {
+        margin-top: var(--sp-6);
+    }
+    /* Kortad beskrivning: --uc-fund-lines rader, sedan Läs mer */
+    .uc-fund__desc:not(.is-open) .uc-fund__desc-text {
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: var(--uc-fund-lines);
+        overflow: hidden;
+    }
+    .uc-fund__desc.is-long .uc-fund__more,
+    .uc-fund__desc.is-open .uc-fund__more {
+        display: inline-block;
+        margin: var(--sp-2) 0 0;
+        padding: 0;
+        border: 0;
+        background: none;
+        font-family: var(--font-body);
+        font-size: var(--fs-body);
+        text-decoration: underline;
+        text-underline-offset: 3px;
+        color: var(--uc-concept-ink);
+        cursor: pointer;
+    }
+    .uc-fund .uc-fund__give {
+        margin-top: var(--sp-7);
+        font-size: var(--fs-h2);       /* 32px */
+    }
+    .uc-fund :is(.show_swish_reward_form, #showText, #errorText, #swish_form_underlay_text) {
+        max-width: none;
+    }
+    .uc-fund .show_swish_reward_form :is(.input-group, .checkbox-group) {
+        width: 100%;                   /* plattformens 320px: fälten i linje med rubriken */
+        margin-left: 0;
+        margin-right: 0;
+    }
+}
+
 /* =========================================
-   11. P2P — HÄLSNINGSVÄGG (leaderboard på insamlingssidan)
-   Mall i admin: <blockquote>{message}</blockquote> + <cite>{name}</cite>.
-   OBS: DOM verifierad bara i tomt läge — stäm av när första gåvan
-   med hälsning finns. Testposter rensas via Transactions.
+   11. P2P — HÄLSNINGSVÄGG (leaderboarden på insamlingssidan)
+   Som minnesväggen i kampanj 289: lappar med tejp, lite snett, huller
+   om buller i spalter. Scriptet (greetingWall) gör om varje post till
+   .uc-note > figure.uc-note__paper > blockquote (hälsningen) +
+   figcaption (avsändaren) och placerar lapparna (position absolute).
+   Här bara lappens utseende. Spaltbredd och luft: WALL i uc-p2p.js.
    ========================================= */
 .p2p-transaction-landing .leaderboard {
-    max-width: 640px;
-    margin: var(--sp-7) auto 0;
+    width: 100%;
+    max-width: none;
+    margin: 64px 0 0;
 }
-.p2p-transaction-landing .leaderboard-records > * {
-    padding: var(--sp-4) 0;
-    border-top: var(--border-w) solid var(--uc-concept-ink);
+.p2p-transaction-landing .leaderboard-container {
+    width: 100%;
+    box-sizing: border-box;
 }
-.p2p-transaction-landing .leaderboard blockquote {
-    margin: 0 0 var(--sp-2);
-    color: var(--uc-concept-ink);
-}
-.p2p-transaction-landing .leaderboard cite {
+.p2p-transaction-landing .leaderboard-records {
+    position: relative;
+    width: 100%;
     margin: 0;
-    color: var(--uc-concept-ink);
+    padding: 0;
+}
+.p2p-transaction-landing .leaderboard-records > .uc-note {
+    position: absolute;
+    box-sizing: border-box;
+    width: max-content;
+    max-width: var(--uc-note-max, 240px);
+    margin: 0;
+    padding: 0;
+    border: 0;
+}
+.p2p-transaction-landing .leaderboard-records > .uc-note--empty {
+    display: none;
+}
+/* Lappen */
+.uc-note__paper {
+    --uc-note-fs: 32px;
+    position: relative;
+    box-sizing: border-box;
+    margin: 0;
+    padding: 22px 20px 16px;
+    text-align: center;
+    overflow-wrap: break-word;
+    color: #0B0D10;
+    background-color: #FCFDFF;
+    box-shadow: 0 2px 6px rgba(40,40,38,.12), 0 8px 20px rgba(40,40,38,.08);
+}
+.uc-note .uc-note__msg {
+    max-width: none;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    font-family: var(--font-hand);
+    font-size: var(--uc-note-fs);
+    line-height: 1.05;
+    color: inherit;
+}
+/* Avsändaren: egen rad längst ner */
+.uc-note .uc-note__from {
+    margin: 12px 0 0;
+    font-family: var(--font-body);
+    font-size: 13px;
+    line-height: 1.3;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+    color: rgba(40,40,38,.72);
+}
+.uc-note .uc-note__from::before {
+    content: "\2013\00a0";             /* "– " */
+}
+/* Bara avsändare, ingen hälsning: namnet blir lappen */
+.uc-note--nomsg .uc-note__from {
+    margin: 0;
+    font-family: var(--font-hand);
+    font-size: calc(var(--uc-note-fs) * .8);
+    letter-spacing: normal;
+    color: inherit;
+}
+.uc-note--nomsg .uc-note__from::before {
+    content: none;
+}
+/* Tejp: grundbit + 4-cykel (från 289) */
+.uc-note__paper::before {
+    content: "";
+    position: absolute;
+    top: -10px;
+    left: 50%;
+    width: 70px;
+    height: 22px;
+    transform: translateX(-50%) rotate(-2deg);
+    background: rgba(252,247,227,.45);
+    border-left: 1px dashed rgba(40,40,38,.08);
+    border-right: 1px dashed rgba(40,40,38,.08);
+    box-shadow: 0 1px 2px rgba(40,40,38,.08);
+}
+.uc-note:nth-child(4n+1) .uc-note__paper::before { transform: translateX(-50%) rotate(3deg); width: 58px; }
+.uc-note:nth-child(4n+2) .uc-note__paper::before { left: 18%; transform: rotate(-38deg); width: 64px; top: -8px; }
+.uc-note:nth-child(4n+3) .uc-note__paper::before { transform: translateX(-50%) rotate(-1deg); width: 86px; }
+.uc-note:nth-child(4n+4) .uc-note__paper::before { left: auto; right: 4%; transform: rotate(40deg); width: 60px; top: -9px; }
+.uc-note:nth-child(7n+3) .uc-note__paper::after {
+    content: "";
+    position: absolute;
+    bottom: -9px;
+    left: 55%;
+    width: 54px;
+    height: 20px;
+    transform: rotate(2deg);
+    background: rgba(252,247,227,.6);
+    box-shadow: 0 1px 2px rgba(40,40,38,.08);
+}
+/* Lutning (5-cykel) */
+.uc-note:nth-child(5n+1) .uc-note__paper { transform: rotate(-2.1deg); }
+.uc-note:nth-child(5n+2) .uc-note__paper { transform: rotate(1.6deg); }
+.uc-note:nth-child(5n+3) .uc-note__paper { transform: rotate(-.7deg); }
+.uc-note:nth-child(5n+4) .uc-note__paper { transform: rotate(2.4deg); }
+.uc-note:nth-child(5n)   .uc-note__paper { transform: rotate(-1.3deg); }
+/* Olika pennor och papper (11-cykel) */
+.uc-note:nth-child(11n+2)  .uc-note__paper { --uc-note-fs: 27px; color: #0B0D10; background-color: #FAFCFE; }
+.uc-note:nth-child(11n+3)  .uc-note__paper { --uc-note-fs: 30px; color: #595959; background-color: #F9FAF9; }
+.uc-note:nth-child(11n+4)  .uc-note__paper { --uc-note-fs: 30px; color: #2A2D30; letter-spacing: .3px; background-color: #F8F8F6; }
+.uc-note:nth-child(11n+5)  .uc-note__paper { --uc-note-fs: 36px; background-color: #FEFEFE; }
+.uc-note:nth-child(11n+6)  .uc-note__paper { --uc-note-fs: 30px; color: #1A1F26; letter-spacing: .5px; background-color: #FBFBFA; }
+.uc-note:nth-child(11n+7)  .uc-note__paper { --uc-note-fs: 27px; color: #111315; background-color: #FBFAF4; }
+.uc-note:nth-child(11n+8)  .uc-note__paper { --uc-note-fs: 30px; color: #595959; letter-spacing: .7px; background-color: #FFFEFA; }
+.uc-note:nth-child(11n+9)  .uc-note__paper { --uc-note-fs: 30px; color: #303234; letter-spacing: .5px; background-color: #FFFDFB; }
+.uc-note:nth-child(11n+10) .uc-note__paper { --uc-note-fs: 36px; background-color: #FEFCF5; }
+.uc-note:nth-child(11n+11) .uc-note__paper { --uc-note-fs: 30px; color: #2E3640; letter-spacing: .2px; background-color: #FDFBF3; }
+/* Smal vägg (mobil): mindre lappar, två spalter */
+.uc-wall--small .uc-note__paper {
+    padding: 18px 14px 12px;
+}
+.uc-wall--small .uc-note .uc-note__msg {
+    font-size: calc(var(--uc-note-fs) * .72);
+}
+.uc-wall--small .uc-note .uc-note__from {
+    font-size: 11px;
+}
+.uc-wall--small .uc-note--nomsg .uc-note__from {
+    font-size: calc(var(--uc-note-fs) * .6);
 }

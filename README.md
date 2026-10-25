@@ -28,7 +28,9 @@ kontrollera efteråt.
 |---|---|
 | Menyn (länkar, ordning, texter) | `src/js/uc-p2p.js`, listorna `MENU_MAIN` och `MENU_MORE` högst upp |
 | Färger, typsnitt, knappar, avstånd | `src/css/01-bas.css` (sektion 0–8, tokens överst) |
-| Skapa-sidan och insamlingssidorna | `src/css/02-koncept.css` (sektion 9–11) |
+| Skapa-sidan | `src/css/02-koncept.css` (sektion 9) |
+| Insamlingssidan (`/p/…`): rubrik, bild, summa, formulär | `src/css/02-koncept.css` (sektion 10), texterna (knappen "Gåva & hälsning", "Din gåva", "Läs mer") i `FUND_TEXT` i `src/js/uc-p2p.js`. Antal rader före "Läs mer" på mobil: `--uc-fund-lines` i sektion 10.1 |
+| Hälsningsväggen på insamlingssidan | lapparnas utseende i `src/css/02-koncept.css` (sektion 11), spaltbredd och luft i `WALL` i `src/js/uc-p2p.js` |
 | Header, menypanel, sök, ankare, infosidan | `src/css/03-header.css` (sektion 12) |
 | Korten i Pågående insamlingar (utseende) | `src/css/04-insamlingskort.css` (sektion 13) |
 | Heron och "Tillsammans har vi samlat in" överst på Summary | `src/css/05-summary-hero.css` (sektion 14), bilden `src/assets/hjarta.svg`, texterna i `HERO_CTA` och `TOTAL_TEXT` i `src/js/uc-p2p.js` (summan räknas ihop från konceptkortens belopp) |
