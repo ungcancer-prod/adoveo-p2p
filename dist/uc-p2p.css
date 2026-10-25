@@ -1,5 +1,5 @@
 /* uc-p2p.css — GENERERAD FIL, ÄNDRA INTE HÄR.
-   Källa: github.com/ungcancer-prod/adoveo-p2p (src/). Byggd 2026-10-25 10:05 UTC, lokalt. */
+   Källa: github.com/ungcancer-prod/adoveo-p2p (src/). Byggd 2026-10-25 10:06 UTC, lokalt. */
 
 /* ===== src/css/01-bas.css ===== */
 /* ============================================================
@@ -1296,6 +1296,7 @@ html.uc-fund-page #wrap-default:not(uc-x) {
 .uc-fund .uc-fund__cta:not(uc-x) {
     margin: var(--sp-5) 0 0;
     color: var(--uc-concept-ink);
+    background-color: transparent;     /* temat ger knappar vit fyllning på mobil */
     border-color: var(--uc-concept-ink);
     text-decoration: none;
 }
@@ -1407,6 +1408,11 @@ html.uc-fund-page #wrap-default:not(uc-x) {
     }
     .uc-fund :is(.show_swish_reward_form, #showText, #errorText, #swish_form_underlay_text):not(uc-x) {
         max-width: none;
+    }
+    .uc-fund .show_swish_reward_form :is(.input-group, .checkbox-group):not(uc-x) {
+        width: 100%;                   /* plattformens 320px: fälten i linje med rubriken */
+        margin-left: 0;
+        margin-right: 0;
     }
 }
 

@@ -586,6 +586,7 @@ html.uc-fund-page #wrap-default {
 .uc-fund .uc-fund__cta {
     margin: var(--sp-5) 0 0;
     color: var(--uc-concept-ink);
+    background-color: transparent;     /* temat ger knappar vit fyllning på mobil */
     border-color: var(--uc-concept-ink);
     text-decoration: none;
 }
@@ -697,6 +698,11 @@ html.uc-fund-page #wrap-default {
     }
     .uc-fund :is(.show_swish_reward_form, #showText, #errorText, #swish_form_underlay_text) {
         max-width: none;
+    }
+    .uc-fund .show_swish_reward_form :is(.input-group, .checkbox-group) {
+        width: 100%;                   /* plattformens 320px: fälten i linje med rubriken */
+        margin-left: 0;
+        margin-right: 0;
     }
 }
 
