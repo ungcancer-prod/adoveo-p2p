@@ -1,5 +1,5 @@
 /* uc-p2p.js — GENERERAD FIL, ÄNDRA INTE HÄR.
-   Källa: github.com/ungcancer-prod/adoveo-p2p (src/). Byggd 2026-10-25 10:03 UTC, lokalt. */
+   Källa: github.com/ungcancer-prod/adoveo-p2p (src/). Byggd 2026-10-25 10:05 UTC, lokalt. */
 /* ==========================================================================
    UNG CANCER — P2P PÅ ADOVEO: header, meny, sök och ankare
    --------------------------------------------------------------------------
@@ -860,6 +860,7 @@
       var bad = !img || !img.getAttribute('src') || (img.complete && img.naturalWidth === 0);
       wrap.classList.toggle('uc-fund--noimg', bad);
     };
+    if (img) img.removeAttribute('style');           /* plattformen: 150px rund, inline */
     if (img) { img.alt = ''; img.addEventListener('load', noImg); img.addEventListener('error', noImg); }
     noImg();
 

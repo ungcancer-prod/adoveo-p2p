@@ -559,7 +559,7 @@ html.uc-fund-page #wrap-default {
     margin: 0;
     font-family: var(--font-hand);
     font-weight: normal;
-    font-size: clamp(4.8rem, 8cqi, 11.2rem);       /* 48–112px */
+    font-size: clamp(4.8rem, 9cqi, 11.2rem);       /* 48–112px */
     line-height: 1.02;
     letter-spacing: normal;
     text-transform: uppercase;
@@ -602,7 +602,7 @@ html.uc-fund-page #wrap-default {
     display: block;
     margin: 0;
     font-family: var(--font-body);
-    font-size: var(--fs-h4);           /* 20px */
+    font-size: var(--fs-h4) !important;   /* 20px; plattformen har inline 16px */
     line-height: 1.5;
     white-space: pre-line;             /* insamlarens egna radbrytningar */
     overflow-wrap: break-word;
@@ -665,7 +665,7 @@ html.uc-fund-page #wrap-default {
         font-size: 1em;
     }
     .uc-fund .uc-fund__desc-text {
-        font-size: var(--fs-body);     /* 16px */
+        font-size: var(--fs-body) !important;   /* 16px (se ovan) */
     }
     .uc-fund__desc {
         margin-top: var(--sp-6);

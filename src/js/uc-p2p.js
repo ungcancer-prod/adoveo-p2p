@@ -858,6 +858,7 @@
       var bad = !img || !img.getAttribute('src') || (img.complete && img.naturalWidth === 0);
       wrap.classList.toggle('uc-fund--noimg', bad);
     };
+    if (img) img.removeAttribute('style');           /* plattformen: 150px rund, inline */
     if (img) { img.alt = ''; img.addEventListener('load', noImg); img.addEventListener('error', noImg); }
     noImg();
 
