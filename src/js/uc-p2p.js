@@ -576,8 +576,7 @@
 
   /* ---------- Tillsammans har vi samlat in ---------- */
   /* Summan av alla koncept, under heron. Beloppen tas från konceptkorten
-     ({29X total_collected} i admin), så summan följer korten. Siffran
-     räknas upp när den kommer in i bild. */
+     ({29X total_collected} i admin), så summan följer korten. */
   var TOTAL_TEXT = { before: 'Tillsammans har vi samlat in', after: 'till unga vuxna som möter cancer' };
   function buildTotal() {
     var hero = document.querySelector('.uc-hero');
@@ -585,30 +584,12 @@
     if (!hero || !prices.length || document.querySelector('.uc-total')) return;
     var total = 0;
     prices.forEach(function (p) { total += amountOf(p.textContent); });
-    var fmt = kr;
     var box = el('div', 'uc-total');
     box.appendChild(el('p', 'uc-total__hand', TOTAL_TEXT.before));
-    var sum = el('p', 'uc-total__sum', fmt(total));
+    var sum = el('p', 'uc-total__sum', kr(total));
     box.appendChild(sum);
     box.appendChild(el('p', 'uc-total__hand', TOTAL_TEXT.after));
     hero.parentNode.insertBefore(box, hero.nextSibling);
-
-    var still = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (still || !window.IntersectionObserver || total === 0) return;
-    sum.textContent = fmt(0);
-    var io = new IntersectionObserver(function (entries) {
-      if (!entries[0].isIntersecting) return;
-      io.disconnect();
-      var t0 = null, dur = 1600;
-      var step = function (ts) {
-        if (t0 === null) t0 = ts;
-        var k = Math.min(1, (ts - t0) / dur);
-        sum.textContent = fmt(total * (1 - Math.pow(1 - k, 3)));   /* mjuk inbromsning */
-        if (k !== 1) requestAnimationFrame(step);
-      };
-      requestAnimationFrame(step);
-    }, { threshold: 0.5 });
-    io.observe(sum);
   }
 
   /* ---------- Steg 1–2–3 på konceptens startsida ---------- */
