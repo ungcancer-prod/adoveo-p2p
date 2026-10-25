@@ -488,6 +488,7 @@
     var txt = card.querySelector('p.cc-txt');
     var sums = card.querySelectorAll('span.cc-title');
     var sum = sums.length ? sums[sums.length - 1].textContent.trim() : '';
+    if (/\d/.test(sum)) sum = kr(amountOf(sum));          /* "10000 kr" -> "10 000 kr" */
     var name = title.textContent.trim();
 
     var link = el('a', 'uc-fcard__link');
@@ -556,6 +557,23 @@
     sec.insertBefore(art, text);
   }
 
+  /* ---------- Belopp: samma format överallt ---------- */
+  /* Adoveo skriver belopp utan tusentalsavgränsare ("10000 kr"). Här
+     läses beloppet ut (heltalsdelen) och skrivs som "10 000 kr". */
+  function amountOf(text) {
+    var m = String(text || '').replace(/[\s\u00a0\u202f]/g, '').match(/\d+/);
+    return m ? parseInt(m[0], 10) : 0;
+  }
+  function kr(n) {
+    return Math.round(n).toLocaleString('sv-SE') + ' kr';
+  }
+  /* Konceptkorten på Summary ({29X total_collected} kr) */
+  function formatPrices() {
+    document.querySelectorAll('.p2p-main .campaignsDisplay .cc-price').forEach(function (p) {
+      if (/\d/.test(p.textContent)) p.textContent = kr(amountOf(p.textContent));
+    });
+  }
+
   /* ---------- Tillsammans har vi samlat in ---------- */
   /* Summan av alla koncept, under heron. Beloppen tas från konceptkorten
      ({29X total_collected} i admin), så summan följer korten. Siffran
@@ -566,8 +584,8 @@
     var prices = document.querySelectorAll('.p2p-main .campaignsDisplay .cc-price');
     if (!hero || !prices.length || document.querySelector('.uc-total')) return;
     var total = 0;
-    prices.forEach(function (p) { total += parseInt(p.textContent.replace(/\D/g, ''), 10) || 0; });
-    var fmt = function (n) { return Math.round(n).toLocaleString('sv-SE') + ' kr'; };
+    prices.forEach(function (p) { total += amountOf(p.textContent); });
+    var fmt = kr;
     var box = el('div', 'uc-total');
     box.appendChild(el('p', 'uc-total__hand', TOTAL_TEXT.before));
     var sum = el('p', 'uc-total__sum', fmt(total));
@@ -786,7 +804,7 @@
 
     /* Varje del körs för sig: kraschar en, fungerar resten ändå
        (t.ex. att headern göms vid scroll) */
-    [buildHero, buildTotal, makeAnchors, fundraiserCards, conceptSteps, inlineQr, createLayout].forEach(function (fn) {
+    [buildHero, formatPrices, buildTotal, makeAnchors, fundraiserCards, conceptSteps, inlineQr, createLayout].forEach(function (fn) {
       try { fn(); } catch (e) { if (window.console) console.warn('[uc-p2p] ' + fn.name, e); }
     });
 
