@@ -223,7 +223,7 @@
     if (a.tagName === 'A' && a.hash) {
       var u = new URL(a.href, location.href);
       var t = document.getElementById(decodeURIComponent(u.hash.slice(1)));
-      if (t && u.host === location.host && u.pathname === location.pathname) {
+      if (t && u.host === location.host && path(u.pathname) === path(location.pathname)) {
         e.preventDefault();
         history.pushState(null, '', u.hash);
         scrollToAnchor(t, true);
@@ -270,8 +270,11 @@
 
   /* ---------- Sök ---------- */
   /* Bara 294 räknas: infosidan (308) är också en Summary med en egen lista */
+  /* Adressen med och utan snedstreck på slutet är samma sida
+     (/start/294 och /start/294/ visar båda Summary) */
+  function path(p) { return String(p).replace(/\/+$/, ''); }
   function onSummary() {
-    return location.pathname.indexOf('/start/' + SUMMARY_ID + '/') === 0 && !!document.querySelector('#searchInput');
+    return path(location.pathname) === '/start/' + SUMMARY_ID && !!document.querySelector('#searchInput');
   }
 
   function showAll(q) {
@@ -776,11 +779,11 @@
     if (sIcon) sIcon.setAttribute('href', '#uc-sok');
 
     /* Markera sidan man står på */
-    var here = location.pathname.replace(/\/$/, '');
+    var here = path(location.pathname);
     document.querySelectorAll('.uc-header__link, .uc-drawer__link').forEach(function (a) {
       var u = new URL(a.href, location.href);
       if (u.hash || u.host !== location.host) return;
-      if (u.pathname.replace(/\/$/, '') === here) a.setAttribute('aria-current', 'page');
+      if (path(u.pathname) === here) a.setAttribute('aria-current', 'page');
     });
 
     /* Varje del körs för sig: kraschar en, fungerar resten ändå
