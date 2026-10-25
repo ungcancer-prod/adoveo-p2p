@@ -272,6 +272,13 @@ button {
     padding: var(--sp-2) var(--sp-2) var(--sp-1) var(--sp-2);
     border-radius: var(--radius);
 }
+/* Länkar som ser ut som knappar: texten centrerad i höjdled, som i en
+   riktig <button> (annars hamnar den högt med extra luft under) */
+a.cc-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
 .cc-button:hover {
     background-color: var(--uc-black);
     color: var(--uc-white);

@@ -1,27 +1,22 @@
 /* =========================================
    05 — SUMMARY-HERON (sektion 14)
    Första sektionen på Summary (294): rubrik och ingress från admin blir
-   en hero på rosa yta, med hjärtat av "JA!" till vänster. Byggs av
+   en hero med hjärtat av "JA!" till vänster. Byggs av
    src/js/uc-p2p.js (buildHero); hjärtat är src/assets/hjarta.svg och
    bär sin egen animation (bubblorna växer fram uppifrån och ned).
    Knappen leder till konceptkorten (#valj-koncept).
    ========================================= */
 
-/* 14.1 Ytan: rosa i hela fönstrets bredd. Skuggan målar ytan utanför
-   sektionen och clip-path klipper den upptill och nertill, så att ingen
-   horisontell scroll uppstår. */
+/* 14.1 Ytan: sidans vita, hjärtat och texten bredvid varandra */
 .cc-section.uc-hero {
     display: flex;
     flex-direction: row;               /* plattformens sektioner är kolumner */
     align-items: center;
     justify-content: center;
     gap: var(--sp-7) 64px;
-    min-height: min(640px, 80vh);
-    margin: 0 0 var(--sp-7);
+    min-height: min(600px, 75vh);
+    margin: 0;
     padding: var(--sp-7) var(--sp-4);
-    background-color: var(--uc-pink);
-    box-shadow: 0 0 0 100vmax var(--uc-pink);
-    clip-path: inset(0 -100vmax);
     text-align: left;
 }
 .uc-hero > .divider {
@@ -90,4 +85,35 @@
     .uc-hero #page-title + .cc-txt {
         text-align: center;
     }
+}
+
+/* 14.5 Tillsammans har vi samlat in: summan av alla koncept, direkt under
+   heron. Byggs av scriptet (buildTotal), som räknar ihop beloppen på
+   konceptkorten och räknar upp siffran när den syns. */
+.uc-total {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--sp-2);
+    margin: 0 auto var(--sp-7);
+    padding: var(--sp-6) var(--sp-4);
+    text-align: center;
+    color: var(--uc-black);
+}
+.uc-total__hand {
+    margin: 0;
+    font-family: var(--font-hand);
+    font-size: var(--fs-h4);           /* 20px */
+    line-height: 1.2;
+    text-transform: uppercase;
+}
+.uc-total__sum {
+    margin: 0;
+    font-family: var(--font-head);
+    font-size: clamp(4.8rem, 8vw, 9.6rem);   /* 48–96px */
+    line-height: 1;
+    letter-spacing: var(--track-tight);
+    text-transform: uppercase;
+    font-variant-numeric: tabular-nums;      /* siffrorna hoppar inte när de räknas upp */
+    white-space: nowrap;
 }

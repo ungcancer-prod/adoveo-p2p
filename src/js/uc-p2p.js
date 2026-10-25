@@ -556,6 +556,43 @@
     sec.insertBefore(art, text);
   }
 
+  /* ---------- Tillsammans har vi samlat in ---------- */
+  /* Summan av alla koncept, under heron. Beloppen tas från konceptkorten
+     ({29X total_collected} i admin), så summan följer korten. Siffran
+     räknas upp när den kommer in i bild. */
+  var TOTAL_TEXT = { before: 'Tillsammans har vi samlat in', after: 'till unga vuxna som möter cancer' };
+  function buildTotal() {
+    var hero = document.querySelector('.uc-hero');
+    var prices = document.querySelectorAll('.p2p-main .campaignsDisplay .cc-price');
+    if (!hero || !prices.length || document.querySelector('.uc-total')) return;
+    var total = 0;
+    prices.forEach(function (p) { total += parseInt(p.textContent.replace(/\D/g, ''), 10) || 0; });
+    var fmt = function (n) { return Math.round(n).toLocaleString('sv-SE') + ' kr'; };
+    var box = el('div', 'uc-total');
+    box.appendChild(el('p', 'uc-total__hand', TOTAL_TEXT.before));
+    var sum = el('p', 'uc-total__sum', fmt(total));
+    box.appendChild(sum);
+    box.appendChild(el('p', 'uc-total__hand', TOTAL_TEXT.after));
+    hero.parentNode.insertBefore(box, hero.nextSibling);
+
+    var still = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (still || !window.IntersectionObserver || total === 0) return;
+    sum.textContent = fmt(0);
+    var io = new IntersectionObserver(function (entries) {
+      if (!entries[0].isIntersecting) return;
+      io.disconnect();
+      var t0 = null, dur = 1600;
+      var step = function (ts) {
+        if (t0 === null) t0 = ts;
+        var k = Math.min(1, (ts - t0) / dur);
+        sum.textContent = fmt(total * (1 - Math.pow(1 - k, 3)));   /* mjuk inbromsning */
+        if (k !== 1) requestAnimationFrame(step);
+      };
+      requestAnimationFrame(step);
+    }, { threshold: 0.5 });
+    io.observe(sum);
+  }
+
   /* ---------- Steg 1–2–3 på konceptens startsida ---------- */
   /* Samma tre steg som "Så funkar det" på Summary. På skapa-sidan är
      Välj klart och Skapa pågår; efter skapad är Dela på tur. Bara det
@@ -749,7 +786,7 @@
 
     /* Varje del körs för sig: kraschar en, fungerar resten ändå
        (t.ex. att headern göms vid scroll) */
-    [buildHero, makeAnchors, fundraiserCards, conceptSteps, inlineQr, createLayout].forEach(function (fn) {
+    [buildHero, buildTotal, makeAnchors, fundraiserCards, conceptSteps, inlineQr, createLayout].forEach(function (fn) {
       try { fn(); } catch (e) { if (window.console) console.warn('[uc-p2p] ' + fn.name, e); }
     });
 
