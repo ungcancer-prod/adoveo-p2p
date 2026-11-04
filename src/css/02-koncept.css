@@ -44,7 +44,7 @@
     align-items: center;
     flex-wrap: wrap;
     gap: var(--sp-2);
-    margin: 0 auto var(--sp-5);
+    margin: 0 auto var(--sp-6);        /* 32px: stegraden får eget band ovanför rubriken */
     padding: 0;
     list-style: none;
     color: var(--uc-concept-ink);
@@ -261,7 +261,7 @@ html.uc-create-split #phase-before-coupon:not([style*="none"]) {
     align-items: flex-start;
     gap: 48px;
 }
-/* Formulärets yta: exakt som kampanj 300 — 390px, padding 24/40/40,
+/* Formulärets yta: som kampanj 300 — 390px, padding 40 runt om,
    oregelbunden kant. Kanten och färgen ritas av ::before, inte med
    clip-path på själva ytan: clip-path klipper även plattformens
    fixed-rutor inuti (felmeddelanden), som då skulle skäras till formen.
@@ -273,7 +273,7 @@ html.uc-create-split #phase-before-coupon > .wrapper {
     width: 390px;
     min-width: 0;
     margin: var(--sp-7) 0;
-    padding: var(--sp-5) var(--sp-7) var(--sp-7);
+    padding: var(--sp-7);              /* 40px runt om (var 24px upptill: stegraden satt för högt) */
     background-color: transparent;
 }
 html.uc-create-split #phase-before-coupon > .wrapper::before {
