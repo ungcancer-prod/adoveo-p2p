@@ -35,6 +35,34 @@
     { text: 'Till ungcancer.se', href: 'https://ungcancer.se/' }
   ];
 
+  /* ---------- FOOTER ---------- */
+  /* Samma innehåll som footern på ungcancer.se, men inverterad (vit yta,
+     svart text) och utan land/språkväljaren. Ligger på alla P2P-sidor.
+     Ändra texterna här. Logotyperna hämtas från ungcancer.se och färgas
+     svarta i CSS (sektion 15). Ikonerna ligger i src/icons/. */
+  var FOOTER = {
+    columns: [
+      { title: 'Ge en gåva',   lines: ['Swish: 9005745', 'Bg: 900-5745'] },
+      { title: 'Postadress',   lines: ['Ung Cancer', 'C/o The Works (Hiss A, våning 7)', 'Medborgarplatsen 25', '118 72 Stockholm'] },
+      { title: 'Besöksadress', lines: ['Medborgarplatsen 25', '118 72 Stockholm'] },
+      { title: 'Kontakt',      lines: [{ text: 'info@ungcancer.se', href: 'mailto:info@ungcancer.se' }] }
+    ],
+    payoff: 'För att ingen ung vuxen ska möta cancer ensam',
+    logos: [
+      { src: 'https://ungcancer.se/cdn/shop/files/logo_tryggt_givande.png', alt: 'Tryggt givande, Giva Sverige', w: 91, h: 52 },
+      { src: 'https://ungcancer.se/cdn/shop/files/logo_90-konto.png', alt: '90-konto, Svensk Insamlingskontroll', w: 146, h: 36 }
+    ],
+    orgnr: 'Organisationsnr. 802456-7763',
+    social: [   /* icon = filnamnet i src/icons/ och modifieraren i CSS */
+      { name: 'Facebook',  icon: 'facebook',  href: 'https://www.facebook.com/ungcancer/' },
+      { name: 'Instagram', icon: 'instagram', href: 'https://www.instagram.com/ungcancer/' },
+      { name: 'TikTok',    icon: 'tiktok',    href: 'https://www.tiktok.com/@ungcancer' },
+      { name: 'YouTube',   icon: 'youtube',   href: 'https://www.youtube.com/user/ungcancer' },
+      { name: 'LinkedIn',  icon: 'linkedin',  href: 'https://linkedin.com/company/ung-cancer' }
+    ],
+    copyright: 'Upphovsrätt ' + new Date().getFullYear() + ' / Ung Cancer'
+  };
+
   /* ---------- Summary-heron ---------- */
   /* Knappen i heron leder till korten där man väljer koncept */
   var HERO_CTA = { text: 'Starta', href: '#valj-koncept' };
@@ -1004,6 +1032,62 @@
     render();
   }
 
+  /* ---------- Footer ---------- */
+  /* Byggs efter #wrap-default (plattformens innehåll), direkt i body.
+     Campaign footer i Adoveo ska vara tomt. */
+  function buildFooter() {
+    if (document.querySelector('.uc-footer')) return;
+    var f = el('footer', 'uc-footer');
+    var cols = el('div', 'uc-footer__cols');
+    FOOTER.columns.forEach(function (c) {
+      var col = el('div', 'uc-footer__col');
+      col.appendChild(el('h2', 'uc-footer__title', c.title));
+      var p = el('p', 'uc-footer__text');
+      c.lines.forEach(function (line, i) {
+        if (i) p.appendChild(el('br'));
+        if (line.href) {
+          var a = el('a', null, line.text);
+          a.href = line.href;
+          p.appendChild(a);
+        } else {
+          p.appendChild(document.createTextNode(line));
+        }
+      });
+      col.appendChild(p);
+      cols.appendChild(col);
+    });
+    f.appendChild(cols);
+    f.appendChild(el('p', 'uc-footer__payoff', FOOTER.payoff));
+    var logos = el('div', 'uc-footer__logos');
+    FOOTER.logos.forEach(function (l) {
+      var img = el('img', 'uc-footer__logo');
+      img.src = l.src; img.alt = l.alt; img.width = l.w; img.height = l.h;
+      img.style.height = l.h + 'px';          /* filerna är dubbelt så stora (skarpa på retina) */
+      img.loading = 'lazy';
+      logos.appendChild(img);
+    });
+    f.appendChild(logos);
+    var last = el('div', 'uc-footer__last');
+    last.appendChild(el('p', 'uc-footer__meta', FOOTER.orgnr));
+    var ul = el('ul', 'uc-footer__social');
+    FOOTER.social.forEach(function (s) {
+      var li = el('li');
+      var a = el('a', 'uc-footer__icon uc-footer__icon--' + s.icon);
+      a.href = s.href;
+      a.target = '_blank';
+      a.rel = 'noopener';
+      a.setAttribute('aria-label', 'Ung Cancer på ' + s.name);
+      li.appendChild(a);
+      ul.appendChild(li);
+    });
+    last.appendChild(ul);
+    last.appendChild(el('p', 'uc-footer__meta', FOOTER.copyright));
+    f.appendChild(last);
+    var wrap = document.getElementById('wrap-default');
+    if (wrap && wrap.parentNode === document.body) document.body.insertBefore(f, wrap.nextSibling);
+    else document.body.appendChild(f);
+  }
+
   /* ---------- Start ---------- */
   function init() {
     removeOldHeaders();
@@ -1026,7 +1110,7 @@
 
     /* Varje del körs för sig: kraschar en, fungerar resten ändå
        (t.ex. att headern göms vid scroll) */
-    [buildHero, conceptCards, formatPrices, buildTotal, makeAnchors, fundraiserCards, conceptSteps, inlineQr, createLayout, fundraiserPage, greetingWall].forEach(function (fn) {
+    [buildFooter, buildHero, conceptCards, formatPrices, buildTotal, makeAnchors, fundraiserCards, conceptSteps, inlineQr, createLayout, fundraiserPage, greetingWall].forEach(function (fn) {
       try { fn(); } catch (e) { if (window.console) console.warn('[uc-p2p] ' + fn.name, e); }
     });
 

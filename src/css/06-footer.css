@@ -1,0 +1,134 @@
+/* =========================================
+   06 — FOOTER (sektion 15)
+   Footern från ungcancer.se, inverterad: vit yta och Ung Cancers svarta
+   text. Ingen land/språkväljare. Markupen och texterna byggs av
+   src/js/uc-p2p.js (listan FOOTER), ikonerna ligger i src/icons/.
+   ========================================= */
+.uc-footer {
+    padding: 112px 48px 32px;
+    border-top: 1px solid var(--uc-drawer-rule);   /* vit footer på vit sida: tunt streck som i menyn */
+    background-color: var(--uc-white);
+    color: var(--uc-black);
+    font-family: var(--font-body);
+    text-align: center;
+}
+/* 15.1 Fyra kolumner */
+.uc-footer__cols {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: var(--sp-6);
+    max-width: 1240px;
+    margin: 0 auto 80px;
+}
+.uc-footer__title {
+    margin: 0 0 4px;
+    font-family: var(--font-head);
+    font-size: 2.4rem;                 /* 24px */
+    line-height: 1.125;
+    letter-spacing: var(--track-tight);
+    text-transform: uppercase;
+    color: inherit;
+}
+.uc-footer__text {
+    margin: 0;
+    font-size: 1.8rem;                 /* 18px */
+    line-height: 1.333;
+}
+.uc-footer a {                         /* plattformens röda a:link */
+    color: inherit;
+    text-decoration: none;
+}
+.uc-footer__text a:hover {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+/* 15.2 Payoffen i handstil */
+.uc-footer__payoff {
+    max-width: 1032px;
+    margin: 0 auto 64px;
+    font-family: var(--font-hand);
+    font-size: clamp(3.6rem, 7vw, 9.6rem);   /* 36–96px */
+    line-height: 1;
+    text-transform: uppercase;
+    text-wrap: balance;
+}
+/* 15.3 Logotyperna: vita på ungcancer.se, här färgade till svart
+   (#282828, i praktiken samma som --uc-black) */
+.uc-footer__logos {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: var(--sp-6) 88px;
+    margin-bottom: 56px;
+}
+.uc-footer__logo {
+    display: block;
+    width: auto;                       /* höjden sätts av scriptet (FOOTER.logos) */
+    max-width: 100%;
+    filter: brightness(0) invert(0.157);
+}
+/* 15.4 Sista raden: orgnr, sociala medier, upphovsrätt */
+.uc-footer__last {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: var(--sp-4) 56px;
+}
+.uc-footer__meta {
+    margin: 0;
+    font-size: 1.6rem;                 /* 16px */
+    line-height: 1.5;
+}
+.uc-footer__social {
+    display: flex;
+    align-items: center;
+    gap: var(--sp-4);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+.uc-footer__icon {
+    display: block;
+    width: 20px;
+    height: 20px;
+    background-color: currentColor;
+    -webkit-mask: var(--uc-icon) center / contain no-repeat;
+    mask: var(--uc-icon) center / contain no-repeat;
+}
+.uc-footer__icon:hover {
+    opacity: 0.6;
+}
+.uc-footer__icon--facebook  { --uc-icon: @@FACEBOOK@@; }
+.uc-footer__icon--instagram { --uc-icon: @@INSTAGRAM@@; }
+.uc-footer__icon--tiktok    { --uc-icon: @@TIKTOK@@; }
+.uc-footer__icon--youtube   { --uc-icon: @@YOUTUBE@@; }
+.uc-footer__icon--linkedin  { --uc-icon: @@LINKEDIN@@; }
+/* 15.5 Smalare skärmar: två kolumner, sedan en */
+@media (max-width: 899px) {
+    .uc-footer {
+        padding: 72px var(--sp-4) var(--sp-6);
+    }
+    .uc-footer__cols {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        row-gap: var(--sp-7);
+        margin-bottom: 56px;
+    }
+    .uc-footer__payoff {
+        margin-bottom: 48px;
+    }
+    .uc-footer__logos {
+        gap: var(--sp-6) 48px;
+        margin-bottom: 40px;
+    }
+    .uc-footer__last {
+        flex-direction: column;
+        gap: var(--sp-4);
+    }
+}
+@media (max-width: 519px) {
+    .uc-footer__cols {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}

@@ -23,6 +23,7 @@ bort. (Ligger den kvar gör det inget — scriptet använder den då i stället.
 | Theme → Custom CSS | All CSS kommer från repot. |
 | Theme → Custom CSS Desktop / Mobile | Låg tidigare kopior av hela CSS:en här. Ska vara tomma. |
 | Theme → Campaign Head | Headern byggs av scriptet. Ligger det kvar en gammal header här tas den bort automatiskt, men töm fältet. |
+| Theme → Campaign footer | Footern byggs av scriptet (samma på alla sidor). |
 | Klassfältet för Campaign Head | Stod `.uc-campaign-head` (med punkt). Kan tömmas. |
 
 ## Kampanjerna
