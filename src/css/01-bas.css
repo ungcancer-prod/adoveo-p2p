@@ -232,21 +232,63 @@ hr.divider {
 .uc-campaign-head img {
     max-width: var(--head-img);
 }
-/* --- "Så funkar det"-steg (294, Summary #2) --- */
+/* --- "Så funkar det"-steg (294, ligger ovanför konceptkorten) ---
+   Samma bildspråk som stegraden på konceptsidorna (.uc-progress i
+   02-koncept): siffran i en ring, och på bred skärm en tunn linje
+   mellan ringarna. Luften under skiljer stegen från korten. */
 .uc-steps {
+    --uc-ring: 56px;
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
     gap: var(--gap-lg);           /* 32px */
     max-width: 900px;
     margin-inline: auto;
-    margin-bottom: var(--sp-7);   /* ersätter tidigare <br><br> i HTML */
+    margin-bottom: 96px;
 }
 .uc-step {
+    position: relative;
     flex: 1 1 220px;
 }
-.uc-step-number {
-    font-size: var(--fs-display); /* 40px */
+.uc-step .cc-txt {
+    max-width: 26ch;
+    margin-inline: auto;
+}
+.uc-steps .uc-step-number {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: var(--uc-ring);
+    height: var(--uc-ring);
+    margin: 0 auto var(--sp-4);
+    padding-top: 3px;             /* typsnittet sitter högt i raden */
+    border: var(--border-w) solid currentColor;
+    border-radius: 50%;
+    font-size: 2.8rem;            /* 28px */
+    line-height: 1;
+}
+@media (min-width: 800px) {
+    .uc-step + .uc-step::before {     /* linjen från föregående ring */
+        content: '';
+        position: absolute;
+        top: calc(var(--uc-ring) / 2);
+        right: calc(50% + var(--uc-ring) / 2 + var(--sp-3));
+        width: calc(100% + var(--gap-lg) - var(--uc-ring) - 2 * var(--sp-3));
+        height: var(--border-w);
+        background-color: currentColor;
+        opacity: 0.35;
+    }
+}
+@media (max-width: 799px) {
+    .uc-steps {
+        --uc-ring: 48px;
+        gap: var(--sp-6);
+        margin-bottom: 64px;
+    }
+    .uc-steps .uc-step-number {
+        margin-bottom: var(--sp-3);
+        font-size: 2.4rem;            /* 24px */
+    }
 }
 /* =========================================
    3. KNAPPAR, INPUT & BELOPPSKNAPPAR
