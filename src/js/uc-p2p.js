@@ -598,6 +598,21 @@
   function kr(n) {
     return Math.round(n).toLocaleString('sv-SE') + ' kr';
   }
+  /* Konceptkorten på Summary får sitt koncepts färg (bg/ink i MENU_MAIN).
+     Konceptet avgörs av kortets länk: /start/295/ -> Födelsedag. Kort som
+     länkar till något annat behåller den krämvita standardfärgen. */
+  function conceptCards() {
+    document.querySelectorAll('.p2p-main .campaignsDisplay .cc-card').forEach(function (card) {
+      var a = card.querySelector('a[href]');
+      var m = a ? a.getAttribute('href').match(/\/start\/(\d+)/) : null;
+      var c = m ? byId(m[1]) : null;
+      if (!c) return;
+      card.style.setProperty('--uc-card-bg', c.bg);
+      card.style.setProperty('--uc-card-ink', c.ink);
+      card.classList.add('uc-ccard');
+    });
+  }
+
   /* Konceptkorten på Summary ({29X total_collected} kr) */
   function formatPrices() {
     document.querySelectorAll('.p2p-main .campaignsDisplay .cc-price').forEach(function (p) {
@@ -1011,7 +1026,7 @@
 
     /* Varje del körs för sig: kraschar en, fungerar resten ändå
        (t.ex. att headern göms vid scroll) */
-    [buildHero, formatPrices, buildTotal, makeAnchors, fundraiserCards, conceptSteps, inlineQr, createLayout, fundraiserPage, greetingWall].forEach(function (fn) {
+    [buildHero, conceptCards, formatPrices, buildTotal, makeAnchors, fundraiserCards, conceptSteps, inlineQr, createLayout, fundraiserPage, greetingWall].forEach(function (fn) {
       try { fn(); } catch (e) { if (window.console) console.warn('[uc-p2p] ' + fn.name, e); }
     });
 

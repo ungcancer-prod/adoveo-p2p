@@ -34,7 +34,7 @@ kontrollera efteråt.
 | Header, menypanel, sök, ankare, infosidan | `src/css/03-header.css` (sektion 12) |
 | Korten i Pågående insamlingar (utseende) | `src/css/04-insamlingskort.css` (sektion 13) |
 | Heron och "Tillsammans har vi samlat in" överst på Summary | `src/css/05-summary-hero.css` (sektion 14), bilden `src/assets/hjarta.svg`, texterna i `HERO_CTA` och `TOTAL_TEXT` i `src/js/uc-p2p.js` (summan räknas ihop från konceptkortens belopp) |
-| Etiketterna på korten (koncept och färg) | `src/js/uc-p2p.js`, listan `MENU_MAIN` (`id`, `bg`, `ink`) |
+| Konceptens färg på korten (konceptkorten på 294, etiketterna på insamlingskorten) | `src/js/uc-p2p.js`, listan `MENU_MAIN` (`id`, `bg`, `ink`). Konceptkortet hittar sitt koncept via länken (`/start/295/` osv.) |
 | Logga och ikoner | `src/icons/*.svg` |
 | Oregelbundna kanter (formen `#shape-box`) | `src/js/uc-p2p.js`, `SHAPES`. Lägg kanten på valfritt element med `class="uc-clip"` |
 | Konceptfärgerna | Adoveos färgväljare (wrapperns bakgrund) i respektive kampanj, se `adoveo/kampanjer.md` |

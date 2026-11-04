@@ -475,6 +475,29 @@ a.uc-card {
     background-color: var(--uc-black);
     color: var(--uc-white);
 }
+/* Konceptkorten i konceptets färg. Scriptet (conceptCards) sätter
+   --uc-card-bg/--uc-card-ink per kort från MENU_MAIN; utan script är
+   korten krämvita med svart text som förut. Text, rubriker och knappens
+   ram följer ytans textfärg; vid hover byter knappen yta och text. */
+.campaignsDisplay .cc-card {
+    background-color: var(--uc-card-bg, var(--uc-cream));
+    color: var(--uc-card-ink, var(--uc-black));
+}
+.campaignsDisplay .cc-card :is(.cc-title, .cc-txt) {
+    color: inherit;
+}
+/* Knappen ligger i en <a>, och plattformens länkfärg är röd: sätt färgen
+   direkt i stället för att ärva den */
+.campaignsDisplay .cc-card .cc-button {
+    color: var(--uc-card-ink, var(--uc-black));
+    border-color: var(--uc-card-ink, var(--uc-black));
+    background-color: transparent;
+}
+.campaignsDisplay .cc-card:hover .cc-button {
+    background-color: var(--uc-card-ink, var(--uc-black));
+    border-color: var(--uc-card-ink, var(--uc-black));
+    color: var(--uc-card-bg, var(--uc-white));
+}
 /* P2P-paketeringskort: "Insamlat hittills"-etiketten i cc-price-container */
 .cc-price-container .cc-txt {
     font-size: var(--fs-h4);   /* 20px */
