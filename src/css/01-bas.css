@@ -246,6 +246,21 @@ hr.divider {
     margin-inline: auto;
     margin-bottom: 96px;
 }
+/* Rubriken ("Så funkar det") ligger kvar i admin men syns inte: ringarna
+   och linjen säger redan att det är steg. Den behövs ändå som ankare
+   (menylänken #sa-funkar-det) och för skärmläsare, så den döljs bara
+   visuellt. */
+:is(h1, h2, h3):has(+ .uc-steps) {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+    white-space: nowrap;
+}
 .uc-step {
     position: relative;
     flex: 1 1 220px;
